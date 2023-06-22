@@ -1,3 +1,4 @@
+"use client";
 import chroma from 'chroma-js';
 import React from 'react';
 import styles from './RunningBar.module.css';
