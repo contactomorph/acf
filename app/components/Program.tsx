@@ -1,8 +1,8 @@
 "use client";
 import styles from './Program.module.css';
 import { ARROW, CHRONO, NBS, RULER, SHOES, getIcon } from './icons';
-import { Distance, Pace, Speed, TimeSpan } from '../model/units';
-import { DISTANCE_COLOR_NAME, DURATION_COLOR_NAME, colorizeSpeed, stringifyDistance, stringifyPace, stringifySpeed, stringifyTimeSpan } from '../display/units';
+import { Distance, Pace, Speed, TimeSpan } from '../data/units';
+import { DISTANCE_COLOR_NAME, DURATION_COLOR_NAME, colorizeSpeed, stringifyDistance, stringifyPace, stringifySpeed, stringifyTimeSpan } from './unit_display';
 import chroma from 'chroma-js';
 
 export type ProgramStep = {

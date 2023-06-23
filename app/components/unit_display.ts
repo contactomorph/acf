@@ -1,5 +1,5 @@
 import chroma from "chroma-js";
-import { Distance, Pace, Speed, TimeSpan } from "../model/units";
+import { Distance, Pace, Speed, TimeSpan } from "../data/units";
 import { NBS } from "../components/icons";
 
 export const DISTANCE_COLOR_NAME = "darkmagenta";

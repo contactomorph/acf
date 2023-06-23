@@ -1,6 +1,6 @@
-import { CompleteInterval, Interval, Round } from "./intervals";
-import { MultiFactor, Training } from "./training";
-import { Distance, Duration, Pace, Speed, TimeSpan, computeDistance, computeDuration, toPace, toTimeSpan } from "./units";
+import { Distance, Duration, Pace, Speed, TimeSpan, computeDistance, computeDuration, toPace, toTimeSpan } from "../data/units";
+import { CompleteInterval, Interval, Round } from "../data/intervals";
+import { MultiFactor, Training } from "../data/training";
 
 type SpeedSpecifier = (speedPercentage: number) => Speed;
 
