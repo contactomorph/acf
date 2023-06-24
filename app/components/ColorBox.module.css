@@ -1,0 +1,41 @@
+div.BoxContainer, div.BoxBackdrop, input.BoxText {
+    height: 30px;
+    border: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 5px;
+}
+
+div.BoxContainer {
+    width: 90%;
+    position: relative;
+    background-color: white;
+}
+
+div.BoxBackdrop, input.BoxText {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: left;
+    background-color: transparent;
+}
+
+div.BoxBackdrop {
+    overflow-x: hidden;
+    resize: none;
+    white-space: nowrap;
+}
+  
+span.BoxFormula, input.BoxText {
+    font-family: sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+}
+
+span.BoxFormula {
+    position: absolute;
+    top: 6px;
+    left: 0;
+}

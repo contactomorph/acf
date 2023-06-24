@@ -3,9 +3,15 @@ import chroma from 'chroma-js';
 import { Block, RunningBar } from './components/RunningBar';
 import styles from './page.module.css';
 import { Program, ProgramStep } from './components/Program';
+import { ColorBox, ColoredSpan } from './components/ColorBox';
 
 const DISTANCE = '\uD83D\uDCCF Distance';
 const DURATION = '\u23F1\uFE0F Durée';
+
+async function colorize(_text: string): Promise<ReadonlyArray<ColoredSpan>> {
+  await new Promise<void>(resolve => setTimeout(resolve, 0));
+  return [];
+}
 
 export default function Home(): JSX.Element {
   const distanceBlocks: Block[] = [
@@ -35,6 +41,7 @@ export default function Home(): JSX.Element {
   const durationTitle = `${DURATION}: longtemps`;
   return (
     <main className={styles.Home}>
+      <ColorBox colorizer={t => colorize(t)} />
       <RunningBar blocks={distanceBlocks} title={distanceTitle} />
       <RunningBar blocks={durationBlocks} title={durationTitle} />
       <Program steps={steps} />
