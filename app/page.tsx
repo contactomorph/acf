@@ -1,50 +1,46 @@
 "use client";
-import chroma from 'chroma-js';
-import { Block, RunningBar } from './components/RunningBar';
+import { RunningBar } from './components/RunningBar';
 import styles from './page.module.css';
-import { Program, ProgramStep } from './components/Program';
+import { Program } from './components/Program';
 import { ColorBox, ColoredSpan } from './components/ColorBox';
+import { processFormula } from './grammar/FormulaProcessor';
+import { Training } from './data/training';
+import { useState } from 'react';
+import { Speed } from './data/units';
+import { computeIntervals } from './model/interval_computation';
+import { toDistanceBlocks, toDurationBlocks } from './controllers/intervals';
+import { toColoredSpans } from './controllers/grammar';
+
+async function colorize(text: string, setter: (t: Training | undefined) => void) : Promise<ReadonlyArray<ColoredSpan>> {
+  const formula = await processFormula(text);
+  await new Promise<void>(resolve => setTimeout(resolve, 0));
+  setter(formula.training);
+  return toColoredSpans(formula.firstToken);
+}
 
 const DISTANCE = '\uD83D\uDCCF Distance';
 const DURATION = '\u23F1\uFE0F Durée';
 
-async function colorize(_text: string): Promise<ReadonlyArray<ColoredSpan>> {
-  await new Promise<void>(resolve => setTimeout(resolve, 0));
-  return [];
-}
-
 export default function Home(): JSX.Element {
-  const distanceBlocks: Block[] = [
-    { color: chroma('yellow'), icon: "X", texts: [], width: 40 },
-    { color: chroma('purple'), icon: "Y", texts: ["Paf"], width: 30 },
-  ];
-  const durationBlocks: Block[] = [
-    { color: chroma('red'), icon: "Z", texts: ["Coing"], width: 30 },
-  ];
-  const s: ProgramStep = {
-    isRecovery: false,
-    speedPercentage: 100,
-    speed: { in_meter_per_sec: 3 },
-    pace: { in_time_per_km: { hr:0, min:0, sec: 30 } },
-    from: "distance",
-    distance: { in_meter: 20 },
-    cumulativeDistance: { in_meter: 20 },
-    timeSpan: { hr:0, min:1, sec: 30 },
-    cumulativeTimeSpan: { hr:0, min:1, sec: 30 },
-  };
-  const steps: ProgramStep[] = [];
-  for(let i=0; i < 20; ++i) {
-    steps.push(s);
-  }
+  const [training, setTraining] = useState<Training | undefined>(undefined);
 
-  const distanceTitle = `${DISTANCE}: beaucoup`;
-  const durationTitle = `${DURATION}: longtemps`;
+  function speedSpecifier(speedPercentage: number): Speed {
+    return { in_meter_per_sec: 4.1 * speedPercentage / 100 };
+  }
+  const intervals = computeIntervals(training, speedSpecifier);
+  const [distanceBlocks, totalDistance] = toDistanceBlocks(intervals);
+  const [durationBlocks, totalDuration] = toDurationBlocks(intervals);
+
+  const distanceTitle = totalDistance === "" ? DISTANCE : `${DISTANCE}: ${totalDistance}`;
+  const durationTitle = totalDuration === "" ? DURATION : `${DURATION}: ${totalDuration}`;
+
   return (
     <main className={styles.Home}>
-      <ColorBox colorizer={t => colorize(t)} />
+      <ColorBox colorizer={t => colorize(t, setTraining)} />
       <RunningBar blocks={distanceBlocks} title={distanceTitle} />
       <RunningBar blocks={durationBlocks} title={durationTitle} />
-      <Program steps={steps} />
+      <Program steps={intervals} />
     </main>
   )
 }
+
