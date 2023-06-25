@@ -1,5 +1,5 @@
-import { KeywordLexemeKind, LexemeKind, NumericLexemeKind, UnknownLexemeKind } from "../grammar/lexemization";
-import { FormulaToken } from "../grammar/parsing";
+import { KeywordLexemeKind, LexemeKind, NumericLexemeKind, UnknownLexemeKind } from "../model/grammar/lexemization";
+import { FormulaToken } from "../model/grammar/parsing";
 import { colorizeSpeed } from './units';
 
 const KEYWORD_STYLE: Partial<React.CSSProperties> = {

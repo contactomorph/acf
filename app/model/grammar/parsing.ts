@@ -1,5 +1,5 @@
-import { Distance, Duration, assignPercentage, fromKmPerHour } from '../data/units';
-import { FactorForRefSpeed, TrainingInterval, Training, MultiFactor } from '../data/training';
+import { Distance, Duration, assignPercentage, fromKmPerHour } from '../../data/units';
+import { FactorForRefSpeed, TrainingInterval, Training, MultiFactor } from '../../data/training';
 import { Token, TokenPosition, rule, ParseError } from "typescript-parsec";
 import { tok, seq, kleft, alt, opt, apply, rep_sc, list_sc, expectEOF } from "typescript-parsec";
 import { Range } from "./morphemization";

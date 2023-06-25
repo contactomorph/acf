@@ -1,6 +1,6 @@
-import { morphemize } from "./morphemization";
-import { lexemize } from "./lexemization";
-import { parse, Formula } from "./parsing";
+import { morphemize } from "./grammar/morphemization";
+import { lexemize } from "./grammar/lexemization";
+import { parse, Formula } from "./grammar/parsing";
 
 export async function processFormula(text: string): Promise<Formula> {
     await new Promise<void>(resolve => setTimeout(resolve, 0));

@@ -1,15 +1,15 @@
 "use client";
-import { RunningBar } from './components/RunningBar';
 import styles from './page.module.css';
-import { Program } from './components/Program';
-import { ColorBox, ColoredSpan } from './components/ColorBox';
-import { processFormula } from './grammar/FormulaProcessor';
-import { Training } from './data/training';
 import { useState } from 'react';
 import { Speed } from './data/units';
+import { Training } from './data/training';
+import { processFormula } from './model/FormulaProcessor';
 import { computeIntervals } from './model/interval_computation';
 import { toDistanceBlocks, toDurationBlocks } from './controllers/intervals';
 import { toColoredSpans } from './controllers/grammar';
+import { RunningBar } from './components/RunningBar';
+import { Program } from './components/Program';
+import { ColorBox, ColoredSpan } from './components/ColorBox';
 
 async function colorize(text: string, setter: (t: Training | undefined) => void) : Promise<ReadonlyArray<ColoredSpan>> {
   const formula = await processFormula(text);

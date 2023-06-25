@@ -1,5 +1,5 @@
-import { SpeedLevel, assignPercentage } from "../data/units";
-import { ArrayIterator } from "../tools/ArrayIterator";
+import { SpeedLevel, assignPercentage } from "../../data/units";
+import { ArrayIterator } from "../../tools/ArrayIterator";
 import { Morpheme, Range, MorphemeCategory } from "./morphemization";
 
 function concatMorpheme(a: Morpheme, b: Morpheme): Morpheme {
@@ -62,7 +62,7 @@ export type KeywordLexem = BaseLexeme & {
 export type Lexeme = NumericLexeme | UnkownLexeme | KeywordLexem;
 
 const SPEED_LEVELS: ReadonlySet<SpeedLevel> = new Set<SpeedLevel>([
-    "vr" as SpeedLevel,
+    "v10" as SpeedLevel,
     "vf",
     "vm",
     "vsm",
