@@ -22,7 +22,7 @@ const DISTANCE_COLOR_SCALE = chroma.scale(['lightgrey', DISTANCE_COLOR_NAME]);
 const DURATION_COLOR_SCALE = chroma.scale(['lightgrey', DURATION_COLOR_NAME]);
 
 const COLOR_SCALES: ReadonlyArray<(value: number) => string> = [
-  () => "transparent",
+  () => "lightgrey",
   (v) => SPEED_COLOR_SCALE(v).hex(),
   (v) => DISTANCE_COLOR_SCALE(v).hex(),
   (v) => DURATION_COLOR_SCALE(v).hex(),
