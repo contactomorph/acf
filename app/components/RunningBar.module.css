@@ -1,7 +1,6 @@
 div.BarTitle, div.BarInner {
     width: 100%;
     background-color: transparent;
-    display: flex;
     padding: 0;
     margin: 0;
 }
@@ -28,6 +27,14 @@ div.BarTitle {
 
 div.BarInner {
     height: 75%;
+    overflow-x: auto;
+}
+
+div.BarBlockSequence {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    display: flex;
     padding: 0;
     margin: 0;
 }
