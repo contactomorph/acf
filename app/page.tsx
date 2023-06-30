@@ -1,7 +1,7 @@
 "use client";
 import styles from './page.module.css';
-import { useState } from 'react';
-import { Speed } from './data/units';
+import { useState, useMemo } from 'react';
+import { Speed, fromKmPerHour } from './data/units';
 import { Training } from './data/training';
 import { processFormula } from './model/FormulaProcessor';
 import { computeIntervals } from './model/interval_computation';
@@ -10,6 +10,7 @@ import { toColoredSpans } from './controllers/grammar_coloration';
 import { RunningBar } from './components/RunningBar';
 import { Program } from './components/Program';
 import { ColorBox, ColoredSpan } from './components/ColorBox';
+import { DecimalBox, DecimalBoxConfig } from './components/DecimalBox';
 
 async function colorize(text: string, setter: (t: Training | undefined) => void) : Promise<ReadonlyArray<ColoredSpan>> {
   const formula = await processFormula(text);
@@ -21,13 +22,24 @@ async function colorize(text: string, setter: (t: Training | undefined) => void)
 const DISTANCE = '\uD83D\uDCCF Distance';
 const DURATION = '\u23F1\uFE0F Durée';
 
+const CONFIG: DecimalBoxConfig = {
+  min: 5,
+  max: 25,
+  step: 0.1,
+};
+
 export default function Home(): JSX.Element {
   const [training, setTraining] = useState<Training | undefined>(undefined);
+  const [refSpeed, setRefSpeed] = useState(15);
 
-  function speedSpecifier(speedPercentage: number): Speed {
-    return { in_meter_per_sec: 4.1 * speedPercentage / 100 };
-  }
-  const intervals = computeIntervals(training, speedSpecifier);
+  const intervals = useMemo(() => {
+    const speedSpecifier = (speedPercentage: number): Speed => {
+      const ratio = speedPercentage / 100;
+      return fromKmPerHour(ratio * refSpeed);
+    };
+    return computeIntervals(training, speedSpecifier);
+  }, [refSpeed, training]);
+
   const [distanceBlocks, totalDistance] = toDistanceBlocks(intervals);
   const [durationBlocks, totalDuration] = toDurationBlocks(intervals);
 
@@ -37,6 +49,7 @@ export default function Home(): JSX.Element {
   return (
     <main className={styles.Home}>
       <ColorBox colorizer={t => colorize(t, setTraining)} />
+      <DecimalBox updater={setRefSpeed} value={refSpeed} config={CONFIG} />
       <RunningBar blocks={distanceBlocks} title={distanceTitle} />
       <RunningBar blocks={durationBlocks} title={durationTitle} />
       <Program steps={intervals} />
