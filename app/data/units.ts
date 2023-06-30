@@ -12,7 +12,7 @@ export type TimeSpan = {
 }
 
 export function fromKmPerHour(in_km_per_hour: number): Speed {
-    return { in_meter_per_sec: in_km_per_hour * 3.6 };
+    return { in_meter_per_sec: in_km_per_hour / 3.6 };
 }
 
 export type Pace = { readonly in_time_per_km: TimeSpan };

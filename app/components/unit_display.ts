@@ -32,9 +32,9 @@ export function stringifyTimeSpan(ts: TimeSpan): string {
 }
 
 export function stringifySpeed(s: Speed): string {
-    const speed = s.in_meter_per_sec * 3.6;
-    const units = Math.floor(speed);
-    const deci = Math.floor(10 * (speed - units));
+    const speedX10 = Math.round(s.in_meter_per_sec * 36);
+    const units = Math.floor(speedX10 / 10);
+    const deci = speedX10 - 10 * units;
     return `${units}.${deci}${NBS}km${NBS}/${NBS}h`
 }
 
