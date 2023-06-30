@@ -71,6 +71,7 @@ export function Program(props: { steps: ReadonlyArray<ProgramStep> }): JSX.Eleme
     const ths = texts.map((t, i) => {
       const style = {
         backgroundColor: COLOR_SCALES[i](0.2),
+        width: i === 0 ? "10%" : "15%",
       };
       return (<th style={style} key={i}>{t}</th>);
     });
