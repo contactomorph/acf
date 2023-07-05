@@ -1,5 +1,5 @@
 import { Distance, Duration, assignPercentage, fromKmPerHour } from '../../data/units';
-import { FactorForRefSpeed, TrainingInterval, Training, MultiFactor } from '../../data/training';
+import { FactorForRefSpeed, TrainingInterval, Training, MultiFactor, TrainingLoop } from '../../data/training';
 import { Token, TokenPosition, rule, ParseError } from "typescript-parsec";
 import { tok, seq, kleft, alt, opt, apply, rep_sc, list_sc, expectEOF } from "typescript-parsec";
 import { Range } from "./morphemization";
@@ -185,7 +185,14 @@ REPEATED_INTERVAL.setPattern(
             tok(KeywordLexemeKind.Times),
             INTERVAL_WITH_RECOVERY
         ),
-        ([multiFactor, _times, intervals]) => [{multiFactor, intervals}]
+        ([multiFactor, _times, intervals]) => {
+            const loop: TrainingLoop = {
+                multiFactor,
+                intervals: [intervals[0]]
+            };
+            const recovery = intervals.at(1);
+            return recovery === undefined ? [loop] : [loop, recovery];
+        }
     )
 );
 
