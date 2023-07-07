@@ -1,19 +1,23 @@
-INSTALLATION
+REINSTALLATION FROM GITHUB
 
-> npx create-next-app@latest acf
+- clone repository git@github.com:contactomorph/acf.git
+- go inside "acf" folder and remove the "web" folder (we will restore it after).
+> npx create-next-app@latest web
     √ Would you like to use TypeScript with this project? ... Yes
     √ Would you like to use ESLint with this project? ... No
     √ Would you like to use Tailwind CSS with this project? ... No
     √ Would you like to use `src/` directory with this project? ... No
     √ Use App Router (recommended)? ... Yes
     √ Would you like to customize the default import alias? ... No
+- clean all modifications inside the git repository so that we restore sources
+  and only the "next" files ignored by git remain as such.
 
-- modify next.config.js to generate a single out folder on build
+- check that next.config.js contains the following option to be sure a single out folder on build
     const nextConfig = {
         output: 'export',
     }
 
-- go to "acf", download "firebase-tool-instant-win.exe" and add to .gitignore
+- go to "acf" root, download "firebase-tool-instant-win.exe" and add to .gitignore if missing.
 
 - in firebase-tool-instant-win.exe run > firebase init
     (*) Hosting: Configure files for Firebase Hosting and (optionally) set up GitHub Action deploys
