@@ -1,6 +1,6 @@
 "use client";
 import styles from './page.module.css';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Speed, fromKmPerHour } from './data/units';
 import { Training } from './data/training';
 import { processFormula } from './model/FormulaProcessor';
@@ -12,6 +12,7 @@ import { Program } from './components/Program';
 import { ColorBox, ColoredSpan } from './components/ColorBox';
 import { DecimalBox } from './components/DecimalBox';
 import { UriQueryConnector } from './tools/UriQueryConnector';
+import { FbServer } from './backend/FbServer';
 
 async function colorize(
   text: string,
@@ -46,9 +47,32 @@ function getRefSpeed(s: number): string {
   return s === DEFAULT_REF_SPEED ? "" : `${s}`;
 }
 
+
+const DEF = {
+  "categories":[],
+  "date":"2023-07-22 22:00:00Z",
+  "place":"Stade Alain Mimoun",
+  "training":"100m à vma"
+};
+
+function BasicForm(): JSX.Element {
+  const [dbContent, setDbContent] = useState<string>("");
+  var server = useMemo(() => new FbServer(), []);
+  useEffect(() => {
+    server.subscribe(data => setDbContent(JSON.stringify(data)));
+  }, []);
+
+  return (<div>
+    <div>Content: {dbContent}</div>
+    Training: <input type='text' /><br/>
+    Post: <input type='text' /><br/>
+    <input type='button' value='Ajouter' onClick={() => server.post(DEF)} />
+  </div>);
+}
+
 const CONNECTOR = new UriQueryConnector(() => globalThis.window);
 
-export default function Home(): JSX.Element {
+export default function Home(): JSX.Element { 
   const [training, setTraining] = useState<Training | undefined>(undefined);
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
 
@@ -94,6 +118,7 @@ export default function Home(): JSX.Element {
       <RunningBar blocks={distanceBlocks} title={distanceTitle} />
       <RunningBar blocks={durationBlocks} title={durationTitle} />
       <Program steps={intervals} />
+      <BasicForm />
     </main>
   )
 }
