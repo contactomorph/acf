@@ -2,7 +2,7 @@
 import styles from './page.module.css';
 import { useState, useMemo, useEffect } from 'react';
 import { Speed, fromKmPerHour } from './data/units';
-import { Training } from './data/training';
+import { Training } from './data/trainings';
 import { processFormula } from './model/FormulaProcessor';
 import { computeIntervals } from './model/interval_computation';
 import { toDistanceBlocks, toDurationBlocks } from './controllers/interval_translation';
