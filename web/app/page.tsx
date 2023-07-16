@@ -80,7 +80,7 @@ export default function Home(): JSX.Element {
   const { intervals, distanceTitle, distanceBlocks, durationTitle, durationBlocks, } = data;
 
   return (
-    <main className={styles.Home}>
+    <div className={styles.Home}>
       <ColorBox
         colorizer={t => colorize(t, setTraining)}
       />
@@ -94,7 +94,7 @@ export default function Home(): JSX.Element {
       <RunningBar blocks={distanceBlocks} title={distanceTitle} />
       <RunningBar blocks={durationBlocks} title={durationTitle} />
       <Program steps={intervals} />
-    </main>
+    </div>
   )
 }
 
