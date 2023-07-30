@@ -1,5 +1,5 @@
 "use client";
-import styles from './ProgramCreation.module.css';
+import styles from './TrainingCreationPage.module.css';
 import { useState, useMemo, useEffect } from 'react';
 import { Speed, fromKmPerHour } from './data/units';
 import { Training } from './data/trainings';
@@ -42,7 +42,7 @@ function mayInitRefSpeed(text: string | undefined, setRefSpeed: (s: number) => v
   }
 }
 
-export default function ProgramCreation(props: { client: RouterClient }): JSX.Element {
+export default function TrainingCreationPage(props: { client: RouterClient }): JSX.Element {
   const [training, setTraining] = useState<Training | undefined>(undefined);
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
   
@@ -86,7 +86,7 @@ export default function ProgramCreation(props: { client: RouterClient }): JSX.El
   const { intervals, distanceTitle, distanceBlocks, durationTitle, durationBlocks, } = data;
 
   return (
-    <div className={styles.Home}>
+    <div className={styles.Page}>
       <ColorBox
         colorizer={t => colorize(t, setTraining)}
       />
