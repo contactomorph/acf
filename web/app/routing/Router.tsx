@@ -1,4 +1,4 @@
-import { CSSProperties, useMemo, } from "react";
+import { CSSProperties, useId, useMemo, } from "react";
 import { Coordinator } from "./Coordinator";
 import { RouterClient } from "./primitives";
 
@@ -10,7 +10,7 @@ export type PageInfo = {
 export function Router(
     props: { children: ReadonlyArray<PageInfo> }
 ): JSX.Element {
-    const globalId = useMemo(generateGlobalId, []);
+    const globalId = useId();
     const coordinator = useMemo(() => {
         const routes = props.children.map(info => info.route);
         return new Coordinator(globalId, routes);
@@ -30,8 +30,4 @@ export function Router(
         return (<div key={i} id={wrapperId} style={style}>{page}</div>);
     });
     return (<>{pageWrappers}</>);
-}
-
-function generateGlobalId(): string {
-    return Math.floor(Number.MAX_SAFE_INTEGER * Math.random()).toString(16);
 }
