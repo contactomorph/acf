@@ -1,15 +1,22 @@
 import { CSSProperties, useMemo, } from "react";
-import { PageNumber, toWrapperId } from "./primitives";
-import { RouterCore } from "./RouterCore";
+import { Coordinator } from "./Coordinator";
+import { RouterClient } from "./primitives";
+
+export type PageInfo = {
+    ctor: (client: RouterClient) => JSX.Element,
+    route: string,
+};
 
 export function Router(
-    props: { children: ReadonlyArray<[constructor: (n: PageNumber) => JSX.Element, route: string]> }
+    props: { children: ReadonlyArray<PageInfo> }
 ): JSX.Element {
     const globalId = useMemo(generateGlobalId, []);
-    const routes = props.children.map(pair => pair[1]);
-    const divs = props.children.map((pair, i) => {
-        const pageConstructor = pair[0];
-        const n: PageNumber = { globalId, index: i };
+    const coordinator = useMemo(() => {
+        const routes = props.children.map(info => info.route);
+        return new Coordinator(globalId, routes);
+    }, []);
+    const pageWrappers = props.children.map((info, i) => {
+        const pageConstructor = info.ctor;
         const style: CSSProperties = {
             visibility: i === 0 ? "visible" : "hidden",
             position: "absolute",
@@ -17,11 +24,12 @@ export function Router(
             margin: 0,
             width: "100%",
         };
-        const page = pageConstructor(n);
-        const wrapperId = toWrapperId(n);
+        const client = coordinator.getClient(i);
+        const page = pageConstructor(client);
+        const wrapperId = client.wrapperId;
         return (<div key={i} id={wrapperId} style={style}>{page}</div>);
     });
-    return (<><RouterCore globalId={globalId} routes={routes}/>{divs}</>);
+    return (<>{pageWrappers}</>);
 }
 
 function generateGlobalId(): string {

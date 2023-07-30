@@ -6,9 +6,9 @@ import ProgramCreation from './ProgramCreation';
 export default function Home(): JSX.Element {
   return (
     <Router>
-      {[n => (<ProgramCreation n={n}/>), 'a']}
-      {[n => (<ClientPage n={n} color="blue" />), 'b']}
-      {[n => (<ClientPage n={n} color="red" />), 'c']}
+      {{ ctor: cl => (<ProgramCreation client={cl}/>), route: 'a' }}
+      {{ ctor: cl => (<ClientPage client={cl} color="pink" />), route: 'b' }}
+      {{ ctor: cl => (<ClientPage client={cl} color="brown" />), route: 'c' }}
     </Router>
   )
 }

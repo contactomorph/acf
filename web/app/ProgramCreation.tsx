@@ -12,8 +12,7 @@ import { Program } from './components/Program';
 import { ColorBox, ColoredSpan } from './components/ColorBox';
 import { DecimalBox } from './components/DecimalBox';
 import { UriQueryConnector } from './tools/UriQueryConnector';
-import { PageNumber } from './routing/primitives';
-import { getClient } from './routing/RouterCore';
+import { RouterClient } from './routing/primitives';
 
 async function colorize(
   text: string,
@@ -50,20 +49,16 @@ function getRefSpeed(s: number): string {
 
 const CONNECTOR = new UriQueryConnector(() => globalThis.window);
 
-export default function ProgramCreation(props: { n: PageNumber }): JSX.Element {
+export default function ProgramCreation(props: { client: RouterClient }): JSX.Element {
   const [training, setTraining] = useState<Training | undefined>(undefined);
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
   
-  const client = getClient(props.n);
+  const client = props.client;
 
-  let buttons: JSX.Element[] = [];
-    
-  if (client !== undefined) {
-      buttons = client.routes.map((r, i) => {
-          const p = r === client.route ? { disabled: true }: {};
-          return (<input type="button" onClick={() => client.goTo(r)} key={i} value={`To ${r}`} {...p}/>);
-      });
-  }
+  let buttons: JSX.Element[] = client.routes.map((r, i) => {
+    const p = r === client.route ? { disabled: true }: {};
+    return (<input type="button" onClick={() => client.goTo(r)} key={i} value={`To ${r}`} {...p}/>);
+  });
 
   useEffect(() => {
     CONNECTOR.extractFromUri([SPEED_URI_ARG, t => maySetRefSpeed(t, setRefSpeed)]);
