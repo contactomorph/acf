@@ -11,7 +11,6 @@ import { RunningBar } from './components/RunningBar';
 import { Program } from './components/Program';
 import { ColorBox, ColoredSpan } from './components/ColorBox';
 import { DecimalBox } from './components/DecimalBox';
-import { UriQueryConnector } from './tools/UriQueryConnector';
 import { RouterClient } from './routing/primitives';
 
 async function colorize(
@@ -33,7 +32,7 @@ const STEP_REF_SPEED = 0.1;
 const DEFAULT_REF_SPEED = 15;
 const SPEED_URI_ARG = "speed";
 
-function maySetRefSpeed(text: string | undefined, setRefSpeed: (s: number) => void) {
+function mayInitRefSpeed(text: string | undefined, setRefSpeed: (s: number) => void) {
   if (text !== undefined) {
     let speed = Number.parseFloat(text);
     if (Number.isFinite(speed)) {
@@ -43,12 +42,6 @@ function maySetRefSpeed(text: string | undefined, setRefSpeed: (s: number) => vo
   }
 }
 
-function getRefSpeed(s: number): string {
-  return s === DEFAULT_REF_SPEED ? "" : `${s}`;
-}
-
-const CONNECTOR = new UriQueryConnector(() => globalThis.window);
-
 export default function ProgramCreation(props: { client: RouterClient }): JSX.Element {
   const [training, setTraining] = useState<Training | undefined>(undefined);
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
@@ -57,15 +50,20 @@ export default function ProgramCreation(props: { client: RouterClient }): JSX.El
 
   let buttons: JSX.Element[] = client.routes.map((r, i) => {
     const p = r === client.route ? { disabled: true }: {};
-    return (<input type="button" onClick={() => client.goTo(r)} key={i} value={`To ${r}`} {...p}/>);
+    return (<input type="button" onClick={() => client.goTo(r, {})} key={i} value={`To ${r}`} {...p}/>);
   });
 
-  useEffect(() => {
-    CONNECTOR.extractFromUri([SPEED_URI_ARG, t => maySetRefSpeed(t, setRefSpeed)]);
-  }, []);
+  useMemo(
+    () => {
+      mayInitRefSpeed(client.getUriParam(SPEED_URI_ARG), setRefSpeed);
+    },
+    []);
 
   useEffect(
-    () => CONNECTOR.injectInUri([SPEED_URI_ARG, getRefSpeed(refSpeed)]),
+    () => {
+      const textSpeed = refSpeed === DEFAULT_REF_SPEED ? undefined : `${refSpeed}`;
+      client.setUriParam(SPEED_URI_ARG, textSpeed);
+    },
     [refSpeed],
   );
 

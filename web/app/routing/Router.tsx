@@ -1,4 +1,4 @@
-import { CSSProperties, useId, useMemo, } from "react";
+import { CSSProperties, useEffect, useId, useMemo, } from "react";
 import { Coordinator } from "./Coordinator";
 import { RouterClient } from "./primitives";
 
@@ -7,18 +7,25 @@ export type PageInfo = {
     route: string,
 };
 
+function getWindow(): Window | undefined {
+    if (typeof window === "undefined")
+        return undefined;
+    return window;
+}
+
 export function Router(
     props: { children: ReadonlyArray<PageInfo> }
 ): JSX.Element {
     const globalId = useId();
     const coordinator = useMemo(() => {
         const routes = props.children.map(info => info.route);
-        return new Coordinator(globalId, routes);
+        return new Coordinator(getWindow, globalId, routes);
     }, []);
+
     const pageWrappers = props.children.map((info, i) => {
         const pageConstructor = info.ctor;
         const style: CSSProperties = {
-            visibility: i === 0 ? "visible" : "hidden",
+            visibility: "hidden",
             position: "absolute",
             padding: 0,
             margin: 0,
@@ -29,5 +36,8 @@ export function Router(
         const wrapperId = client.wrapperId;
         return (<div key={i} id={wrapperId} style={style}>{page}</div>);
     });
+
+    useEffect(() => coordinator.goToDefault(), []);
+    
     return (<>{pageWrappers}</>);
 }
