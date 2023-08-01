@@ -1,4 +1,5 @@
-import { CSSProperties, useEffect, useId, useMemo, } from "react";
+import styles from './Router.module.css';
+import { useEffect, useId, useMemo, } from "react";
 import { Coordinator } from "./Coordinator";
 import { RouterClient } from "./primitives";
 
@@ -24,20 +25,13 @@ export function Router(
 
     const pageWrappers = props.children.map((info, i) => {
         const pageConstructor = info.ctor;
-        const style: CSSProperties = {
-            visibility: "hidden",
-            position: "absolute",
-            padding: 0,
-            margin: 0,
-            width: "100%",
-        };
         const client = coordinator.getClient(i);
         const page = pageConstructor(client);
         const wrapperId = client.wrapperId;
-        return (<div key={i} id={wrapperId} style={style}>{page}</div>);
+        return (<div key={i} id={wrapperId} className={styles.Wrapper}>{page}</div>);
     });
 
     useEffect(() => coordinator.goToDefault(), []);
     
-    return (<>{pageWrappers}</>);
+    return (<div className={styles.Router}>{pageWrappers}</div>);
 }

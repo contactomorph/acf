@@ -9,7 +9,8 @@ export default function Home(): JSX.Element {
     <Router>
       {{ ctor: cl => (<TrainingHistoryPage client={cl} />), route: 'history' }}
       {{ ctor: cl => (<TrainingCreationPage client={cl} />), route: 'creation' }}
-      {{ ctor: cl => (<ClientPage client={cl} color="brown" />), route: 'weird' }}
+      {{ ctor: cl => (<ClientPage client={cl} color="brown" />), route: 'test1' }}
+      {{ ctor: cl => (<ClientPage client={cl} color="pink" />), route: 'test2' }}
     </Router>
   )
 }
