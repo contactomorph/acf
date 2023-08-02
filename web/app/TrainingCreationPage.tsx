@@ -28,7 +28,7 @@ const DURATION = '\u23F1\uFE0F Durée';
 
 const MIN_REF_SPEED = 5;
 const MAX_REF_SPEED = 25;
-const STEP_REF_SPEED = 0.1;
+const DEC_COUNT_REF_SPEED = 1;
 const DEFAULT_REF_SPEED = 15;
 const SPEED_URI_ARG = "speed";
 
@@ -42,6 +42,10 @@ function mayInitRefSpeed(text: string | undefined, setRefSpeed: (s: number) => v
   }
 }
 
+function toText(s: number): string | undefined {
+  return s === DEFAULT_REF_SPEED ? undefined : s.toFixed(DEC_COUNT_REF_SPEED);
+}
+
 export default function TrainingCreationPage(props: { client: RouterClient }): JSX.Element {
   const [training, setTraining] = useState<Training | undefined>(undefined);
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
@@ -53,19 +57,9 @@ export default function TrainingCreationPage(props: { client: RouterClient }): J
     return (<input type="button" onClick={() => client.goTo(r, {})} key={i} value={`To ${r}`} {...p}/>);
   });
 
-  useMemo(
-    () => {
-      mayInitRefSpeed(client.getUriParam(SPEED_URI_ARG), setRefSpeed);
-    },
-    []);
+  useMemo(() => mayInitRefSpeed(client.getUriParam(SPEED_URI_ARG), setRefSpeed), []);
 
-  useEffect(
-    () => {
-      const textSpeed = refSpeed === DEFAULT_REF_SPEED ? undefined : `${refSpeed}`;
-      client.setUriParam(SPEED_URI_ARG, textSpeed);
-    },
-    [refSpeed],
-  );
+  useEffect(() => client.setUriParam(SPEED_URI_ARG, toText(refSpeed)), [refSpeed]);
 
   const data = useMemo(() => {
     const speedSpecifier = (speedPercentage: number): Speed => {
@@ -92,10 +86,10 @@ export default function TrainingCreationPage(props: { client: RouterClient }): J
       />
       <DecimalBox
         onValueChange={setRefSpeed}
-        value={refSpeed ?? DEFAULT_REF_SPEED}
+        value={refSpeed}
         minValue={MIN_REF_SPEED}
         maxValue={MAX_REF_SPEED}
-        step={STEP_REF_SPEED}
+        decimalCount={DEC_COUNT_REF_SPEED}
       />
       <RunningBar blocks={distanceBlocks} title={distanceTitle} />
       <RunningBar blocks={durationBlocks} title={durationTitle} />
