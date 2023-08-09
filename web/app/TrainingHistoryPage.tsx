@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import styles from './TrainingHistoryPage.module.css';
-import { TrainingHistory } from './model/TrainingHistory';
+import Model from './model/Model';
 import { SessionBar } from './components/SessionBar';
 import { RouterClient } from './routing/primitives';
+import FirebaseHistoryRepository from './backend/FirebaseHistoryRepository';
 
 export default function TrainingHistoryPage(props: { client: RouterClient }): JSX.Element {
     
@@ -14,17 +15,7 @@ export default function TrainingHistoryPage(props: { client: RouterClient }): JS
     });
 
     const history = useMemo(() => {
-        const h = new TrainingHistory();
-        h.upsertSession({
-            id: "EZIZEOO",
-            comment: "Facile",
-            formula: "1km à v10",
-            place: "Leo Lagrange",
-            tags: [],
-            time: new Date(2021, 3, 4, 19, 30, 0),
-            training: null,
-        });
-        return h;
+        return new Model(new FirebaseHistoryRepository());
     }, []);
 
     const sessions = history.getOrderedSessions().map(s => {

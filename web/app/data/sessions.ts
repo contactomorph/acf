@@ -9,3 +9,7 @@ export type Session = {
     readonly training: Training | null;
     readonly formula: string;
 };
+
+export type SessionList = {
+    readonly [id: string] : Session;
+};
