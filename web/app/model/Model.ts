@@ -47,6 +47,11 @@ export default class Model {
         }
     }
 
+    getTags(): Set<string> {
+        const tags = this._orderedSessions.flatMap(s => s.tags);
+        return new Set(tags);
+    }
+
     private _insert(session: Session) {
         let position = this._orderedSessions.findIndex(s => Model._properlyOrderedByTime(s, session));
         if (position < 0) {

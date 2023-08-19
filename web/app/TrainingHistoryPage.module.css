@@ -7,3 +7,37 @@
     padding: 0;
     margin: 0;
 }
+
+div.Bar {
+    width: 90%;
+    background-color: lightgrey;
+    border-style: solid;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: darkgrey;
+    box-sizing: border-box;
+    padding: 5px;
+    text-align: left;
+}
+
+span.ActiveTag {
+    background-color: red;
+    border-style: solid;
+    border-radius: 5px;
+    border-width: 2px;
+    border-color: darkred;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+span.InactiveTag {
+    background-color: gray;
+    border-style: solid;
+    border-radius: 5px;
+    border-width: 2px;
+    border-color: dimgray;
+    color: lightgray;
+    font-weight: bold;
+    cursor: pointer;
+}
