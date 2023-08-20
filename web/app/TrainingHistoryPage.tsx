@@ -8,6 +8,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import frLocale from "date-fns/locale/fr";
 import './tools/set-extensions';
+import { CHECK_BOX, WATCH } from './components/icons';
 
 export default function TrainingHistoryPage(
     props: { client: RouterClient, model: Model | null }
@@ -78,7 +79,7 @@ export default function TrainingHistoryPage(
             <table>
                 <tbody>
                     <tr key="from">
-                        <td>À partir de</td>
+                        <td>{WATCH}</td>
                         <td>
                             <DatePicker
                                 selected={startingDate}
@@ -88,7 +89,10 @@ export default function TrainingHistoryPage(
                             />
                         </td>
                     </tr>
-                    <tr key="tags"><td>Filtres</td><td>{spans}</td></tr>
+                    <tr key="tags">
+                        <td>{CHECK_BOX}</td>
+                        <td>{spans}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>

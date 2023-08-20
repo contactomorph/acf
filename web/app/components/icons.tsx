@@ -4,6 +4,11 @@ export const RULER = '\uD83D\uDCCF';
 export const CHRONO = '\u23F1\uFE0F';
 export const SHOES = '\uD83D\uDC5F';
 
+export const PIN = '\u{1F4CD}';
+export const WATCH = '\u231A';
+export const COMMENT = '\u2757';
+export const CHECK_BOX = '\u2611\uFE0F';
+
 const RUNNER = "\uD83C\uDFC3";
 const LOTUS = "	\uD83E\uDDD8";
 

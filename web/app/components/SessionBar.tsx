@@ -2,6 +2,7 @@
 import styles from './SessionBar.module.css';
 import { Session } from "../data/sessions";
 import { DATE_TIME_FORMAT } from './date_display';
+import { CHECK_BOX, COMMENT, PIN, WATCH, getIcon } from './icons';
 
 export function SessionBar(props: { session: Session }) : JSX.Element {
 
@@ -12,19 +13,19 @@ export function SessionBar(props: { session: Session }) : JSX.Element {
     );
 
     const tagLine = 0 < tags.length ?
-        (<tr><td>Tags</td><td>{tags}</td></tr>) :
+        (<tr><td>{CHECK_BOX}</td><td>{tags}</td></tr>) :
         (<></>);
 
     const commentLine = props.session.comment !== "" ?
-        (<tr><td>Commentaire</td><td>{props.session.comment}</td></tr>) :
+        (<tr><td>{COMMENT}</td><td>{props.session.comment}</td></tr>) :
         (<></>);
 
     return (<div className={styles.Bar} key={props.session.id}>
         <table>
             <tbody>
-                <tr><td>Programe</td><td>{props.session.formula}</td></tr>
-                <tr><td>Heure</td><td>{DATE_TIME_FORMAT.format(props.session.date)}</td></tr>
-                <tr><td>Lieu</td><td>{props.session.place}</td></tr>
+                <tr><td>{getIcon(false)}</td><td>{props.session.formula}</td></tr>
+                <tr><td>{WATCH}</td><td>{DATE_TIME_FORMAT.format(props.session.date)}</td></tr>
+                <tr><td>{PIN}</td><td>{props.session.place}</td></tr>
                 {tagLine}
                 {commentLine}
             </tbody>
