@@ -9,7 +9,7 @@ export default class FirebaseHistoryRepository implements HistoryRepository {
             comment: "Trop facile",
             formula: "2 * (3km à vma)",
             place: "",
-            time: new Date(2024, 5, 13),
+            date: new Date(2024, 5, 13),
             tags: [ "test vma", "club" ],
             training: null,
         };

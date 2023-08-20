@@ -65,7 +65,7 @@ export default function TrainingHistoryPage(
     });
 
     const sessionBars = (model?.getOrderedSessions(Array.from(activeTags)) ?? [])
-        .filter(s => startingDate <= s.time)
+        .filter(s => startingDate <= s.date)
         .map(s => (<SessionBar session={s} key={s.id} />));
 
     function onDateChange(date: Date | null) {

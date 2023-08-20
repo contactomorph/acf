@@ -5,11 +5,27 @@ import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
 import { getDatabase, ref, onValue, DatabaseReference, Database, child, push, update } from "@firebase/database";
 import { Session, SessionList } from "../data/sessions";
 import HistoryRepository from "../model/HistoryRepository";
+import { Training } from "../data/trainings";
+import { parseIso } from "../components/date_display";
 
 const databaseURL = "https://acf-allure-default-rtdb.europe-west1.firebasedatabase.app";
 
 const email = "de";
 const password = "ps";
+
+export type BackendSession = {
+    readonly id?: string;
+    readonly date?: string;
+    readonly place?: string;
+    readonly tags?: object;
+    readonly comment?: string;
+    readonly training?: object;
+    readonly formula?: string;
+};
+
+type BackendSessionList = {
+    readonly [id: string] : BackendSession;
+};
 
 export default class FirebaseHistoryRepository implements HistoryRepository {
     readonly _app: FirebaseApp;
@@ -48,16 +64,25 @@ export default class FirebaseHistoryRepository implements HistoryRepository {
         }
     }
 
-    _complete(sessions: SessionList): SessionList {
-        for (const key in sessions) {
-            const session: any = sessions[key];
-            session.id ??= key;
-            session.comment ??= "";
-            session.formula ??= "";
-            session.training ??= null;
-            session.place ??= "";
-            session.tags ??= [];
-            session.time ??= new Date();
+    _complete(beSessions: BackendSessionList): SessionList {
+        const sessions: any = {};
+        for (const key in beSessions) {
+            const beSession = beSessions[key];
+            const tags: string[] = [];
+            const tagsAsObj: any = beSession.tags ?? {};
+            for(const key in tagsAsObj) {
+                tags.push(tagsAsObj[key]);
+            }
+            const session: Session = {
+                id: beSession.id ?? key,
+                comment: beSession.comment ?? "",
+                formula: beSession.formula ?? "",
+                place: beSession.place ?? "",
+                training: (beSession.training ?? null) as Training | null,
+                date: (beSession.date ? parseIso(beSession.date) : null) ?? new Date(),
+                tags: tags,
+            };
+            sessions[key] = session;
         }
 
         return sessions;

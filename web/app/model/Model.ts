@@ -70,11 +70,11 @@ export default class Model {
     }
 
     private static _properlyOrderedByTime(s1: Session, s2: Session): boolean {
-        return s1.time.getTime() <= s2.time.getTime();
+        return s1.date.getTime() <= s2.date.getTime();
     }
 
     private static _compareTime(s1: Session, s2: Session): number {
-        return s1.time.getTime() - s2.time.getTime();
+        return s1.date.getTime() - s2.date.getTime();
     }
 
     private static _identical(s1: Session, s2: Session): boolean {
@@ -83,7 +83,7 @@ export default class Model {
         return s1.comment === s2.comment &&
             s1.formula === s2.formula &&
             s1.place === s2.place &&
-            +s1.time === +s2.time &&
+            +s1.date === +s2.date &&
             s1.tags.length === s2.tags.length &&
             s1.tags.every((tag, i) => s2.tags[i] === tag);
     }

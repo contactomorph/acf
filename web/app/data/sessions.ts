@@ -2,7 +2,7 @@ import { Training } from './trainings';
 
 export type Session = {
     readonly id: string;
-    readonly time: Date;
+    readonly date: Date;
     readonly place: string;
     readonly tags: ReadonlyArray<string>;
     readonly comment: string;

@@ -23,7 +23,7 @@ export function SessionBar(props: { session: Session }) : JSX.Element {
         <table>
             <tbody>
                 <tr><td>Programe</td><td>{props.session.formula}</td></tr>
-                <tr><td>Heure</td><td>{DATE_TIME_FORMAT.format(props.session.time)}</td></tr>
+                <tr><td>Heure</td><td>{DATE_TIME_FORMAT.format(props.session.date)}</td></tr>
                 <tr><td>Lieu</td><td>{props.session.place}</td></tr>
                 {tagLine}
                 {commentLine}
