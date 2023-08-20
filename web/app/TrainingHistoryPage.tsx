@@ -6,7 +6,7 @@ import { RouterClient } from './routing/primitives';
 import { useEffect, useMemo, useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { same, setContent } from './tools/set-extensions';
+import './tools/set-extensions';
 
 export default function TrainingHistoryPage(
     props: { client: RouterClient, model: Model | null }
@@ -22,9 +22,9 @@ export default function TrainingHistoryPage(
     useMemo(() => {
         if (model) {
             const modelTags = model.getTags();
-            if (!same(modelTags, allTags)) {
-                setContent(allTags, modelTags);
-                setContent(activeTags, modelTags);
+            if (!modelTags.same(allTags)) {
+                modelTags.setContentOf(allTags);
+                modelTags.setContentOf(activeTags);
             }
         }
     }, [model, version]);

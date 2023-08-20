@@ -1,9 +1,17 @@
+export {};
 
-export function same<T>(a: ReadonlySet<T>, b: ReadonlySet<T>): boolean {
-    return a.size === b.size && Array.from(a).every(v => b.has(v));
+declare global {
+    interface Set<T> {
+        same(other: ReadonlySet<T>): boolean;
+        setContentOf(target: Set<T>): void;
+    }
 }
 
-export function setContent<T>(a: Set<T>, b: ReadonlySet<T>): void {
-    a.clear();
-    Array.from(b).every(v => a.add(v));
-}
+(Set.prototype as any).same = function (this: ReadonlySet<any>, other: ReadonlySet<any>): boolean {
+    return this.size === other.size && Array.from(this).every(v => other.has(v));
+};
+
+(Set.prototype as any).setContentOf = function (this: ReadonlySet<any>, target: Set<any>): void {
+    target.clear();
+    Array.from(this).every(v => target.add(v));
+};
