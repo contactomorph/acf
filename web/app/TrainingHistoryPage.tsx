@@ -6,6 +6,7 @@ import { RouterClient } from './routing/primitives';
 import { useEffect, useMemo, useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import frLocale from "date-fns/locale/fr";
 import './tools/set-extensions';
 
 export default function TrainingHistoryPage(
@@ -79,7 +80,12 @@ export default function TrainingHistoryPage(
                     <tr key="from">
                         <td>À partir de</td>
                         <td>
-                            <DatePicker selected={startingDate} onChange={onDateChange}/>
+                            <DatePicker
+                                selected={startingDate}
+                                onChange={onDateChange}
+                                locale={frLocale}
+                                dateFormat="dd/MM/yyyy"
+                            />
                         </td>
                     </tr>
                     <tr key="tags"><td>Filtres</td><td>{spans}</td></tr>
