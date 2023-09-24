@@ -29,7 +29,7 @@ export class Coordinator {
         this._clients = Array(routes.length);
     }
 
-    goToDefault() {
+    public goToDefault() {
         const uriParams = this._copyUriParams();
         const route = uriParams[PAGE_URI_PARAMETER_NAME];
         const foundIndex = this._routes.findIndex(r => r === route);
@@ -40,7 +40,7 @@ export class Coordinator {
         }
     }
 
-    getClient(index: number): RouterClient {
+    public getClient(index: number): RouterClient {
         if (index < 0 || this._clients.length <= index)
             throw new Error("Invalid client index");
         let client = this._clients[index];
@@ -50,7 +50,7 @@ export class Coordinator {
         return this._clients[index] = new Coordinator.PrivateClient(this, route, index);
     }
 
-    _initWindow(): Window | undefined {
+    private _initWindow(): Window | undefined {
         if (this._window) return this._window;
         return this._window = this._windowGenerator();
     }

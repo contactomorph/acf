@@ -1,6 +1,6 @@
 "use client";
 import chroma from 'chroma-js';
-import React from 'react';
+import React, { memo } from 'react';
 import styles from './RunningBar.module.css';
 import { Properties } from 'csstype';
 
@@ -50,7 +50,9 @@ function mayExtendSequence(
     }
 }
 
-export function RunningBar(props: { blocks: ReadonlyArray<Block>, title: string }) : JSX.Element {
+export const RunningBar = memo(function(
+    props: { blocks: ReadonlyArray<Block>, title: string }
+) : JSX.Element {
     const totalWidth = props.blocks.reduce((w, b) => w + b.width, 0);
 
     const minProportionRef = React.useRef(1.0);
@@ -85,5 +87,4 @@ export function RunningBar(props: { blocks: ReadonlyArray<Block>, title: string 
             <div ref={seqRef} className={styles.BarBlockSequence}>{runningBlocks}</div>
         </div>
     </div>);
-}
-
+});

@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { memo } from 'react';
 import styles from './ColorBox.module.css';
 
 export type ColoredSpan = Partial<React.CSSProperties> & { textWidth: number };
@@ -65,7 +65,8 @@ class ColorizingDaemon {
     return text.substring(from, to ?? text.length).replace(/ /g, "\u00A0");
   }
 }
-export function ColorBox(props: { colorizer: Colorizer }) : JSX.Element {
+
+export const ColorBox = memo(function(props: { colorizer: Colorizer }) : JSX.Element {
   const formulaRefKey = React.useRef<HTMLInputElement>(null);
   const backdropRefKey = React.useRef<HTMLDivElement>(null);
   const [content, setContent] = React.useState(<>{"\u00A0"}</>);
@@ -104,4 +105,4 @@ export function ColorBox(props: { colorizer: Colorizer }) : JSX.Element {
       </div>
       <input type='text' className={styles.BoxText} ref={formulaRefKey}/>
     </div>);
-}
+});

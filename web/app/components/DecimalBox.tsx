@@ -1,7 +1,7 @@
 "use client";
 import DiscreteRange from '../tools/DiscreteRange';
 import styles from './DecimalBox.module.css';
-import { useEffect, useMemo, useRef } from "react";
+import { memo, useEffect, useMemo, useRef } from "react";
 
 function mayUpdateValue(
     valueRef: React.MutableRefObject<number>,
@@ -16,7 +16,7 @@ function mayUpdateValue(
     return updated;
 }
 
-export function DecimalBox(props: {
+export const DecimalBox = memo(function(props: {
     onValueChange: (x: number) => void,
     value: number,
     minValue?: number,
@@ -76,5 +76,4 @@ export function DecimalBox(props: {
             className={styles.BoxPlusButton}
             onClick={() => onClick(true)} />
       </div>);
-  }
-  
+});

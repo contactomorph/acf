@@ -1,5 +1,5 @@
 import styles from './Router.module.css';
-import { useEffect, useId, useMemo, } from "react";
+import { memo, useEffect, useId, useMemo, } from "react";
 import { Coordinator } from "./Coordinator";
 import { RouterClient } from "./primitives";
 
@@ -14,7 +14,7 @@ function getWindow(): Window | undefined {
     return window;
 }
 
-export function Router(
+export const Router = memo(function(
     props: { children: ReadonlyArray<PageInfo> }
 ): JSX.Element {
     const globalId = useId();
@@ -34,4 +34,4 @@ export function Router(
     useEffect(() => coordinator.goToDefault(), []);
     
     return (<div className={styles.Router}>{pageWrappers}</div>);
-}
+});

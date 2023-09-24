@@ -4,6 +4,7 @@ import { ARROW, CHRONO, NBS, RULER, SHOES, getIcon } from './icons';
 import { Distance, Pace, Speed, TimeSpan } from '../data/units';
 import { DISTANCE_COLOR_NAME, DURATION_COLOR_NAME, colorizeSpeed, stringifyDistance, stringifyPace, stringifySpeed, stringifyTimeSpan } from './unit_display';
 import chroma from 'chroma-js';
+import { memo } from 'react';
 
 export type ProgramStep = {
   readonly isRecovery: boolean,
@@ -65,7 +66,7 @@ function Step(props: { step: ProgramStep, index: number }): JSX.Element {
   return (<tr key={index}>{tds}</tr>)
 }
 
-export function Program(props: { steps: ReadonlyArray<ProgramStep> }): JSX.Element {
+export const Program = memo(function(props: { steps: ReadonlyArray<ProgramStep> }): JSX.Element {
     const texts = [getIcon(false), SHOES, RULER, CHRONO, SHOES, ARROW + RULER, ARROW + CHRONO, ];
 
     const ths = texts.map((t, i) => {
@@ -87,4 +88,4 @@ export function Program(props: { steps: ReadonlyArray<ProgramStep> }): JSX.Eleme
           </table>
         </div>
     </div>);
-}
+});

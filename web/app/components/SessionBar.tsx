@@ -3,9 +3,11 @@ import styles from './SessionBar.module.css';
 import { Session } from "../data/sessions";
 import { DATE_TIME_FORMAT } from './date_display';
 import { CHECK_BOX, COMMENT, PIN, WATCH, getIcon } from './icons';
+import { memo } from 'react';
 
-export function SessionBar(props: { session: Session }) : JSX.Element {
-
+export const SessionBar = memo(function(
+    props: { session: Session }
+) : JSX.Element {
     const tags = props.session.tags.map(
         t => {
             return (<><span className={styles.Tag}>&nbsp;{t}&nbsp;</span> </>);
@@ -31,4 +33,4 @@ export function SessionBar(props: { session: Session }) : JSX.Element {
             </tbody>
         </table>
     </div>);
-}
+});
