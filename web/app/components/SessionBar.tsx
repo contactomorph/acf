@@ -3,9 +3,10 @@ import styles from './SessionBar.module.css';
 import { Session } from "../data/sessions";
 import { DATE_TIME_FORMAT } from './date_display';
 import { CHECK_BOX, COMMENT, PIN, WATCH, getIcon } from './icons';
+import { MouseEventHandler } from 'react';
 
 export function SessionBar(
-    props: { session: Session }
+    props: { session: Session, onClick: MouseEventHandler }
 ) : JSX.Element {
     const tags = props.session.tags.map(
         t => {
@@ -21,7 +22,7 @@ export function SessionBar(
         (<tr><td>{COMMENT}</td><td>{props.session.comment}</td></tr>) :
         (<></>);
 
-    return (<div className={styles.Bar} key={props.session.id}>
+    return (<div className={styles.Bar} key={props.session.id} onClick={props.onClick}>
         <table>
             <tbody>
                 <tr><td>{getIcon(false)}</td><td>{props.session.formula}</td></tr>

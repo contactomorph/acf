@@ -28,7 +28,7 @@ test('TrainingCreationPage updates url and display program when user provides te
     const client = new MockRouterClient({});
     const user = userEvent.setup();
 
-    render(<TrainingCreationPage client={client} />);
+    render(<TrainingCreationPage client={client} visible={true} />);
 
     expect(client.step).toBe(2);
     expect(client.currentUriParams).toEqual({});

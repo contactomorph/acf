@@ -51,11 +51,6 @@ export default function TrainingHistoryPage(
         setVersion({});
     }, [activeTags]);
 
-    let buttons: JSX.Element[] = client.routes.map((r, i) => {
-        const p = r === client.route ? { disabled: true }: {};
-        return (<input type="button" onClick={() => client.goTo(r, {})} key={i} value={`To ${r}`} {...p}/>);
-    });
-
     const spans: JSX.Element[] = Array.from(allTags.entries()).map(([t]) => {
         const className = activeTags.has(t) ? styles.ActiveTag : styles.InactiveTag;
         return (<>
@@ -68,7 +63,10 @@ export default function TrainingHistoryPage(
 
     const sessionBars = (model?.getOrderedSessions(Array.from(activeTags)) ?? [])
         .filter(s => startingDate <= s.date)
-        .map(s => (<SessionBar session={s} key={s.id} />));
+        .map(s => {
+            const onClick = () => client.goTo('creation', { id: s.id, formula: s.formula });
+            return (<SessionBar session={s} key={s.id} onClick={onClick}/>);
+        });
 
     function onDateChange(date: Date | null) {
         if (date !== null) { setStartingDate(date); }
@@ -97,6 +95,5 @@ export default function TrainingHistoryPage(
             </table>
         </div>
         {sessionBars}
-        {buttons}
     </div>);
 }

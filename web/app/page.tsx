@@ -1,5 +1,4 @@
 "use client";
-import { ClientPage } from './ClientPage';
 import { Router, RouterKedge } from './routing/Router';
 import TrainingCreationPage from './TrainingCreationPage';
 import TrainingHistoryPage from './TrainingHistoryPage';
@@ -13,9 +12,7 @@ export default function Home(): JSX.Element {
   return (
     <Router kedge={KEDGE}>
       {{ ctor: cl => (<TrainingHistoryPage client={cl} model={MODEL} />), route: 'history' }}
-      {{ ctor: cl => (<TrainingCreationPage client={cl} />), route: 'creation' }}
-      {{ ctor: cl => (<ClientPage client={cl} color="brown" />), route: 'test1' }}
-      {{ ctor: cl => (<ClientPage client={cl} color="pink" />), route: 'test2' }}
+      {{ ctor: (cl, v) => (<TrainingCreationPage client={cl} visible={v} />), route: 'creation' }}
     </Router>
   )
 }

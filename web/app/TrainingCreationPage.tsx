@@ -22,7 +22,7 @@ const DEFAULT_REF_SPEED = 15;
 const SPEED_URI_ARG = "speed";
 const FORMULA_URI_ARG = "formula";
 
-function mayInitRefSpeed(
+function retrieveValuesFromUri(
   client: RouterClient,
   setRefSpeed: (speed: number) => void,
   setFormulaText: (formulaText: string) => void,
@@ -50,7 +50,7 @@ function toText(s: number): string | undefined {
 }
 
 export default function TrainingCreationPage(
-  props: { client: RouterClient }
+  props: { client: RouterClient, visible: boolean, }
 ): JSX.Element {
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
   const [formulaText, setFormulaText] = useState<string>("");
@@ -60,15 +60,21 @@ export default function TrainingCreationPage(
   
   const client = props.client;
 
-  let buttons: JSX.Element[] = client.routes.map((r, i) => {
-    const p = r === client.route ? { disabled: true }: {};
-    return (<input type="button" onClick={() => client.goTo(r, {})} key={i} value={`To ${r}`} {...p}/>);
-  });
-
-  useMemo(() => mayInitRefSpeed(client, setRefSpeed, setFormulaText), []);
-
-  useEffect(() => client.setUriParam(SPEED_URI_ARG, toText(refSpeed)), [refSpeed]);
-  useEffect(() => client.setUriParam(FORMULA_URI_ARG, toStringOrUndefined(formulaText)), [formulaText]);
+  useMemo(() => {
+    if (props.visible) {
+      retrieveValuesFromUri(client, setRefSpeed, setFormulaText);
+    }
+  }, [props.visible]);
+  useEffect(() => {
+    if (props.visible) {
+      client.setUriParam(SPEED_URI_ARG, toText(refSpeed));
+    }
+  }, [refSpeed, props.visible]);
+  useEffect(() => {
+    if (props.visible) {
+      client.setUriParam(FORMULA_URI_ARG, toStringOrUndefined(formulaText));
+    }
+  }, [formulaText, props.visible]);
 
   const colorizer: Colorizer = useCallback((text: string) => {
     const formula = processFormula(text);
@@ -97,6 +103,7 @@ export default function TrainingCreationPage(
 
   return (
     <div className={styles.Page}>
+      <div><input type="button" onClick={() => client.goTo('history', {})} value={`Revenir`} /></div>
       <ColorBox colorizer={colorizer} text={formulaText} />
       <DecimalBox
         onValueChange={setRefSpeed}
@@ -108,7 +115,6 @@ export default function TrainingCreationPage(
       <RunningBar blocks={distanceBlocks} title={distanceTitle} />
       <RunningBar blocks={durationBlocks} title={durationTitle} />
       <Program steps={intervals} />
-      <div>{buttons}</div>
     </div>
   )
 }
