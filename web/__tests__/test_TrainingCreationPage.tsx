@@ -1,10 +1,20 @@
 import TrainingCreationPage from '../app/TrainingCreationPage';
 import { RouterClient, UriParams } from '../app/routing/primitives';
 import { test, expect } from '@jest/globals';
-import { screen, render, fireEvent } from '@testing-library/react';
+import { screen, render, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 const NBSP = "\u00A0";
+
+function toBlockInfo(element: HTMLElement): string[] {
+    const parts = element.title.split('\n').map(i => i.trim());
+    return [
+        element.style.width,
+        element.style.backgroundColor,
+        parts[1],
+        parts[2],
+    ];
+}
 
 class MockRouterClient implements RouterClient {
     currentUriParams: UriParams;
@@ -54,18 +64,53 @@ test('TrainingCreationPage updates url and display program when user provides te
 
     runningBlocks = screen.getAllByRole('running_block');
     
-    const blockInfo = runningBlocks.map(b => {
-        const parts = b.title.split('\n').map(i => i.trim());
-        return [
-            b.style.width,
-            b.style.backgroundColor,
-            parts[1],
-            parts[2],
-        ];
-    });
+    const blockInfo = runningBlocks.map(toBlockInfo);
 
     expect(blockInfo).toEqual([
         ["100%", "rgb(211, 53, 29)", `500${NBSP}m`, `→${NBSP}500${NBSP}m`, ],
         ["100%", "rgb(211, 53, 29)", `2${NBSP}min`, `→${NBSP}2${NBSP}min`, ],
+    ]);
+});
+
+test('TrainingCreationPage propage url and display program when becoming visible', async () => {
+    const client = new MockRouterClient({});
+
+    const { rerender } = render(
+        <TrainingCreationPage client={client} visible={false} />
+    );
+
+    expect(client.step).toBe(0);
+
+    let runningBlocks = screen.queryAllByRole('running_block');
+    expect(runningBlocks).toEqual([]);
+
+    client.currentUriParams = {
+        "formula": `4 * (40" à 100% recup 30", 1' à 90% recup 40") recup 2'30", 4 * (40" à 100% recup 30", 1' à 90% recup 40")`,
+        "speed": "13.2",
+    };
+
+    rerender(
+        <TrainingCreationPage client={client} visible={true} />
+    );
+
+    expect(client.step).toBe(2);
+
+    expect(client.currentUriParams).toEqual({
+        "formula": `4 * (40" à 100% recup 30", 1' à 90% recup 40") recup 2'30", 4 * (40" à 100% recup 30", 1' à 90% recup 40")`,
+        "speed": "13.2",
+    });
+
+    await waitFor(() => {
+        runningBlocks = screen.queryAllByRole('running_block');
+        expect(runningBlocks.length).toBe(62);
+    }, { timeout: 2000 });
+    
+    const blockInfo = runningBlocks.slice(0, 3).map(toBlockInfo);
+    
+
+    expect(blockInfo).toEqual([
+        ["3.4815910871268168%", "rgb(211, 53, 29)", `146${NBSP}m`, `→${NBSP}146${NBSP}m`, ],
+        ["1.6450517886674207%", "rgb(173, 231, 159)", `69${NBSP}m`, `→${NBSP}215${NBSP}m`, ],
+        ["4.700147967621203%", "rgb(239, 110, 46)", `198${NBSP}m`, `→${NBSP}413${NBSP}m`, ],
     ]);
 });

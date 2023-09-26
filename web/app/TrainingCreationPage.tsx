@@ -21,10 +21,13 @@ const DEFAULT_REF_SPEED = 15;
 const SPEED_URI_ARG = "speed";
 const FORMULA_URI_ARG = "formula";
 
+type TrainingRef = { training: Training | undefined };
+
 function retrieveValuesFromUri(
   client: RouterClient,
   setRefSpeed: (speed: number) => void,
   setFormulaText: (formulaText: string) => void,
+  trainingRef: TrainingRef,
 ) {
   const speedText = client.getUriParam(SPEED_URI_ARG);
   if (speedText) {
@@ -36,6 +39,8 @@ function retrieveValuesFromUri(
   }
   const formulaText = client.getUriParam(FORMULA_URI_ARG);
   if (formulaText) {
+    const formula = processFormula(formulaText);
+    trainingRef.training = formula.training;
     setFormulaText(formulaText);
   }
 }
@@ -53,15 +58,13 @@ export default function TrainingCreationPage(
 ): JSX.Element {
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
   const [formulaText, setFormulaText] = useState<string>("");
-  const trainingWrapper = useMemo(() => {
-    return { training: undefined as Training | undefined };
-  }, []);
+  const trainingRef = useMemo<TrainingRef>(() => { return { training: undefined }; }, []);
   
   const client = props.client;
 
   useMemo(() => {
     if (props.visible) {
-      retrieveValuesFromUri(client, setRefSpeed, setFormulaText);
+      retrieveValuesFromUri(client, setRefSpeed, setFormulaText, trainingRef);
     }
   }, [props.visible]);
   useEffect(() => {
@@ -77,7 +80,7 @@ export default function TrainingCreationPage(
 
   const colorizer: Colorizer = useCallback((text: string) => {
     const formula = processFormula(text);
-    trainingWrapper.training = formula.training;
+    trainingRef.training = formula.training;
     setFormulaText(text);
     return toColoredSpans(formula.firstToken);
   }, []);
@@ -87,7 +90,7 @@ export default function TrainingCreationPage(
       const ratio = speedPercentage / 100;
       return fromKmPerHour(ratio * (refSpeed ?? DEFAULT_REF_SPEED));
     };
-    const intervals = computeIntervals(trainingWrapper.training, speedSpecifier);
+    const intervals = computeIntervals(trainingRef.training, speedSpecifier);
 
     const [distanceBlocks, totalDistance] = toDistanceBlocks(intervals);
     const [durationBlocks, totalDuration] = toDurationBlocks(intervals);
