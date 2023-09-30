@@ -3,7 +3,6 @@ export type UriParams = {
 };
 
 export interface RouterClient {
-    get index(): number;
     get route(): string;
     get wrapperId(): string;
     get routes(): ReadonlyArray<string>;
@@ -11,3 +10,7 @@ export interface RouterClient {
     setUriParam(key: string, value: string | undefined): void;
     goTo(route: string, uriParams: UriParams): void;
 }
+
+export interface VisibilityProvider {
+    subscribe(setVisible: (visible: boolean) => void): void;
+};

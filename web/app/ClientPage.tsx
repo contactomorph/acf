@@ -19,7 +19,7 @@ export function ClientPage(props: { client: RouterClient, color: string }): JSX.
 
     return (<div style={style}>
         <input type="button" onClick={() => setCount(count + 1)} value={`Clicked: ${count} times`}/>
-        <div>Client page {client.index} {props.color}</div>
+        <div>Client page {props.color}</div>
         <div>{buttons}</div>
     </div>);
 }
