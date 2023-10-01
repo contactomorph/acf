@@ -33,3 +33,11 @@ RUN IN PRODUCTION
 
 > npm run build
 ! Results are stored in .next folder.
+
+INSTALL JEST
+
+> cd web
+> npm install --save-dev jest jest-environment-jsdom @testing-library/react @testing-library/jest-dom
+- create file 'jest.config.mjs' as specified
+  in https://nextjs.org/docs/pages/building-your-application/optimizing/testing
+> npm install @testing-library/user-event@14
