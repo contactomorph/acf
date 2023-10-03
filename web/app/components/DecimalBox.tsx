@@ -30,13 +30,14 @@ export const DecimalBox = memo(function(props: {
     );
 
     const refKey = useRef<HTMLInputElement>(null);
-    const valueRef = useRef(props.value);
+    const valueRef = useRef(range.clamp(props.value));
+    const isFirstCall = refKey.current === null;
 
     useEffect(() => {
         const updated = mayUpdateValue(valueRef, props.value, range);
         if (refKey.current) { refKey.current.value = range.toFixed(valueRef.current) }
-        if (updated) { onValueChange(valueRef.current) }
-    }, [props.value]);
+        if (updated || isFirstCall) { onValueChange(valueRef.current) }
+    }, [props.value, range]);
 
     const onBlur = useMemo<React.ChangeEventHandler<HTMLInputElement>>(
         () => event => {
@@ -62,16 +63,19 @@ export const DecimalBox = memo(function(props: {
       <div className={styles.BoxContainer}>
         <input
             type='button'
+            role='minus'
             value="-"
             className={styles.BoxMinusButton}
             onClick={() => onClick(false)} />
         <input
             type="text"
+            role="decimal_text"
             ref={refKey}
             className={styles.BoxText}
             onBlur={onBlur} />
         <input
             type='button'
+            role='plus'
             value="+"
             className={styles.BoxPlusButton}
             onClick={() => onClick(true)} />
