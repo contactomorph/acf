@@ -47,16 +47,20 @@ class ColorizingDaemon {
       const subText = ColorizingDaemon._extractSubText(text, offset, nextOffset);
       const properties = Object.getOwnPropertyNames(span);
       if (properties.length === 1 && properties[0] === "textWidth") {
-        children.push(<>{subText}</>);
+        children.push(<React.Fragment key={offset}>{subText}</React.Fragment>);
       } else {
-        children.push(<span style={span}>{subText}</span>);
+        children.push(<span key={offset} style={span}>{subText}</span>);
       }
       offset = nextOffset;
     }
     if (offset < text.length) {
-      children.push(<>{ColorizingDaemon._extractSubText(text, offset)}</>);
+      children.push(
+        <React.Fragment key={offset}>
+          {ColorizingDaemon._extractSubText(text, offset)}
+        </React.Fragment>
+      );
     }
-    children.push(<>{"\u00A0"}</>);
+    children.push(<React.Fragment key={offset+1}>{"\u00A0"}</React.Fragment>);
     this._textInput.style.color = "transparent";
     this._setContent(<>{children}</>);
   }
@@ -101,7 +105,7 @@ export const ColorBox = memo(function(props: { colorizer: Colorizer }) : JSX.Ele
   return (
     <div className={styles.BoxContainer}>
       <div className={styles.BoxBackdrop} ref={backdropRefKey}>
-        <span className={styles.BoxFormula}>{content}</span>
+        <span className={styles.BoxFormula} role='formula'>{content}</span>
       </div>
       <input type='text' className={styles.BoxText} ref={formulaRefKey}/>
     </div>);
