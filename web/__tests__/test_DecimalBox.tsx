@@ -2,21 +2,22 @@ import userEvent from '@testing-library/user-event';
 import { DecimalBox } from '../app/components/DecimalBox';
 import { test, expect } from '@jest/globals';
 import { screen, render, fireEvent } from '@testing-library/react';
+import Ptr from '../app/tools/Ptr';
 
 test('Check clicking the buttons and providing input has appropriate effect', async () => {
     const user = userEvent.setup();
 
-    const valueRef = { value: null as number | null };
+    const ptr = new Ptr<number>();
 
     render(<DecimalBox
         value={12.18}
         maxValue={20}
         minValue={3}
         decimalCount={2}
-        onValueChange={value => { valueRef.value = value }} />
+        onValueChange={value => ptr.set(value)} />
     );
         
-    expect(valueRef.value).toBe(12.18);
+    expect(ptr.value).toBe(12.18);
 
     const minusButton = screen.getByRole('minus');
     const plusButton = screen.getByRole('plus');
@@ -24,34 +25,34 @@ test('Check clicking the buttons and providing input has appropriate effect', as
 
     await user.click(minusButton);
     
-    expect(valueRef.value).toBe(12.17);
+    expect(ptr.value).toBe(12.17);
 
     await user.click(plusButton);
     await user.click(plusButton);
     
-    expect(valueRef.value).toBe(12.19);
+    expect(ptr.value).toBe(12.19);
 
     await user.click(plusButton);
     
-    expect(valueRef.value).toBe(12.2);
+    expect(ptr.value).toBe(12.2);
 
     await user.clear(input);
     await user.type(input, "19.99");
     const blurred = fireEvent.focusOut(input);
     
     expect(blurred).toBe(true);
-    expect(valueRef.value).toBe(19.99);
+    expect(ptr.value).toBe(19.99);
     
     await user.click(plusButton);
-    expect(valueRef.value).toBe(20);
+    expect(ptr.value).toBe(20);
 
     await user.click(plusButton);
-    expect(valueRef.value).toBe(20);
+    expect(ptr.value).toBe(20);
 
     await user.clear(input);
     await user.type(input, "2");
     fireEvent.focusOut(input);
-    expect(valueRef.value).toBe(3);
+    expect(ptr.value).toBe(3);
 });
 
 
