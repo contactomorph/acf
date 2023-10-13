@@ -1,6 +1,6 @@
 "use client";
 
-import { RouterClient, UriParams, VisibilityProvider } from "./primitives";
+import { RouterClient, UriParams, URLStore, VisibilityProvider } from "./primitives";
 
 const PAGE_URI_PARAMETER_NAME = "page";
 
@@ -12,33 +12,37 @@ class PrivateCoordinator {
     readonly globalId: string;
     readonly routes: ReadonlyArray<string>;
     readonly clients: ReadonlyArray<PrivateClient>;
-    private readonly _windowGenerator: () => Window | undefined;
-    private _window: Window | undefined;
+    private _activeIndex: number;
+    private readonly _urlStoreGenerator: () => URLStore | undefined;
+    private _store: URLStore | undefined;
 
     constructor(
-        windowGenerator: () => Window | undefined,
+        urlStoreGenerator: () => URLStore | undefined,
         globalId: string,
         routes: ReadonlyArray<string>,
     ) {
         this.globalId = globalId;
         this.routes = routes;
         this.clients = routes.map((route, index) => new PrivateClient(this, route, index));
-        this._windowGenerator = windowGenerator;
-        this._window = undefined;
+        this._activeIndex = -1;
+        this._urlStoreGenerator = urlStoreGenerator;
+        this._store = undefined;
     }
 
-    private _initWindow(): Window | undefined {
-        if (this._window) return this._window;
-        return this._window = this._windowGenerator();
+    private _initStore(): URLStore | undefined {
+        if (this._store) return this._store;
+        return this._store = this._urlStoreGenerator();
     }
     
-    goTo(index: number, uriParams: UriParams): void {
-        if (index < 0 || this.clients.length <= index)
-            return;
+    goTo(index: number, uriParams: UriParams): boolean {
+        if (index < 0 || this.clients.length <= index || this._activeIndex === index)
+            return false;
         this.clients.forEach((client, i) => {
             client.setVisible(i === index);
         });
+        this._activeIndex = index;
         this.replaceUriParams(this.routes[index], uriParams);
+        return true;
     }
 
     goToDefault() {
@@ -53,17 +57,16 @@ class PrivateCoordinator {
     }
 
     copyUriParams(): MutableUriParams {
-        const w = this._initWindow();
-        if (w === undefined) return {};
-        const searchParams = new URLSearchParams(w.location.search);
+        const h = this._initStore();
+        if (h === undefined) return {};
         const uriParams: MutableUriParams = {};
-        searchParams.forEach((value, key) => uriParams[key] = value);
+        h.searchParams.forEach((value, key) => uriParams[key] = value);
         return uriParams;
     }
 
     replaceUriParams(route: string, uriParams: UriParams): void {
-        const w = this._initWindow();
-        if (w === undefined) return;
+        const h = this._initStore();
+        if (h === undefined) return;
         const searchParams = new URLSearchParams();
         searchParams.set(PAGE_URI_PARAMETER_NAME, route);
         for (const key in uriParams) {
@@ -71,8 +74,7 @@ class PrivateCoordinator {
             if (value != undefined)
                 searchParams.set(key, value);
         }
-        const path = `${w.location.origin}?${searchParams.toString()}`;
-        w.history.pushState({ path }, '', path);
+        h.searchParams = searchParams;
     }
 
     createWrapperId(n: number): string {
@@ -113,12 +115,12 @@ class PrivateClient implements RouterClient, VisibilityProvider {
             this._coord.replaceUriParams(this._route, newUriParams);
         }
     }
-    goTo(route: string, uriParams: UriParams): void {
-        if (route === this._route) { return; }
+    goTo(route: string, uriParams: UriParams): boolean {
         const foundIndex = this._coord.routes.findIndex(r => r === route);
         if (0 <= foundIndex) {
-            this._coord.goTo(foundIndex, uriParams);
+            return this._coord.goTo(foundIndex, uriParams);
         }
+        return false;
     }
     setVisible(visible: boolean) {
         if (this._setVisible) {
@@ -134,11 +136,11 @@ export class Coordinator {
     private readonly _coord: PrivateCoordinator;
 
     constructor(
-        windowGenerator: () => Window | undefined,
+        urlStoreGenerator: () => URLStore | undefined,
         globalId: string,
         routes: ReadonlyArray<string>,
     ) {
-        this._coord = new PrivateCoordinator(windowGenerator, globalId, routes);
+        this._coord = new PrivateCoordinator(urlStoreGenerator, globalId, routes);
     }
 
     public goToDefault() { this._coord.goToDefault(); }

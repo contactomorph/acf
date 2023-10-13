@@ -1,17 +1,27 @@
 import styles from './Router.module.css';
 import { memo, useEffect, useId, useState, } from "react";
 import { Coordinator } from "./Coordinator";
-import { RouterClient, VisibilityProvider } from "./primitives";
+import { RouterClient, URLStore, VisibilityProvider } from "./primitives";
 
 export type PageInfo = {
     ctor: (client: RouterClient, visible: boolean) => JSX.Element,
     route: string,
 };
 
-function getWindow(): Window | undefined {
+function _createDefaultURLStore(): URLStore | undefined {
     if (typeof window === "undefined")
         return undefined;
-    return window;
+    return {
+        get searchParams(): URLSearchParams { 
+            return new URLSearchParams(window.location.search);
+        },
+        set searchParams(params: URLSearchParams) {
+            const path = params.size === 0 ?
+                window.location.origin :
+                `${window.location.origin}?${params.toString()}`;
+            window.history.pushState({ path }, '', path);
+        }
+    };
 }
 
 const Wrapper = function(
@@ -33,11 +43,15 @@ const Wrapper = function(
 }
 
 export const Router = memo(function(
-    props: { children: ReadonlyArray<PageInfo> }
+    props: {
+        children: ReadonlyArray<PageInfo>,
+        urlStoreGenerator?: () => URLStore,
+    }
 ): JSX.Element {
     const globalId = useId();
     const routes = props.children.map(info => info.route);
-    const coordinator = new Coordinator(getWindow, globalId, routes);
+    const urlStoreGenerator = props.urlStoreGenerator ?? _createDefaultURLStore;
+    const coordinator = new Coordinator(urlStoreGenerator, globalId, routes);
     const wrappers = props.children.map((info, i) => {
         const client = coordinator.getClient(i);
         return (<Wrapper key={i} client={client} ctor={info.ctor} />);
