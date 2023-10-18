@@ -34,6 +34,7 @@ class MockColorizer {
         }
         this.text = text;
         this.spans = spans;
+        await Promise.resolve();
         action();
         return spans;
     }
@@ -99,4 +100,41 @@ test('Check the input text is colored for the user', async () => {
         [Node.ELEMENT_NODE, "SPAN", "ghi"],
         [Node.TEXT_NODE, "#text", "\xa0"],
     ]);
+});
+
+
+test('Check prop text is taken into account', async () => {
+    const col = new MockColorizer();
+    const { resolve, promise } = Future.createResolver<void>();
+
+    const { rerender } = render(<ColorBox
+        colorizer={t => col.colorizeAndCall(t, resolve)}
+        text={"bing or bong"} />
+    );
+
+    // Line below is dumb. Just to prevent warning message
+    // "Warning: An update to null inside a test was not wrapped in act(...)."
+    await act(() => {});
+    await promise;
+
+    expect(col.text).toBe("bing or bong");
+    expect(col.spans).toEqual(
+    [
+        { "color": "red", "textWidth": 4, },
+        { "textWidth": 1, },
+        { "color": "blue", "textWidth": 2, },
+        { "textWidth": 1, },
+        { "color": "red", "textWidth": 4, },
+    ]);
+
+    const { resolve: resolve2, promise: promise2 } = Future.createResolver<void>();
+    rerender(<ColorBox
+        colorizer={t => col.colorizeAndCall(t, resolve2)}
+        text={"boom"} />);
+    
+    await act(() => {});
+    await promise2;
+    
+    expect(col.text).toBe("boom");
+    expect(col.spans).toEqual([ { "color": "red", "textWidth": 4, } ]);
 });

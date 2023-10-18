@@ -1,10 +1,14 @@
 "use client";
-import React, { memo } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import styles from './ColorBox.module.css';
 
 export type ColoredSpan = Partial<React.CSSProperties> & { textWidth: number };
 
 export type Colorizer = (text: string) => Promise<ReadonlyArray<ColoredSpan>>;
+
+const NBSP = "\u00A0";
+const ANALYSIS_DELAY_IN_MS = 1000;
+const EMPTY_CONTENT: JSX.Element = (<>{NBSP}</>);
 
 class ColorizingDaemon {
   private readonly _textInput: HTMLInputElement;
@@ -27,17 +31,38 @@ class ColorizingDaemon {
     ++this._version;
     const currentVersion = this._version;
     this._textInput.style.color = "black";
-    this._setContent(<></>);
-    setTimeout(() => this._analyze(currentVersion), 1000);
+    this._setContent(EMPTY_CONTENT);
+    setTimeout(() => this._analyze(currentVersion), ANALYSIS_DELAY_IN_MS);
   }
 
-  private async _analyze(candidateVersion: number) : Promise<void> {
+  public async analyzeNow(text: string): Promise<void> {
+    ++this._version;
+    const candidateVersion = this._version;
+    this._textInput.style.color = "transparent";
+    this._textInput.value = text;
+    const spans = await this._colorizer(text);
+    if (this._version !== candidateVersion) return;
+    const children = ColorizingDaemon._createChildren(spans, text);
+    this._textInput.style.color = "transparent";
+    this._setContent(<>{children}</>);
+  }
+
+  private async _analyze(candidateVersion: number): Promise<void> {
     if (this._version !== candidateVersion) return;
     this._textInput.style.color = "black";
-    this._setContent(<>{"\u00A0"}</>);
+    this._setContent(EMPTY_CONTENT);
     const text = this._textInput.value;
     const spans = await this._colorizer(text);
     if (this._version !== candidateVersion) return;
+    const children = ColorizingDaemon._createChildren(spans, text);
+    this._textInput.style.color = "transparent";
+    this._setContent(<>{children}</>);
+  }
+
+  private static _createChildren(
+    spans: ReadonlyArray<ColoredSpan>,
+    text: string,
+  ): ReadonlyArray<JSX.Element> {
     let offset = 0;
     const children: Array<JSX.Element> = [];
     for(const span of spans) {
@@ -60,32 +85,40 @@ class ColorizingDaemon {
         </React.Fragment>
       );
     }
-    children.push(<React.Fragment key={offset+1}>{"\u00A0"}</React.Fragment>);
-    this._textInput.style.color = "transparent";
-    this._setContent(<>{children}</>);
+    children.push(<React.Fragment key={offset+1}>{NBSP}</React.Fragment>);
+    return children;
   }
 
-  private static _extractSubText(text: string, from: number, to: number | null = null): string {
-    return text.substring(from, to ?? text.length).replace(/ /g, "\u00A0");
+  private static _extractSubText(
+    text: string,
+    from: number,
+    to: number | null = null,
+  ): string {
+    return text.substring(from, to ?? text.length).replace(/ /g, NBSP);
   }
 }
 
-export const ColorBox = memo(function(props: { colorizer: Colorizer }) : JSX.Element {
-  const formulaRefKey = React.useRef<HTMLInputElement>(null);
-  const backdropRefKey = React.useRef<HTMLDivElement>(null);
-  const [content, setContent] = React.useState(<>{"\u00A0"}</>);
+export const ColorBox = memo(function(
+  props: { colorizer: Colorizer, text?: string }
+) : JSX.Element {
+  const formulaRefObj = useRef<HTMLInputElement>(null);
+  const backdropRefObj = useRef<HTMLDivElement>(null);
+  const daemonRefObj = useRef<ColorizingDaemon|null>(null);
+  const [content, setContent] = useState(EMPTY_CONTENT);
 
-  React.useEffect(() => {
-    const textInput = formulaRefKey.current;
-    const backdrop = backdropRefKey.current;
-    if (backdrop != null && textInput != null)
+  useEffect(() => {
+    const textInput = formulaRefObj.current;
+    const backdrop = backdropRefObj.current;
+    if (backdrop !== null && textInput !== null) {
       backdrop.scrollLeft = textInput.scrollLeft;
+    }
   });
 
-  React.useEffect(() => {
-    const textInput = formulaRefKey.current!;
-    const backdrop = backdropRefKey.current!;
+  useEffect(() => {
+    const textInput = formulaRefObj.current!;
+    const backdrop = backdropRefObj.current!;
     const daemon = new ColorizingDaemon(textInput, setContent, props.colorizer);
+    daemonRefObj.current = daemon;
     function colorize() { daemon.inform(); }
     function scroll() { backdrop.scrollLeft = textInput.scrollLeft; }
     textInput.addEventListener("scroll", scroll);
@@ -102,11 +135,17 @@ export const ColorBox = memo(function(props: { colorizer: Colorizer }) : JSX.Ele
     };
   }, [props.colorizer]);
 
+  useEffect(() => {
+    if (props.text !== undefined) {
+      daemonRefObj.current!.analyzeNow(props.text);
+    }
+  }, [props.colorizer, props.text]);
+
   return (
     <div className={styles.BoxContainer}>
-      <div className={styles.BoxBackdrop} ref={backdropRefKey}>
+      <div className={styles.BoxBackdrop} ref={backdropRefObj}>
         <span className={styles.BoxFormula} role='formula'>{content}</span>
       </div>
-      <input type='text' className={styles.BoxText} ref={formulaRefKey}/>
+      <input type='text' className={styles.BoxText} ref={formulaRefObj}/>
     </div>);
 });
