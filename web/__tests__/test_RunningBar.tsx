@@ -6,15 +6,19 @@ import chroma from 'chroma-js';
 test('RunningBar renders properly', async () => {
     const blocks: Block[] = [
         { color: chroma("pink"), icon: "😊", texts: [], width: 100 },
-        { color: chroma("orange"), icon: "😊", texts: [], width: 200 },
-        { color: chroma("teal"), icon: "😊", texts: [], width: 500 },
+        { color: chroma("orange"), icon: "😠", texts: [], width: 200 },
+        { color: chroma("teal"), icon: "😭", texts: [], width: 500 },
     ];
     render(<RunningBar blocks={blocks} title='Hello' />);
 
     const runningBlocks = screen.getAllByRole('running_block');
 
-    expect(runningBlocks.length).toBe(3);
-    expect(runningBlocks[0].style.width).toBe("12.5%");
-    expect(runningBlocks[1].style.width).toBe("25%");
-    expect(runningBlocks[2].style.width).toBe("62.5%");
+    const blockInfo = runningBlocks.map(b =>
+        [b.style.width, b.style.backgroundColor, b.title]);
+
+    expect(blockInfo).toEqual([
+        ["12.5%", "rgb(221, 204, 207)", "😊\n"],
+        ["25%", "rgb(244, 169, 66)", "😠\n"],
+        ["62.5%", "rgb(88, 121, 120)", "😭\n"],
+    ]);
 });
