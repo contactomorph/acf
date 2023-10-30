@@ -20,24 +20,43 @@ const MAX_REF_SPEED = 25;
 const DEC_COUNT_REF_SPEED = 1;
 const DEFAULT_REF_SPEED = 15;
 const SPEED_URI_ARG = "speed";
+const FORMULA_URI_ARG = "formula";
 
-function mayInitRefSpeed(text: string | undefined, setRefSpeed: (s: number) => void) {
-  if (text !== undefined) {
-    let speed = Number.parseFloat(text);
+function mayInitRefSpeed(
+  client: RouterClient,
+  setRefSpeed: (speed: number) => void,
+  setFormulaText: (formulaText: string) => void,
+) {
+  const speedText = client.getUriParam(SPEED_URI_ARG);
+  if (speedText) {
+    let speed = Number.parseFloat(speedText);
     if (Number.isFinite(speed)) {
       speed = Math.max(Math.min(speed, MAX_REF_SPEED), MIN_REF_SPEED);
       setRefSpeed(speed);
     }
   }
+  const formulaText = client.getUriParam(FORMULA_URI_ARG);
+  if (formulaText) {
+    setFormulaText(formulaText);
+  }
+}
+
+function toStringOrUndefined(s: string): string | undefined {
+  return s === "" ? undefined : s;
 }
 
 function toText(s: number): string | undefined {
   return s === DEFAULT_REF_SPEED ? undefined : s.toFixed(DEC_COUNT_REF_SPEED);
 }
 
-export default function TrainingCreationPage(props: { client: RouterClient }): JSX.Element {
-  const [training, setTraining] = useState<Training | undefined>(undefined);
+export default function TrainingCreationPage(
+  props: { client: RouterClient, delayInMs?: number }
+): JSX.Element {
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
+  const [formulaText, setFormulaText] = useState<string>("");
+  const trainingWrapper = useMemo(() => {
+    return { training: undefined as Training | undefined };
+  }, []);
   
   const client = props.client;
 
@@ -46,14 +65,16 @@ export default function TrainingCreationPage(props: { client: RouterClient }): J
     return (<input type="button" onClick={() => client.goTo(r, {})} key={i} value={`To ${r}`} {...p}/>);
   });
 
-  useMemo(() => mayInitRefSpeed(client.getUriParam(SPEED_URI_ARG), setRefSpeed), []);
+  useMemo(() => mayInitRefSpeed(client, setRefSpeed, setFormulaText), []);
 
   useEffect(() => client.setUriParam(SPEED_URI_ARG, toText(refSpeed)), [refSpeed]);
+  useEffect(() => client.setUriParam(FORMULA_URI_ARG, toStringOrUndefined(formulaText)), [formulaText]);
 
   const colorizer: Colorizer = useCallback(async (text: string) => {
     const formula = await processFormula(text);
     await new Promise<void>(resolve => setTimeout(resolve, 0));
-    setTraining(formula.training);
+    trainingWrapper.training = formula.training;
+    setFormulaText(text);
     return toColoredSpans(formula.firstToken);
   }, []);
 
@@ -62,7 +83,7 @@ export default function TrainingCreationPage(props: { client: RouterClient }): J
       const ratio = speedPercentage / 100;
       return fromKmPerHour(ratio * (refSpeed ?? DEFAULT_REF_SPEED));
     };
-    const intervals = computeIntervals(training, speedSpecifier);
+    const intervals = computeIntervals(trainingWrapper.training, speedSpecifier);
 
     const [distanceBlocks, totalDistance] = toDistanceBlocks(intervals);
     const [durationBlocks, totalDuration] = toDurationBlocks(intervals);
@@ -71,13 +92,13 @@ export default function TrainingCreationPage(props: { client: RouterClient }): J
     const durationTitle = totalDuration === "" ? DURATION : `${DURATION}: ${totalDuration}`;
 
     return { intervals, distanceTitle, distanceBlocks, durationTitle, durationBlocks, };
-  }, [refSpeed, training]);
+  }, [refSpeed, formulaText]);
 
   const { intervals, distanceTitle, distanceBlocks, durationTitle, durationBlocks, } = data;
 
   return (
     <div className={styles.Page}>
-      <ColorBox colorizer={colorizer} />
+      <ColorBox colorizer={colorizer} text={formulaText} delayInMs={props.delayInMs} />
       <DecimalBox
         onValueChange={setRefSpeed}
         value={refSpeed}
