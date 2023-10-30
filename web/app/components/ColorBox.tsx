@@ -7,7 +7,7 @@ export type ColoredSpan = Partial<React.CSSProperties> & { textWidth: number };
 export type Colorizer = (text: string) => Promise<ReadonlyArray<ColoredSpan>>;
 
 const NBSP = "\u00A0";
-const ANALYSIS_DELAY_IN_MS = 1000;
+const DEFAULT_DELAY_IN_MS = 1000;
 const EMPTY_CONTENT: JSX.Element = (<>{NBSP}</>);
 
 class ColorizingDaemon {
@@ -15,15 +15,18 @@ class ColorizingDaemon {
   private readonly _setContent: (arg: JSX.Element) => void;
   private readonly _colorizer: Colorizer;
   private _version: number;
+  public delayInMs: number;
 
   constructor(
     textInput: HTMLInputElement,
     setContent: (arg: JSX.Element) => void,
     colorizer: Colorizer,
+    delayInMs: number,
   ) {
     this._setContent = setContent;
     this._textInput = textInput;
     this._colorizer = colorizer;
+    this.delayInMs = delayInMs;
     this._version = 0;
   }
 
@@ -32,7 +35,7 @@ class ColorizingDaemon {
     const currentVersion = this._version;
     this._textInput.style.color = "black";
     this._setContent(EMPTY_CONTENT);
-    setTimeout(() => this._analyze(currentVersion), ANALYSIS_DELAY_IN_MS);
+    setTimeout(() => this._analyze(currentVersion), this.delayInMs);
   }
 
   public async analyzeNow(text: string): Promise<void> {
@@ -99,7 +102,7 @@ class ColorizingDaemon {
 }
 
 export const ColorBox = memo(function(
-  props: { colorizer: Colorizer, text?: string }
+  props: { colorizer: Colorizer, text?: string, delayInMs?: number }
 ) : JSX.Element {
   const formulaRefObj = useRef<HTMLInputElement>(null);
   const backdropRefObj = useRef<HTMLDivElement>(null);
@@ -117,7 +120,11 @@ export const ColorBox = memo(function(
   useEffect(() => {
     const textInput = formulaRefObj.current!;
     const backdrop = backdropRefObj.current!;
-    const daemon = new ColorizingDaemon(textInput, setContent, props.colorizer);
+    const daemon = new ColorizingDaemon(
+      textInput,
+      setContent,
+      props.colorizer,
+      props.delayInMs ?? DEFAULT_DELAY_IN_MS);
     daemonRefObj.current = daemon;
     function colorize() { daemon.inform(); }
     function scroll() { backdrop.scrollLeft = textInput.scrollLeft; }
@@ -134,6 +141,10 @@ export const ColorBox = memo(function(
       textInput.removeEventListener("click", colorize);
     };
   }, [props.colorizer]);
+
+  useEffect(() => {
+    daemonRefObj.current!.delayInMs = props.delayInMs ?? DEFAULT_DELAY_IN_MS;
+  }, [props.delayInMs])
 
   useEffect(() => {
     if (props.text !== undefined) {

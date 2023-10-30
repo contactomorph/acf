@@ -4,6 +4,8 @@ import { test, expect } from '@jest/globals';
 import { screen, act, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+const DELAY_IN_MS = 20;
+
 class MockColorizer {
     public text: string;
     public spans: ReadonlyArray<ColoredSpan>;
@@ -45,7 +47,7 @@ test('Check the input text generates color spans', async () => {
     const { resolve, promise } = Future.createResolver<void>();
     const user = userEvent.setup();
 
-    render(<ColorBox colorizer={t => col.colorizeAndCall(t, resolve)} />);
+    render(<ColorBox colorizer={t => col.colorizeAndCall(t, resolve)} delayInMs={DELAY_IN_MS} />);
 
     expect(col.text).toBe("");
     expect(col.spans).toEqual([]);
@@ -75,7 +77,7 @@ test('Check the input text is colored for the user', async () => {
     const { resolve, promise } = Future.createResolver<void>();
     const user = userEvent.setup();
 
-    render(<ColorBox colorizer={t => col.colorizeAndCall(t, resolve)} />);
+    render(<ColorBox colorizer={t => col.colorizeAndCall(t, resolve)} delayInMs={DELAY_IN_MS} />);
 
     const input = screen.getByRole('textbox');
     const box = screen.getByRole('formula');
@@ -109,13 +111,11 @@ test('Check prop text is taken into account', async () => {
 
     const { rerender } = render(<ColorBox
         colorizer={t => col.colorizeAndCall(t, resolve)}
-        text={"bing or bong"} />
+        text={"bing or bong"}
+        delayInMs={DELAY_IN_MS} />
     );
 
-    // Line below is dumb. Just to prevent warning message
-    // "Warning: An update to null inside a test was not wrapped in act(...)."
-    await act(() => {});
-    await promise;
+    await act(() => promise);
 
     expect(col.text).toBe("bing or bong");
     expect(col.spans).toEqual(
@@ -130,10 +130,10 @@ test('Check prop text is taken into account', async () => {
     const { resolve: resolve2, promise: promise2 } = Future.createResolver<void>();
     rerender(<ColorBox
         colorizer={t => col.colorizeAndCall(t, resolve2)}
-        text={"boom"} />);
+        text={"boom"}
+        delayInMs={DELAY_IN_MS} />);
     
-    await act(() => {});
-    await promise2;
+    await act(() => promise2);
     
     expect(col.text).toBe("boom");
     expect(col.spans).toEqual([ { "color": "red", "textWidth": 4, } ]);
