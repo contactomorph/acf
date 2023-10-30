@@ -1,6 +1,6 @@
 "use client";
 import styles from './TrainingCreationPage.module.css';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Speed, fromKmPerHour } from './data/units';
 import { Training } from './data/trainings';
 import { processFormula } from './model/FormulaProcessor';
@@ -9,23 +9,12 @@ import { toDistanceBlocks, toDurationBlocks } from './controllers/interval_trans
 import { toColoredSpans } from './controllers/grammar_coloration';
 import { RunningBar } from './components/RunningBar';
 import { Program } from './components/Program';
-import { ColorBox, ColoredSpan } from './components/ColorBox';
+import { ColorBox, Colorizer } from './components/ColorBox';
 import { DecimalBox } from './components/DecimalBox';
 import { RouterClient } from './routing/primitives';
 
-async function colorize(
-  text: string,
-  setTraining: (t: Training | undefined) => void,
-) : Promise<ReadonlyArray<ColoredSpan>> {
-  const formula = await processFormula(text);
-  await new Promise<void>(resolve => setTimeout(resolve, 0));
-  setTraining(formula.training);
-  return toColoredSpans(formula.firstToken);
-}
-
 const DISTANCE = '\uD83D\uDCCF Distance';
 const DURATION = '\u23F1\uFE0F Durée';
-
 const MIN_REF_SPEED = 5;
 const MAX_REF_SPEED = 25;
 const DEC_COUNT_REF_SPEED = 1;
@@ -61,6 +50,13 @@ export default function TrainingCreationPage(props: { client: RouterClient }): J
 
   useEffect(() => client.setUriParam(SPEED_URI_ARG, toText(refSpeed)), [refSpeed]);
 
+  const colorizer: Colorizer = useCallback(async (text: string) => {
+    const formula = await processFormula(text);
+    await new Promise<void>(resolve => setTimeout(resolve, 0));
+    setTraining(formula.training);
+    return toColoredSpans(formula.firstToken);
+  }, []);
+
   const data = useMemo(() => {
     const speedSpecifier = (speedPercentage: number): Speed => {
       const ratio = speedPercentage / 100;
@@ -81,9 +77,7 @@ export default function TrainingCreationPage(props: { client: RouterClient }): J
 
   return (
     <div className={styles.Page}>
-      <ColorBox
-        colorizer={t => colorize(t, setTraining)}
-      />
+      <ColorBox colorizer={colorizer} />
       <DecimalBox
         onValueChange={setRefSpeed}
         value={refSpeed}

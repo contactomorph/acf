@@ -1,5 +1,5 @@
 import { Future } from '@/app/tools/Future';
-import { ColorBox, ColoredSpan } from '../app/components/ColorBox';
+import { ColorBox, ColoredSpan, Colorizer } from '../app/components/ColorBox';
 import { test, expect } from '@jest/globals';
 import { screen, act, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -7,17 +7,20 @@ import userEvent from '@testing-library/user-event';
 const DELAY_IN_MS = 20;
 
 class MockColorizer {
+    public readonly colorizer: Colorizer;
     public text: string;
     public spans: ReadonlyArray<ColoredSpan>;
+    public onColorized: undefined | (() => void);
 
     public constructor() {
         this.text = "";
         this.spans = [];
+        this.onColorized = undefined;
+        this.colorizer = (text: string) => this._colorize(text);
     }
 
-    public async colorizeAndCall(
+    private async _colorize(
         text: string,
-        action: () => void,
     ): Promise<ReadonlyArray<ColoredSpan>> {
         const parts = text.split(/(?=[ ])|(?<=[ ])/g);
         const spans: ColoredSpan[] = [];
@@ -37,17 +40,22 @@ class MockColorizer {
         this.text = text;
         this.spans = spans;
         await Promise.resolve();
-        action();
+        if (this.onColorized) {
+            this.onColorized();
+            this.onColorized = undefined;
+        }
         return spans;
     }
 }
 
 test('Check the input text generates color spans', async () => {
-    const col = new MockColorizer();
-    const { resolve, promise } = Future.createResolver<void>();
     const user = userEvent.setup();
+    const col = new MockColorizer();
 
-    render(<ColorBox colorizer={t => col.colorizeAndCall(t, resolve)} delayInMs={DELAY_IN_MS} />);
+    const { resolve, promise } = Future.createResolver<void>();
+    col.onColorized = resolve;
+
+    render(<ColorBox colorizer={col.colorizer} delayInMs={DELAY_IN_MS} />);
 
     expect(col.text).toBe("");
     expect(col.spans).toEqual([]);
@@ -73,11 +81,13 @@ test('Check the input text generates color spans', async () => {
 });
 
 test('Check the input text is colored for the user', async () => {
-    const col = new MockColorizer();
-    const { resolve, promise } = Future.createResolver<void>();
     const user = userEvent.setup();
+    const col = new MockColorizer();
 
-    render(<ColorBox colorizer={t => col.colorizeAndCall(t, resolve)} delayInMs={DELAY_IN_MS} />);
+    const { resolve, promise } = Future.createResolver<void>();
+    col.onColorized = resolve;
+
+    render(<ColorBox colorizer={col.colorizer} delayInMs={DELAY_IN_MS} />);
 
     const input = screen.getByRole('textbox');
     const box = screen.getByRole('formula');
@@ -104,13 +114,14 @@ test('Check the input text is colored for the user', async () => {
     ]);
 });
 
-
 test('Check prop text is taken into account', async () => {
     const col = new MockColorizer();
+
     const { resolve, promise } = Future.createResolver<void>();
+    col.onColorized = resolve;
 
     const { rerender } = render(<ColorBox
-        colorizer={t => col.colorizeAndCall(t, resolve)}
+        colorizer={col.colorizer}
         text={"bing or bong"}
         delayInMs={DELAY_IN_MS} />
     );
@@ -128,10 +139,13 @@ test('Check prop text is taken into account', async () => {
     ]);
 
     const { resolve: resolve2, promise: promise2 } = Future.createResolver<void>();
+    col.onColorized = resolve2;
+
     rerender(<ColorBox
-        colorizer={t => col.colorizeAndCall(t, resolve2)}
+        colorizer={col.colorizer}
         text={"boom"}
-        delayInMs={DELAY_IN_MS} />);
+        delayInMs={DELAY_IN_MS} />
+    );
     
     await act(() => promise2);
     
