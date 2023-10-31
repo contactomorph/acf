@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, memo } from "react";
+import { useEffect } from "react";
 import FirebaseHistoryRepository from "./backend/FirebaseHistoryRepository";
 import Model from "./model/Model";
 
-export default memo(function(
+export default function(
     props: { setModel: (model: Model) => void }
 ): JSX.Element {
 
@@ -14,4 +14,4 @@ export default memo(function(
     }, [props.setModel]);
 
     return (<></>);
-});
+}

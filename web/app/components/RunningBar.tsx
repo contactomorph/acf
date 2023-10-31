@@ -1,8 +1,8 @@
 "use client";
 import chroma from 'chroma-js';
-import React, { memo } from 'react';
 import styles from './RunningBar.module.css';
 import { Properties } from 'csstype';
+import { useEffect, useRef } from 'react';
 
 export type Block = {
     readonly color: chroma.Color,
@@ -50,27 +50,27 @@ function mayExtendSequence(
     }
 }
 
-export const RunningBar = memo(function(
+export function RunningBar(
     props: { blocks: ReadonlyArray<Block>, title: string }
 ) : JSX.Element {
     const totalWidth = props.blocks.reduce((w, b) => w + b.width, 0);
 
-    const minProportionRef = React.useRef(1.0);
+    const minProportionRef = useRef(1.0);
     minProportionRef.current = props.blocks.reduce(
         (mp, b) => Math.min(b.width / totalWidth, mp),
         1.0,
     );
 
-    const innerRef = React.useRef<HTMLDivElement>(null);
-    const seqRef = React.useRef<HTMLDivElement>(null);
+    const innerRef = useRef<HTMLDivElement>(null);
+    const seqRef = useRef<HTMLDivElement>(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (innerRef.current !== null && seqRef.current !== null) {
             mayExtendSequence(innerRef.current, seqRef.current, minProportionRef.current);
         }
     });
 
-    React.useEffect(() => {
+    useEffect(() => {
         const observer = new window.ResizeObserver(() => {
             mayExtendSequence(innerRef.current!, seqRef.current!, minProportionRef.current);
         });
@@ -87,4 +87,4 @@ export const RunningBar = memo(function(
             <div ref={seqRef} className={styles.BarBlockSequence}>{runningBlocks}</div>
         </div>
     </div>);
-});
+}

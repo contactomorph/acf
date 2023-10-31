@@ -1,5 +1,5 @@
 import styles from './Router.module.css';
-import { memo, useEffect, useId, useState, } from "react";
+import { useEffect, useId, useState, } from "react";
 import { Coordinator } from "./Coordinator";
 import { RouterClient, URLStore, VisibilityProvider } from "./primitives";
 
@@ -42,7 +42,7 @@ const Wrapper = function(
     );
 }
 
-export const Router = memo(function(
+export function Router(
     props: {
         children: ReadonlyArray<PageInfo>,
         urlStoreGenerator?: () => URLStore,
@@ -58,4 +58,4 @@ export const Router = memo(function(
     });
     useEffect(() => coordinator.goToDefault(), []);
     return (<div className={styles.Router}>{wrappers}</div>);
-});
+}
