@@ -25,7 +25,7 @@ function RunningBlock(props: { block: Block, proportion: number }) : JSX.Element
         color: textColor,
     };
     const title = `${block.icon}\n${block.texts.join('\n')}`;
-    return (<div className={styles.BarBlock} style={style} title={title}>
+    return (<div role="running_block" className={styles.BarBlock} style={style} title={title}>
         <span className={styles.BarHeader}>{block.icon}</span>{texts}
     </div>);
 }
@@ -71,11 +71,13 @@ export function RunningBar(
     });
 
     useEffect(() => {
-        const observer = new window.ResizeObserver(() => {
-            mayExtendSequence(innerRef.current!, seqRef.current!, minProportionRef.current);
-        });
-        observer.observe(innerRef.current!);
-        return () => { observer.disconnect() };
+        if (window?.ResizeObserver) {
+            const observer = new window.ResizeObserver(() => {
+                mayExtendSequence(innerRef.current!, seqRef.current!, minProportionRef.current);
+            });
+            observer.observe(innerRef.current!);
+            return () => { observer.disconnect() };
+        }
     }, []);
 
     const runningBlocks = props.blocks.map(
