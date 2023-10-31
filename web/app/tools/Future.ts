@@ -1,9 +1,10 @@
 
 export namespace Future {
-    export async function sleep(milliseconds: number): Promise<void> {
-        await new Promise(resolve => {
-            return setTimeout(resolve, milliseconds)
-        });
+    export function sleep(milliseconds: number): Promise<void> {
+        return new Promise<void>(resolve => setTimeout(resolve, milliseconds));
+    };
+    export function pause(): Promise<void> {
+        return new Promise<void>(resolve => setTimeout(resolve, 1));
     };
 
     export type Resolver<T> = {

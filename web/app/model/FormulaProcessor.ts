@@ -1,12 +1,13 @@
 import { morphemize } from "./grammar/morphemization";
 import { lexemize } from "./grammar/lexemization";
 import { parse, Formula } from "./grammar/parsing";
+import { Future } from "../tools/Future";
 
 export async function processFormula(text: string): Promise<Formula> {
-    await new Promise<void>(resolve => setTimeout(resolve, 0));
+    await Future.pause();
     const morphemes = morphemize(text);
-    await new Promise<void>(resolve => setTimeout(resolve, 0));
+    await Future.pause();
     const lexemes = lexemize(morphemes);
-    await new Promise<void>(resolve => setTimeout(resolve, 0));
+    await Future.pause();
     return parse(lexemes);
 }
