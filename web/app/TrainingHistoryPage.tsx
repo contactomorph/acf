@@ -3,7 +3,7 @@ import styles from './TrainingHistoryPage.module.css';
 import Model from './model/Model';
 import { SessionBar } from './components/SessionBar';
 import { RouterClient } from './routing/primitives';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import frLocale from "date-fns/locale/fr";
@@ -40,7 +40,7 @@ export default function TrainingHistoryPage(
             return () => model.unsubscribe(lambda);
         }
     }, [model]);
-    const toggle = useMemo(() => (t: string, target: HTMLSpanElement) => {
+    const toggle = useCallback((t: string, target: HTMLSpanElement) => {
         if (activeTags.has(t)) {
             target.className = styles.InactiveTag;
             activeTags.delete(t);
