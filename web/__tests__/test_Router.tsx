@@ -22,7 +22,7 @@ class MockURLStore implements URLStore {
     }
 }
 
-test('Check if page routing is correct', () => {
+test('Router sends appropriate props to pages when navigating', () => {
     const pc1 = new Ptr<RouterClient>();
     const pv1 = new Ptr<boolean>();
     const pc2 = new Ptr<RouterClient>();
@@ -75,7 +75,7 @@ function MockPage(props: { ptr: Ptr<object> }): JSX.Element {
     return (<div></div>);
 }
 
-test('Check if page is content is conserved', () => {
+test('Router preserves memoised content inside pages', () => {
     const po1 = new Ptr<object>();
     const po2 = new Ptr<object>();
     const pid = new Ptr<string>();

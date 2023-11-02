@@ -81,7 +81,7 @@ export function RunningBar(
     }, []);
 
     const runningBlocks = props.blocks.map(
-        b => (<RunningBlock proportion={b.width / totalWidth} block={b}/>)
+        (b, i) => (<RunningBlock key={i} proportion={b.width / totalWidth} block={b}/>)
     );
     return (<div className={styles.Bar}>
         <div className={styles.BarTitle}>{props.title}</div>

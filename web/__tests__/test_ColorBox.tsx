@@ -1,7 +1,6 @@
-import { Future } from '@/app/tools/Future';
 import { ColorBox, ColoredSpan, Colorizer } from '../app/components/ColorBox';
 import { test, expect } from '@jest/globals';
-import { screen, act, render } from '@testing-library/react';
+import { screen, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 const DELAY_IN_MS = 20;
@@ -10,13 +9,13 @@ class MockColorizer {
     public readonly colorizer: Colorizer;
     public text: string;
     public spans: ReadonlyArray<ColoredSpan>;
-    public onColorized: undefined | (() => void);
+    public step: number;
 
     public constructor() {
         this.text = "";
         this.spans = [];
-        this.onColorized = undefined;
         this.colorizer = (text: string) => this._colorize(text);
+        this.step = 0;
     }
 
     private async _colorize(
@@ -40,20 +39,14 @@ class MockColorizer {
         this.text = text;
         this.spans = spans;
         await Promise.resolve();
-        if (this.onColorized) {
-            this.onColorized();
-            this.onColorized = undefined;
-        }
+        this.step += 1;
         return spans;
     }
 }
 
-test('Check the input text generates color spans', async () => {
+test('ColorBox calls the colorizer when the user provides input text', async () => {
     const user = userEvent.setup();
     const col = new MockColorizer();
-
-    const { resolve, promise } = Future.createResolver<void>();
-    col.onColorized = resolve;
 
     render(<ColorBox colorizer={col.colorizer} delayInMs={DELAY_IN_MS} />);
 
@@ -62,10 +55,8 @@ test('Check the input text generates color spans', async () => {
 
     const input = screen.getByRole('textbox');
 
-    await act(async () => {
-        await user.type(input, 'ab cd ef ghi');
-        await promise;
-    });
+    await user.type(input, 'ab cd ef ghi');
+    await waitFor(() => expect(col.step).toBe(1));
 
     expect(col.text).toBe("ab cd ef ghi");
     expect(col.spans).toEqual(
@@ -80,12 +71,9 @@ test('Check the input text generates color spans', async () => {
     ]);
 });
 
-test('Check the input text is colored for the user', async () => {
+test('ColorBox adds colors to input text for the user', async () => {
     const user = userEvent.setup();
     const col = new MockColorizer();
-
-    const { resolve, promise } = Future.createResolver<void>();
-    col.onColorized = resolve;
 
     render(<ColorBox colorizer={col.colorizer} delayInMs={DELAY_IN_MS} />);
 
@@ -95,10 +83,8 @@ test('Check the input text is colored for the user', async () => {
     let children = Array.from(box.childNodes);
     expect(children.map(n => n.nodeType)).toEqual([Node.TEXT_NODE]);
 
-    await act(async () => {
-        await user.type(input, 'ab cd ef ghi');
-        await promise;
-    });
+    await user.type(input, 'ab cd ef ghi');
+    await waitFor(() => expect(col.step).toBe(1));
     
     children = Array.from(box.childNodes);
     expect(children.map(n => [n.nodeType, n.nodeName, n.textContent])).toEqual(
@@ -114,11 +100,8 @@ test('Check the input text is colored for the user', async () => {
     ]);
 });
 
-test('Check prop text is taken into account', async () => {
+test('ColorBox calls the colorizer when the text is provided in props', async () => {
     const col = new MockColorizer();
-
-    const { resolve, promise } = Future.createResolver<void>();
-    col.onColorized = resolve;
 
     const { rerender } = render(<ColorBox
         colorizer={col.colorizer}
@@ -126,7 +109,7 @@ test('Check prop text is taken into account', async () => {
         delayInMs={DELAY_IN_MS} />
     );
 
-    await act(() => promise);
+    await waitFor(() => expect(col.step).toBe(1));
 
     expect(col.text).toBe("bing or bong");
     expect(col.spans).toEqual(
@@ -138,16 +121,13 @@ test('Check prop text is taken into account', async () => {
         { "color": "red", "textWidth": 4, },
     ]);
 
-    const { resolve: resolve2, promise: promise2 } = Future.createResolver<void>();
-    col.onColorized = resolve2;
-
     rerender(<ColorBox
         colorizer={col.colorizer}
         text={"boom"}
         delayInMs={DELAY_IN_MS} />
     );
     
-    await act(() => promise2);
+    await waitFor(() => expect(col.step).toBe(2));
     
     expect(col.text).toBe("boom");
     expect(col.spans).toEqual([ { "color": "red", "textWidth": 4, } ]);

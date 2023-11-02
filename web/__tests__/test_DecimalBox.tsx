@@ -4,7 +4,7 @@ import { test, expect } from '@jest/globals';
 import { screen, render, fireEvent } from '@testing-library/react';
 import Ptr from '../app/tools/Ptr';
 
-test('Check clicking the buttons and providing input has appropriate effect', async () => {
+test('DecimalBox notifies appropriate value when clicking buttons and providing input', async () => {
     const user = userEvent.setup();
 
     const ptr = new Ptr<number>();
@@ -56,7 +56,7 @@ test('Check clicking the buttons and providing input has appropriate effect', as
 });
 
 
-test('Check rerendering with new props', async () => {
+test('DecimalBox notifies appropriate value when changing props', async () => {
     const valueRef = { value: null as number | null };
 
     const { rerender } = render(<DecimalBox

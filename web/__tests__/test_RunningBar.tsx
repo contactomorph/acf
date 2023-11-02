@@ -3,7 +3,7 @@ import { screen, render } from '@testing-library/react';
 import { RunningBar, Block } from '@/app/components/RunningBar';
 import chroma from 'chroma-js';
 
-test('RunningBar renders propely', async () => {
+test('RunningBar renders properly', async () => {
     const blocks: Block[] = [
         { color: chroma("pink"), icon: "😊", texts: [], width: 100 },
         { color: chroma("orange"), icon: "😊", texts: [], width: 200 },
