@@ -2,7 +2,7 @@
 import chroma from 'chroma-js';
 import styles from './RunningBar.module.css';
 import { Properties } from 'csstype';
-import { useEffect, useRef } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 
 export type Block = {
     readonly color: chroma.Color,
@@ -13,7 +13,7 @@ export type Block = {
 
 function RunningBlock(props: { block: Block, proportion: number }) : JSX.Element {
     const block = props.block;
-    const texts = block.texts.map(t => (<><br/>{t}</>));
+    const texts = block.texts.map((t, i) => (<Fragment key={i}><br/>{t}</Fragment>));
     const color = block.color;
     const backgroundColor = color.desaturate().hex();
     const borderColor = color.darken(2).hex();

@@ -51,7 +51,7 @@ function Step(props: { step: ProgramStep, index: number }): JSX.Element {
       const borderColor = speedColor.darken(2).hex();
       const style: React.CSSProperties = { backgroundColor, borderColor };
       const title = step.isRecovery ? "Récupération" : "Course";
-      return (<td>
+      return (<td key={0}>
         <div className={styles.ProgLeftBox} style={style} title={title}>{t}</div>
       </td>);
     } else {
@@ -59,10 +59,10 @@ function Step(props: { step: ProgramStep, index: number }): JSX.Element {
         color: speedColor.darken(2).hex(),
         backgroundColor: COLOR_SCALES[i](proportion),
       };
-      return (<td style={style}>{NBS + t + NBS}</td>);
+      return (<td key={i} style={style}>{NBS + t + NBS}</td>);
     }
   });
-  return (<tr key={index}>{tds}</tr>)
+  return (<tr>{tds}</tr>)
 }
 
 export function Program(props: { steps: ReadonlyArray<ProgramStep> }): JSX.Element {
@@ -73,10 +73,10 @@ export function Program(props: { steps: ReadonlyArray<ProgramStep> }): JSX.Eleme
         backgroundColor: COLOR_SCALES[i](0.2),
         width: i === 0 ? "10%" : "15%",
       };
-      return (<th style={style} key={i}>{t}</th>);
+      return (<th key={i} style={style}>{t}</th>);
     });
     
-    const steps = props.steps.map((s, i) => (<Step step={s} index={i} key={i} />));
+    const steps = props.steps.map((s, i) => (<Step key={i} index={i} step={s} />));
 
     return (<div className={styles.Prog}>
         <div className={styles.ProgTitle}>{SHOES} Entraînement</div>
