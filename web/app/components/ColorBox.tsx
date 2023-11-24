@@ -4,55 +4,30 @@ import styles from './ColorBox.module.css';
 
 export type ColoredSpan = Partial<React.CSSProperties> & { textWidth: number };
 
-export type Colorizer = (text: string) => Promise<ReadonlyArray<ColoredSpan>>;
+export type Colorizer = (text: string) => ReadonlyArray<ColoredSpan>;
 
 const NBSP = "\u00A0";
-const DEFAULT_DELAY_IN_MS = 1000;
 const EMPTY_CONTENT: JSX.Element = (<>{NBSP}</>);
 
 class ColorizingDaemon {
   private readonly _setContent: (arg: JSX.Element) => void;
   private readonly _colorizer: Colorizer;
-  private _version: number;
-  public delayInMs: number;
 
   constructor(
     setContent: (arg: JSX.Element) => void,
     colorizer: Colorizer,
-    delayInMs: number,
   ) {
     this._setContent = setContent;
     this._colorizer = colorizer;
-    this.delayInMs = delayInMs;
-    this._version = 0;
   }
 
-  public injectTextAfterTimeout(text: string): void {
-    ++this._version;
-    const currentVersion = this._version;
-    this._setContent(EMPTY_CONTENT);
-    setTimeout(() => this._injectText(text, currentVersion), this.delayInMs);
-  }
-
-  public async injectTextNow(text: string): Promise<void> {
-    ++this._version;
-    const candidateVersion = this._version;
-    const spans = await this._colorizer(text);
-    if (this._version !== candidateVersion) return;
-    const children = ColorizingDaemon._createChildren(spans, text);
-    this._setContent(<>{children}</>);
-  }
-
-  private async _injectText(text: string, candidateVersion: number): Promise<void> {
-    if (this._version !== candidateVersion) return;
-    const spans = await this._colorizer(text);
-    if (this._version !== candidateVersion) return;
+  public injectText(text: string): void {
+    const spans = this._colorizer(text);
     const children = ColorizingDaemon._createChildren(spans, text);
     this._setContent(<>{children}</>);
   }
 
   public clearText() {
-    ++this._version;
     this._setContent(EMPTY_CONTENT);
   }
 
@@ -95,31 +70,17 @@ class ColorizingDaemon {
   }
 }
 
-function syncScrolling(destination: HTMLElement | null, source: HTMLElement): void {
+function syncScrolling(
+  destination: HTMLElement | null,
+  source: HTMLElement,
+): void {
   if (destination) {
     destination.scrollLeft = source.scrollLeft;
   }
 }
 
-async function blacken(
-  daemon: ColorizingDaemon,
-  textInput: HTMLInputElement,
-): Promise<void> {
-  daemon.clearText();
-  daemon.injectTextAfterTimeout(textInput.value);
-}
-
-async function colorize(
-  daemon: ColorizingDaemon,
-  textInput: HTMLInputElement,
-  text: string,
-): Promise<void> {
-  textInput.value = text;
-  await daemon.injectTextNow(text);
-}
-
 export function ColorBox(
-  props: { colorizer: Colorizer, text?: string, delayInMs?: number }
+  props: { colorizer: Colorizer, text?: string, }
 ) : JSX.Element {
   const formulaRefObj = useRef<HTMLInputElement>(null);
   const backdropRefObj = useRef<HTMLDivElement>(null);
@@ -136,15 +97,13 @@ export function ColorBox(
   });
 
   const daemon = useMemo(() => {
-    return new ColorizingDaemon(
-      setContent,
-      props.colorizer,
-      props.delayInMs ?? DEFAULT_DELAY_IN_MS);
+    return new ColorizingDaemon(setContent, props.colorizer);
   }, [props.colorizer]);
 
   useEffect(() => {
     if (props.text !== undefined && formulaRefObj.current) {
-      colorize(daemon, formulaRefObj.current, props.text);
+      formulaRefObj.current.value = props.text;
+      daemon.injectText(props.text);
     }
   }, [props.colorizer, props.text]);
 
@@ -158,9 +117,8 @@ export function ColorBox(
         style={{color}}
         ref={formulaRefObj}
         onScroll={e => syncScrolling(backdropRefObj.current, e.target as HTMLElement) }
-        onInput={e => blacken(daemon, e.target as HTMLInputElement)}
-        onClick={e => blacken(daemon, e.target as HTMLInputElement)}
-        onKeyDown={e => blacken(daemon, e.target as HTMLInputElement)}
-        onKeyUp={e => blacken(daemon, e.target as HTMLInputElement)} />
+        onInput={() => daemon.clearText()}
+        onClick={() => daemon.clearText()}
+        onBlur={e => daemon.injectText(e.target.value)} />
     </div>);
 }

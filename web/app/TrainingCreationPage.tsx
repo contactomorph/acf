@@ -50,7 +50,7 @@ function toText(s: number): string | undefined {
 }
 
 export default function TrainingCreationPage(
-  props: { client: RouterClient, delayInMs?: number }
+  props: { client: RouterClient }
 ): JSX.Element {
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
   const [formulaText, setFormulaText] = useState<string>("");
@@ -70,9 +70,8 @@ export default function TrainingCreationPage(
   useEffect(() => client.setUriParam(SPEED_URI_ARG, toText(refSpeed)), [refSpeed]);
   useEffect(() => client.setUriParam(FORMULA_URI_ARG, toStringOrUndefined(formulaText)), [formulaText]);
 
-  const colorizer: Colorizer = useCallback(async (text: string) => {
-    const formula = await processFormula(text);
-    await new Promise<void>(resolve => setTimeout(resolve, 0));
+  const colorizer: Colorizer = useCallback((text: string) => {
+    const formula = processFormula(text);
     trainingWrapper.training = formula.training;
     setFormulaText(text);
     return toColoredSpans(formula.firstToken);
@@ -98,7 +97,7 @@ export default function TrainingCreationPage(
 
   return (
     <div className={styles.Page}>
-      <ColorBox colorizer={colorizer} text={formulaText} delayInMs={props.delayInMs} />
+      <ColorBox colorizer={colorizer} text={formulaText} />
       <DecimalBox
         onValueChange={setRefSpeed}
         value={refSpeed}

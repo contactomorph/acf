@@ -1,10 +1,9 @@
 import TrainingCreationPage from '@/app/TrainingCreationPage';
 import { RouterClient, UriParams } from '@/app/routing/primitives';
 import { test, expect } from '@jest/globals';
-import { screen, render, waitFor } from '@testing-library/react';
+import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-const DELAY_IN_MS = 20;
 const NBSP = "\u00A0";
 
 class MockRouterClient implements RouterClient {
@@ -29,10 +28,9 @@ test('TrainingCreationPage updates url and display program when user provides te
     const client = new MockRouterClient({});
     const user = userEvent.setup();
 
-    render(<TrainingCreationPage client={client} delayInMs={DELAY_IN_MS} />);
+    render(<TrainingCreationPage client={client} />);
 
-    await waitFor(() => expect(client.step).toBe(2));
-    
+    expect(client.step).toBe(2);
     expect(client.currentUriParams).toEqual({});
 
     let runningBlocks = screen.queryAllByRole('running_block');
@@ -41,17 +39,18 @@ test('TrainingCreationPage updates url and display program when user provides te
     const colorBoxInput = screen.getByRole<HTMLInputElement>('textbox');
     
     await user.type(colorBoxInput, '2min a vma');
-    await waitFor(() => expect(client.step).toBe(3));
+    const blurred = fireEvent.focusOut(colorBoxInput);
+    
+    expect(blurred).toBe(true);
+    expect(client.step).toBe(3)
 
     expect(client.currentUriParams).toEqual({
         "formula": "2min a vma",
         "speed": undefined,
     });
 
-    await waitFor(() => {
-        const runningBlocks = screen.queryAllByRole('running_block');
-        expect(runningBlocks.length).not.toBe(0);
-    }, { timeout: 1500 });
+    runningBlocks = screen.queryAllByRole('running_block');
+    expect(runningBlocks.length).not.toBe(0);
 
     runningBlocks = screen.getAllByRole('running_block');
     
