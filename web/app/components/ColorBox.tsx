@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './ColorBox.module.css';
 
 export type ColoredSpan = Partial<React.CSSProperties> & { textWidth: number };
@@ -11,55 +11,49 @@ const DEFAULT_DELAY_IN_MS = 1000;
 const EMPTY_CONTENT: JSX.Element = (<>{NBSP}</>);
 
 class ColorizingDaemon {
-  private readonly _textInput: HTMLInputElement;
   private readonly _setContent: (arg: JSX.Element) => void;
   private readonly _colorizer: Colorizer;
   private _version: number;
   public delayInMs: number;
 
   constructor(
-    textInput: HTMLInputElement,
     setContent: (arg: JSX.Element) => void,
     colorizer: Colorizer,
     delayInMs: number,
   ) {
     this._setContent = setContent;
-    this._textInput = textInput;
     this._colorizer = colorizer;
     this.delayInMs = delayInMs;
     this._version = 0;
   }
 
-  public inform() {
+  public injectTextAfterTimeout(text: string): void {
     ++this._version;
     const currentVersion = this._version;
-    this._textInput.style.color = "black";
     this._setContent(EMPTY_CONTENT);
-    setTimeout(() => this._analyze(currentVersion), this.delayInMs);
+    setTimeout(() => this._injectText(text, currentVersion), this.delayInMs);
   }
 
-  public async analyzeNow(text: string): Promise<void> {
+  public async injectTextNow(text: string): Promise<void> {
     ++this._version;
     const candidateVersion = this._version;
-    this._textInput.style.color = "transparent";
-    this._textInput.value = text;
     const spans = await this._colorizer(text);
     if (this._version !== candidateVersion) return;
     const children = ColorizingDaemon._createChildren(spans, text);
-    this._textInput.style.color = "transparent";
     this._setContent(<>{children}</>);
   }
 
-  private async _analyze(candidateVersion: number): Promise<void> {
+  private async _injectText(text: string, candidateVersion: number): Promise<void> {
     if (this._version !== candidateVersion) return;
-    this._textInput.style.color = "black";
-    this._setContent(EMPTY_CONTENT);
-    const text = this._textInput.value;
     const spans = await this._colorizer(text);
     if (this._version !== candidateVersion) return;
     const children = ColorizingDaemon._createChildren(spans, text);
-    this._textInput.style.color = "transparent";
     this._setContent(<>{children}</>);
+  }
+
+  public clearText() {
+    ++this._version;
+    this._setContent(EMPTY_CONTENT);
   }
 
   private static _createChildren(
@@ -101,13 +95,37 @@ class ColorizingDaemon {
   }
 }
 
+function syncScrolling(destination: HTMLElement | null, source: HTMLElement): void {
+  if (destination) {
+    destination.scrollLeft = source.scrollLeft;
+  }
+}
+
+async function blacken(
+  daemon: ColorizingDaemon,
+  textInput: HTMLInputElement,
+): Promise<void> {
+  daemon.clearText();
+  daemon.injectTextAfterTimeout(textInput.value);
+}
+
+async function colorize(
+  daemon: ColorizingDaemon,
+  textInput: HTMLInputElement,
+  text: string,
+): Promise<void> {
+  textInput.value = text;
+  await daemon.injectTextNow(text);
+}
+
 export function ColorBox(
   props: { colorizer: Colorizer, text?: string, delayInMs?: number }
 ) : JSX.Element {
   const formulaRefObj = useRef<HTMLInputElement>(null);
   const backdropRefObj = useRef<HTMLDivElement>(null);
-  const daemonRefObj = useRef<ColorizingDaemon|null>(null);
   const [content, setContent] = useState(EMPTY_CONTENT);
+
+  const color = content === EMPTY_CONTENT ? "black" : "transparent";
 
   useEffect(() => {
     const textInput = formulaRefObj.current;
@@ -117,38 +135,16 @@ export function ColorBox(
     }
   });
 
-  useEffect(() => {
-    const textInput = formulaRefObj.current!;
-    const backdrop = backdropRefObj.current!;
-    const daemon = new ColorizingDaemon(
-      textInput,
+  const daemon = useMemo(() => {
+    return new ColorizingDaemon(
       setContent,
       props.colorizer,
       props.delayInMs ?? DEFAULT_DELAY_IN_MS);
-    daemonRefObj.current = daemon;
-    function colorize() { daemon.inform(); }
-    function scroll() { backdrop.scrollLeft = textInput.scrollLeft; }
-    textInput.addEventListener("scroll", scroll);
-    textInput.addEventListener("input", colorize);
-    textInput.addEventListener("keydown", colorize);
-    textInput.addEventListener("keyup", colorize);
-    textInput.addEventListener("click", colorize);
-    return () => {
-      textInput.removeEventListener("scroll", scroll);
-      textInput.removeEventListener("input", colorize);
-      textInput.removeEventListener("keydown", colorize);
-      textInput.removeEventListener("keyup", colorize);
-      textInput.removeEventListener("click", colorize);
-    };
   }, [props.colorizer]);
 
   useEffect(() => {
-    daemonRefObj.current!.delayInMs = props.delayInMs ?? DEFAULT_DELAY_IN_MS;
-  }, [props.delayInMs])
-
-  useEffect(() => {
-    if (props.text !== undefined) {
-      daemonRefObj.current!.analyzeNow(props.text);
+    if (props.text !== undefined && formulaRefObj.current) {
+      colorize(daemon, formulaRefObj.current, props.text);
     }
   }, [props.colorizer, props.text]);
 
@@ -157,6 +153,14 @@ export function ColorBox(
       <div className={styles.BoxBackdrop} ref={backdropRefObj}>
         <span className={styles.BoxFormula} role='formula'>{content}</span>
       </div>
-      <input type='text' className={styles.BoxText} ref={formulaRefObj}/>
+      <input type='text'
+        className={styles.BoxText}
+        style={{color}}
+        ref={formulaRefObj}
+        onScroll={e => syncScrolling(backdropRefObj.current, e.target as HTMLElement) }
+        onInput={e => blacken(daemon, e.target as HTMLInputElement)}
+        onClick={e => blacken(daemon, e.target as HTMLInputElement)}
+        onKeyDown={e => blacken(daemon, e.target as HTMLInputElement)}
+        onKeyUp={e => blacken(daemon, e.target as HTMLInputElement)} />
     </div>);
 }
