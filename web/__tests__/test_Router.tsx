@@ -114,3 +114,70 @@ test('Router preserves memoised content inside pages', () => {
     expect(po2.value).toBe(o2);
     expect(pid.value).toBe(wrapperId);
 });
+
+test('Router does not react to methods called from inactive clients', () => {
+    const pc1 = new Ptr<RouterClient>();
+    const pv1 = new Ptr<boolean>();
+    const pc2 = new Ptr<RouterClient>();
+    const pv2 = new Ptr<boolean>();
+    const pc3 = new Ptr<RouterClient>();
+    const pv3 = new Ptr<boolean>();
+
+    const store = new MockURLStore();
+    const kedge = new RouterKedge(() => store);
+    
+    render(
+        <Router kedge={kedge}>
+            {{
+                ctor: (cl, v) => { pc1.set(cl); pv1.set(v); return (<div></div>); },
+                route: "premier",
+            }}
+            {{
+                ctor: (cl, v) => { pc2.set(cl); pv2.set(v); return (<div></div>); },
+                route: "deuxieme",
+            }}
+            {{
+                ctor: (cl, v) => { pc3.set(cl); pv3.set(v); return (<div></div>); },
+                route: "troisieme",
+            }}
+        </Router>
+    );
+
+    expect(pv1.value).toBe(true);
+    expect(pv2.value).toBe(false);
+    expect(pv3.value).toBe(false);
+    expect(store.searchParams.toString()).toEqual("page=premier");
+    
+    let changed = false;
+    act(() => {
+        changed = pc3.value!.goTo("deuxieme", { canard: "coin" });
+    });
+
+    expect(changed).toBe(false);
+    expect(pv1.value).toBe(true);
+    expect(pv2.value).toBe(false);
+    expect(pv3.value).toBe(false);
+    expect(store.searchParams.toString()).toEqual("page=premier");
+    
+    act(() => {
+        changed = pc1.value!.goTo("deuxieme", { canard: "coin" });
+    });
+    
+    expect(changed).toBe(true);
+    expect(pv1.value).toBe(false);
+    expect(pv2.value).toBe(true);
+    expect(pv3.value).toBe(false);
+    expect(store.searchParams.toString()).toEqual("page=deuxieme&canard=coin");
+
+    act(() => {
+        pc1.value!.setUriParam("canard", "croa");
+    });
+
+    expect(store.searchParams.toString()).toEqual("page=deuxieme&canard=coin");
+    
+    act(() => {
+        pc2.value!.setUriParam("canard", "croa");
+    });
+    
+    expect(store.searchParams.toString()).toEqual("page=deuxieme&canard=croa");
+});

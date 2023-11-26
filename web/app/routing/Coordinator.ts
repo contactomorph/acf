@@ -86,12 +86,14 @@ class PrivateClient implements RouterClient, VisibilityProvider {
     private readonly _coord: PrivateCoordinator;
     private readonly _route: string;
     private readonly _index: number;
+    private _visible: boolean;
     private _setVisible: (visible: boolean) => void;
 
     constructor(coordinator: PrivateCoordinator, route: string, index: number) {
         this._coord = coordinator;
         this._route = route;
         this._index = index;
+        this._visible = false;
         this._setVisible = () => {};
     }
 
@@ -109,6 +111,7 @@ class PrivateClient implements RouterClient, VisibilityProvider {
         return uriParams[key];
     }
     setUriParam(key: string, value: string | undefined): void {
+        if (!this._visible) return;
         const newUriParams = this._coord.copyUriParams();
         if (value !== newUriParams[key]) {
             newUriParams[key] = value;
@@ -116,6 +119,7 @@ class PrivateClient implements RouterClient, VisibilityProvider {
         }
     }
     goTo(route: string, uriParams: UriParams): boolean {
+        if (!this._visible) return false;
         const foundIndex = this._coord.routes.findIndex(r => r === route);
         if (0 <= foundIndex) {
             return this._coord.goTo(foundIndex, uriParams);
@@ -123,8 +127,11 @@ class PrivateClient implements RouterClient, VisibilityProvider {
         return false;
     }
     setVisible(visible: boolean) {
-        if (this._setVisible) {
-            this._setVisible(visible);
+        if (this._visible !== visible) {
+            this._visible = visible;
+            if (this._setVisible) {
+                this._setVisible(visible);
+            }
         }
     }
     subscribe(setVisible: (visible: boolean) => void): void {
