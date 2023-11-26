@@ -143,6 +143,9 @@ export class Coordinator {
         this._coord = new PrivateCoordinator(urlStoreGenerator, globalId, routes);
     }
 
+    public get globalId(): string { return this._coord.globalId; }
+    public get routes(): ReadonlyArray<string> { return this._coord.routes; }
+
     public goToDefault() { this._coord.goToDefault(); }
 
     public getClient(index: number): RouterClient & VisibilityProvider {

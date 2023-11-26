@@ -1,6 +1,6 @@
 import { test, expect } from '@jest/globals';
 import { render, act } from '@testing-library/react';
-import { Router } from '../app/routing/Router';
+import { Router, RouterKedge } from '../app/routing/Router';
 import { RouterClient, URLStore } from '@/app/routing/primitives';
 import Ptr from '../app/tools/Ptr';
 import { useMemo } from 'react';
@@ -29,9 +29,10 @@ test('Router sends appropriate props to pages when navigating', () => {
     const pv2 = new Ptr<boolean>();
 
     const store = new MockURLStore();
+    const kedge = new RouterKedge(() => store);
 
     render(
-        <Router urlStoreGenerator={() => store}>
+        <Router kedge={kedge}>
             {{
                 ctor: (cl, v) => { pc1.set(cl); pv1.set(v); return (<div></div>); },
                 route: "premier",
@@ -81,6 +82,7 @@ test('Router preserves memoised content inside pages', () => {
     const pid = new Ptr<string>();
 
     const store = new MockURLStore();
+    const kedge = new RouterKedge(() => store);
 
     function ctor1(client: RouterClient): JSX.Element {
         pid.set(client.wrapperId);
@@ -88,7 +90,7 @@ test('Router preserves memoised content inside pages', () => {
     };
 
     const { rerender } = render(
-        <Router urlStoreGenerator={() => store}>
+        <Router kedge={kedge}>
             {{ ctor: ctor1, route: "premier" }}
             {{ ctor: () => (<MockPage ptr={po2}/>), route: "deuxieme" }}
         </Router>
@@ -102,7 +104,7 @@ test('Router preserves memoised content inside pages', () => {
     const wrapperId = pid.value!;
     
     rerender(
-        <Router urlStoreGenerator={() => store}>
+        <Router kedge={kedge}>
             {{ ctor: ctor1, route: "premier" }}
             {{ ctor: () => (<MockPage ptr={po2}/>), route: "deuxieme" }}
         </Router>
