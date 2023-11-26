@@ -14,6 +14,11 @@ function mayUpdateValue(
     valueRef.current = newValue;
     return updated;
 }
+function onKeyUp(e: React.KeyboardEvent<HTMLElement>): void {
+    if (e.key === "Enter") {
+        (e.target as HTMLElement).blur();
+    }
+}
 
 export function DecimalBox(props: {
     onValueChange: (x: number) => void,
@@ -71,7 +76,8 @@ export function DecimalBox(props: {
             role="decimal_text"
             ref={refKey}
             className={styles.BoxText}
-            onBlur={onBlur} />
+            onBlur={onBlur}
+            onKeyUp={onKeyUp} />
         <input
             type='button'
             role='plus'

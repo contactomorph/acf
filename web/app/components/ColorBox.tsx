@@ -78,6 +78,12 @@ function syncScrolling(
   }
 }
 
+function onKeyUp(e: React.KeyboardEvent<HTMLElement>): void {
+  if (e.key === "Enter") {
+    (e.target as HTMLElement).blur();
+  }
+}
+
 export function ColorBox(
   props: { colorizer: Colorizer, text?: string, }
 ) : JSX.Element {
@@ -118,6 +124,7 @@ export function ColorBox(
         onScroll={e => syncScrolling(backdropRefObj.current, e.target as HTMLElement) }
         onInput={() => daemon.clearText()}
         onClick={() => daemon.clearText()}
-        onBlur={e => daemon.injectText(e.target.value)} />
+        onBlur={e => daemon.injectText(e.target.value)}
+        onKeyUp={onKeyUp} />
     </div>);
 }
