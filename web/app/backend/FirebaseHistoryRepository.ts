@@ -1,7 +1,7 @@
 "use client";
 
 import { FirebaseApp, initializeApp } from "@firebase/app";
-import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
+// import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
 import { getDatabase, ref, onValue, DatabaseReference, Database, child, push, update } from "@firebase/database";
 import { Session, SessionList } from "../data/sessions";
 import HistoryRepository from "../model/HistoryRepository";
@@ -9,9 +9,6 @@ import { Training } from "../data/trainings";
 import { parseIso } from "../components/date_display";
 
 const databaseURL = "https://acf-allure-default-rtdb.europe-west1.firebasedatabase.app";
-
-const email = "de";
-const password = "ps";
 
 export type BackendSession = {
     readonly id?: string;
@@ -51,6 +48,7 @@ export default class FirebaseHistoryRepository implements HistoryRepository {
         return update(ref(this._database), updates);
     }
 
+    /*
     async dod() {
         const auth = getAuth(this._app);
         try {
@@ -63,6 +61,7 @@ export default class FirebaseHistoryRepository implements HistoryRepository {
             // const errorMessage = error.message;
         }
     }
+    */
 
     _complete(beSessions: BackendSessionList): SessionList {
         const sessions: any = {};

@@ -1,3 +1,33 @@
+REPLACEMENT: REMOVE NEXT AND USE VITE
+
+> cd .\acf
+> npm create vite@latest acf -- --template react-ts
+- In 'web\.eslintrc.cjs' edit:
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    project: ['./tsconfig.json', './tsconfig.node.json'],
+    tsconfigRootDir: __dirname,
+  },
+- Replace `plugin:@typescript-eslint/recommended`
+  to `plugin:@typescript-eslint/strict-type-checked`
+- Add `plugin:@typescript-eslint/stylistic-type-checked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react)
+  and add `plugin:react/recommended` & `plugin:react/jsx-runtime`
+> npm install eslint eslint-plugin-react --save-dev
+- change 'src' to 'app' in vite code
+- Install dependencies (like chroma, needs to make a list)
+> npm i jest --save-dev
+> npm i ts-jest @types/jest --save-dev
+> npm i @testing-library/jest-dom @testing-library/react @testing-library/user-event --save-dev
+> npm install ts-node @testing-library/jest-dom --save-dev
+> npm install jest-environment-jsdom
+> npm install identity-obj-proxy --save-dev
+> npm audit fix
+
+============================================================
+POTENTIALLY OBSOLETE:
+
 REINSTALLATION FROM GITHUB
 
 - clone repository git@github.com:contactomorph/acf.git
@@ -41,3 +71,4 @@ INSTALL JEST
 - create file 'jest.config.mjs' as specified
   in https://nextjs.org/docs/pages/building-your-application/optimizing/testing
 > npm install @testing-library/user-event@14
+
