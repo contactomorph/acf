@@ -1,4 +1,3 @@
-"use client";
 import styles from './SessionBar.module.css';
 import { Session } from "../data/sessions";
 import { DATE_TIME_FORMAT } from './date_display';

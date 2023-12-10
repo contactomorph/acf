@@ -1,4 +1,3 @@
-"use client";
 import { Session, SessionList } from "../data/sessions";
 import HistoryRepository from "../model/HistoryRepository";
 

@@ -1,4 +1,3 @@
-"use client";
 import chroma from 'chroma-js';
 import styles from './RunningBar.module.css';
 import { Properties } from 'csstype';

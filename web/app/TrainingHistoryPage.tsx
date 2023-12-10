@@ -1,4 +1,3 @@
-"use client";
 import styles from './TrainingHistoryPage.module.css';
 import Model from './model/Model';
 import { SessionBar } from './components/SessionBar';

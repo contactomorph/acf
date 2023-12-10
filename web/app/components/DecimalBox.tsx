@@ -1,4 +1,3 @@
-"use client";
 import DiscreteRange from '../tools/DiscreteRange';
 import styles from './DecimalBox.module.css';
 import { useEffect, useMemo, useRef } from "react";

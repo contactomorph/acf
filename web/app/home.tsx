@@ -1,4 +1,3 @@
-"use client";
 import { Router, RouterKedge } from './routing/Router';
 import TrainingCreationPage from './TrainingCreationPage';
 import TrainingHistoryPage from './TrainingHistoryPage';

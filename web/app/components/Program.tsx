@@ -1,4 +1,3 @@
-"use client";
 import styles from './Program.module.css';
 import { ARROW, CHRONO, NBS, RULER, SHOES, getIcon } from './icons';
 import { Distance, Pace, Speed, TimeSpan } from '../data/units';

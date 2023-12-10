@@ -1,4 +1,3 @@
-"use client";
 
 import { RouterClient, UriParams, URLStore, VisibilityProvider } from "./primitives";
 

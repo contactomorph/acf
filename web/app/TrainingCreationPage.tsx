@@ -1,4 +1,3 @@
-"use client";
 import styles from './TrainingCreationPage.module.css';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Speed, fromKmPerHour } from './data/units';

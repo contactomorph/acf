@@ -19,7 +19,6 @@ div.Bar {
 
 div.BarTitle {
     height: 25%;
-    font-family: sans-serif;
     font-size: 12pt;
     text-align: left;
     color: black;
@@ -53,7 +52,6 @@ div.BarBlock {
     border-color: darkgrey;
     box-sizing: border-box;
     overflow: hidden;
-    font-family: sans-serif;
     font-size: 13pt;
     text-align: left;
     color: black;
