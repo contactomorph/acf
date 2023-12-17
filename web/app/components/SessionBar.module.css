@@ -8,6 +8,7 @@ div.Bar {
     box-sizing: border-box;
     padding: 5px;
     text-align: left;
+    cursor: pointer;
 }
 
 span.Tag {
