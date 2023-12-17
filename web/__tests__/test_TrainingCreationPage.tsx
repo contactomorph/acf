@@ -1,5 +1,5 @@
-import TrainingCreationPage from '@/app/TrainingCreationPage';
-import { RouterClient, UriParams } from '@/app/routing/primitives';
+import TrainingCreationPage from '../app/TrainingCreationPage';
+import { RouterClient, UriParams } from '../app/routing/primitives';
 import { test, expect } from '@jest/globals';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

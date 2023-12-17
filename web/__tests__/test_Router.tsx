@@ -1,7 +1,7 @@
 import { test, expect } from '@jest/globals';
 import { render, act } from '@testing-library/react';
 import { Router, RouterKedge } from '../app/routing/Router';
-import { RouterClient, URLStore } from '@/app/routing/primitives';
+import { RouterClient, URLStore } from '../app/routing/primitives';
 import Ptr from '../app/tools/Ptr';
 import { useMemo } from 'react';
 
