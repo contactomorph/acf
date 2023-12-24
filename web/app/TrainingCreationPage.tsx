@@ -1,5 +1,5 @@
 import styles from './TrainingCreationPage.module.css';
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Speed, fromKmPerHour } from './data/units';
 import { Training } from './data/trainings';
 import { processFormula } from './model/FormulaProcessor';
@@ -11,6 +11,10 @@ import { Program } from './components/Program';
 import { ColorBox, Colorizer } from './components/ColorBox';
 import { DecimalBox } from './components/DecimalBox';
 import { RouterClient } from './routing/primitives';
+import Model from './model/Model';
+import { Session } from './data/sessions';
+import { validate } from 'uuid';
+import { Future } from './tools/Future';
 
 const DISTANCE = '\uD83D\uDCCF Distance';
 const DURATION = '\u23F1\uFE0F Durée';
@@ -20,6 +24,7 @@ const DEC_COUNT_REF_SPEED = 1;
 const DEFAULT_REF_SPEED = 15;
 const SPEED_URI_ARG = "speed";
 const FORMULA_URI_ARG = "formula";
+const ID_URI_ARG = "id";
 
 interface TrainingRef { training: Training | undefined };
 
@@ -28,7 +33,7 @@ function retrieveValuesFromUri(
   setRefSpeed: (speed: number) => void,
   setFormulaText: (formulaText: string) => void,
   trainingRef: TrainingRef,
-) {
+): void {
   const speedText = client.getUriParam(SPEED_URI_ARG);
   if (speedText != undefined) {
     let speed = Number.parseFloat(speedText);
@@ -45,6 +50,29 @@ function retrieveValuesFromUri(
   }
 }
 
+function retrieveValuesFromId(
+  id: string | undefined,
+  model: Model,
+  placeInput: HTMLInputElement | null,
+  commentInput: HTMLInputElement | null,
+): void {
+  let place = "";
+  let comment = "";
+  if (id) {
+    const session = model.getSession(id);
+    if (session) {
+      place = session.place;
+      comment = session.comment;
+    }
+  }
+  if (placeInput) {
+    placeInput.value = place;
+  }
+  if (commentInput) {
+    commentInput.value = comment;
+  }
+}
+
 function toStringOrUndefined(s: string): string | undefined {
   return s === "" ? undefined : s;
 }
@@ -54,17 +82,22 @@ function toText(s: number): string | undefined {
 }
 
 export default function TrainingCreationPage(
-  props: { client: RouterClient, visible: boolean, }
+  props: { client: RouterClient, model: Model, visible: boolean, }
 ): JSX.Element {
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
   const [formulaText, setFormulaText] = useState<string>("");
   const trainingRef = useMemo<TrainingRef>(() => { return { training: undefined }; }, []);
+  const placeRefObj = useRef<HTMLInputElement>(null);
+  const commentRefObj = useRef<HTMLInputElement>(null);
   
   const client = props.client;
+  const model = props.model;
 
   useMemo(() => {
     if (props.visible) {
       retrieveValuesFromUri(client, setRefSpeed, setFormulaText, trainingRef);
+      const id = client.getUriParam(ID_URI_ARG);
+      retrieveValuesFromId(id, model, placeRefObj.current, commentRefObj.current);
     }
   }, [client, props.visible]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -103,9 +136,51 @@ export default function TrainingCreationPage(
 
   const { intervals, distanceTitle, distanceBlocks, durationTitle, durationBlocks, } = data;
 
+  const upsertSession = useCallback((formula: string) => {
+    const id = client.getUriParam(ID_URI_ARG);
+    if (id !== undefined && validate(id))
+    {
+      const date = new Date();
+      date.setUTCDate(date.getUTCDate() + 4 * 365);
+      const place = placeRefObj.current?.value ?? "";
+      const comment = commentRefObj.current?.value ?? "";
+      const training = trainingRef.training ?? null;
+      const session: Session = {
+        id,
+        comment,
+        date,
+        formula,
+        place,
+        tags: [],
+        training,
+      };
+      const promise = model.upsertSession(session);
+      Future.forget(promise);
+    }
+    client.goTo('history', {});
+  }, [model, client]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  
+  const deleteSession = useCallback(() => {
+    const id = client.getUriParam(ID_URI_ARG);
+    if (id !== undefined && validate(id))
+    {
+      const promise = model
+        .deleteSession(id)
+        .then(() => client.goTo('history', {}));
+      Future.forget(promise);
+    }
+  }, [model, client]);
+
   return (
     <div className={styles.Page}>
-      <div><input type="button" onClick={() => client.goTo('history', {})} value={`Revenir`} /></div>
+      <div>
+        <input type="button" onClick={() => client.goTo('history', {})} value={`Revenir`} />
+        <input type="button" onClick={() => deleteSession()} value={`Supprimer`} />
+        <input type="button" onClick={() => upsertSession(formulaText)} value={`Sauver`} />
+      </div>
+      <input type='text' className={styles.BoxText} ref={placeRefObj} role='placeText' />
+      <input type='text' className={styles.BoxText} ref={commentRefObj} role='commentText' />
       <ColorBox colorizer={colorizer} text={formulaText} />
       <DecimalBox
         onValueChange={setRefSpeed}

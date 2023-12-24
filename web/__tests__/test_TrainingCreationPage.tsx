@@ -3,6 +3,8 @@ import { RouterClient, UriParams } from '../app/routing/primitives';
 import { test, expect } from '@jest/globals';
 import { screen, render, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import Model from '../app/model/Model';
+import FirebaseHistoryRepository from '../app/backend/MockHistoryRepository';
 
 // eslint-disable-next-line react-refresh/only-export-components
 const NBSP = "\u00A0";
@@ -41,8 +43,9 @@ class MockRouterClient implements RouterClient {
 test('TrainingCreationPage updates url and display program when user provides text', async () => {
     const client = new MockRouterClient({});
     const user = userEvent.setup();
+    const model = new Model(new FirebaseHistoryRepository());
 
-    render(<TrainingCreationPage client={client} visible={true} />);
+    render(<TrainingCreationPage client={client} model={model} visible={true} />);
 
     expect(client.step).toBe(2);
     expect(client.currentUriParams).toEqual({});
@@ -78,9 +81,10 @@ test('TrainingCreationPage updates url and display program when user provides te
 
 test('TrainingCreationPage propage url and display program when becoming visible', async () => {
     const client = new MockRouterClient({});
+    const model = new Model(new FirebaseHistoryRepository());
 
     const { rerender } = render(
-        <TrainingCreationPage client={client} visible={false} />
+        <TrainingCreationPage client={client} model={model} visible={false} />
     );
 
     expect(client.step).toBe(0);
@@ -94,7 +98,7 @@ test('TrainingCreationPage propage url and display program when becoming visible
     };
 
     rerender(
-        <TrainingCreationPage client={client} visible={true} />
+        <TrainingCreationPage client={client} model={model} visible={true} />
     );
 
     expect(client.step).toBe(2);

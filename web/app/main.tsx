@@ -20,8 +20,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </header>
     <main>
       <Router kedge={KEDGE}>
-        {{ ctor: cl => (<TrainingHistoryPage client={cl} model={MODEL} />), route: 'history' }}
-        {{ ctor: (cl, v) => (<TrainingCreationPage client={cl} visible={v} />), route: 'creation' }}
+        {{
+          ctor: (cl, v) => (<TrainingHistoryPage client={cl} model={MODEL} visible={v} />),
+          route: 'history',
+        }}
+        {{
+          ctor: (cl, v) => (<TrainingCreationPage client={cl} model={MODEL} visible={v} />),
+          route: 'creation',
+        }}
       </Router>
     </main>
   </React.StrictMode>,

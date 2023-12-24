@@ -11,10 +11,11 @@ import { CHECK_BOX, WATCH } from './components/icons';
 import { v4 as uuidv4 } from 'uuid';
 
 export default function TrainingHistoryPage(
-    props: { client: RouterClient, model: Model | null }
+    props: { client: RouterClient, model: Model, visible: boolean }
 ): JSX.Element {
     const client = props.client;
     const model = props.model;
+    const visible = props.visible;
 
     const [version, setVersion] = useState({});
 
@@ -23,24 +24,22 @@ export default function TrainingHistoryPage(
 
     /* eslint-disable react-hooks/exhaustive-deps */
     useMemo(() => {
-        if (model) {
+        if (visible) {
             const modelTags = model.getTags();
             if (!modelTags.same(allTags)) {
                 modelTags.setContentOf(allTags);
                 modelTags.setContentOf(activeTags);
             }
         }
-    }, [model, version]);
+    }, [model, version, visible]);
     /* eslint-enable react-hooks/exhaustive-deps */
     
     const [startingDate, setStartingDate] = useState<Date>(() => new Date());
     useEffect(() => {
-        if (model) {
-            setVersion({});
-            const lambda = () => setVersion({});
-            model.subscribeToChange(lambda);
-            return () => model.unsubscribe(lambda);
-        }
+        setVersion({});
+        const lambda = () => setVersion({});
+        model.subscribeToChange(lambda);
+        return () => model.unsubscribe(lambda);
     }, [model]);
     const toggle = useCallback((t: string, target: HTMLSpanElement) => {
         if (activeTags.has(t)) {
@@ -63,7 +62,7 @@ export default function TrainingHistoryPage(
         </>);
     });
 
-    const sessionBars = (model?.getOrderedSessions(Array.from(activeTags)) ?? [])
+    const sessionBars = model.getOrderedSessions(Array.from(activeTags))
         .filter(s => startingDate <= s.date)
         .map(s => {
             const onClick = () => client.goTo('creation', { id: s.id, formula: s.formula });
@@ -76,9 +75,12 @@ export default function TrainingHistoryPage(
 
     return (<div className={styles.Page}>
         <div>
-            <input type="button" onClick={() => client.goTo('creation', {
-                id: uuidv4(), formula: ""
-            })} value={`Nouveau`} role='new_training' />
+            <input
+                type="button"
+                onClick={() => client.goTo('creation', { id: uuidv4(), formula: "" })}
+                value={`Nouveau`}
+                role='new_training'
+            />
         </div>
         <div className={styles.Bar}>
             <table>
