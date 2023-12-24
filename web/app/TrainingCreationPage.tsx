@@ -30,7 +30,7 @@ function retrieveValuesFromUri(
   trainingRef: TrainingRef,
 ) {
   const speedText = client.getUriParam(SPEED_URI_ARG);
-  if (speedText) {
+  if (speedText != undefined) {
     let speed = Number.parseFloat(speedText);
     if (Number.isFinite(speed)) {
       speed = Math.max(Math.min(speed, MAX_REF_SPEED), MIN_REF_SPEED);
@@ -38,7 +38,7 @@ function retrieveValuesFromUri(
     }
   }
   const formulaText = client.getUriParam(FORMULA_URI_ARG);
-  if (formulaText) {
+  if (formulaText != undefined) {
     const formula = processFormula(formulaText);
     trainingRef.training = formula.training;
     setFormulaText(formulaText);
@@ -71,12 +71,12 @@ export default function TrainingCreationPage(
     if (props.visible) {
       client.setUriParam(SPEED_URI_ARG, toText(refSpeed));
     }
-  }, [client, refSpeed, props.visible]);
+  }, [client, refSpeed]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (props.visible) {
       client.setUriParam(FORMULA_URI_ARG, toStringOrUndefined(formulaText));
     }
-  }, [client, formulaText, props.visible]);
+  }, [client, formulaText]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const colorizer: Colorizer = useCallback((text: string) => {
     const formula = processFormula(text);

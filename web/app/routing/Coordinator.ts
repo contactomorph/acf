@@ -36,11 +36,11 @@ class PrivateCoordinator {
     goTo(index: number, uriParams: UriParams): boolean {
         if (index < 0 || this.clients.length <= index || this._activeIndex === index)
             return false;
+        this.replaceUriParams(this.routes[index], uriParams);
         this.clients.forEach((client, i) => {
             client.setVisible(i === index);
         });
         this._activeIndex = index;
-        this.replaceUriParams(this.routes[index], uriParams);
         return true;
     }
 
@@ -70,7 +70,7 @@ class PrivateCoordinator {
         searchParams.set(PAGE_URI_PARAMETER_NAME, route);
         for (const key in uriParams) {
             const value = uriParams[key];
-            if (value != undefined)
+            if (value !== undefined)
                 searchParams.set(key, value);
         }
         h.searchParams = searchParams;

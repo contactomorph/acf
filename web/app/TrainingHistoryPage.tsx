@@ -8,6 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import frLocale from "date-fns/locale/fr";
 import './tools/set-extensions';
 import { CHECK_BOX, WATCH } from './components/icons';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function TrainingHistoryPage(
     props: { client: RouterClient, model: Model | null }
@@ -74,6 +75,11 @@ export default function TrainingHistoryPage(
     }
 
     return (<div className={styles.Page}>
+        <div>
+            <input type="button" onClick={() => client.goTo('creation', {
+                id: uuidv4(), formula: ""
+            })} value={`Nouveau`} role='new_training' />
+        </div>
         <div className={styles.Bar}>
             <table>
                 <tbody>
