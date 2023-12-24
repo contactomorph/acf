@@ -1,7 +1,6 @@
-import { SessionList, Session } from "../app/data/sessions";
-import HistoryRepository from "../app/model/HistoryRepository";
+import MockHistoryRepository from "../app/backend/MockHistoryRepository";
+import { Session } from "../app/data/sessions";
 import Model from "../app/model/Model";
-import { Future } from "../app/tools/Future";
 
 function expectSetContent<T>(actual: ReadonlySet<T>, ...expected: T[]): void {
     const expectedAndFound = new Set<T>();
@@ -65,48 +64,9 @@ const SESSIONS: Session[] = [
     },
 ];
 
-class MockHistoryRepository implements HistoryRepository {
-    private readonly _sessions: Session[];
-    private _updateHistory: (sessions: SessionList) => void;
-
-    constructor(...sessions: Session[]) {
-        this._sessions = sessions.slice();
-        this._updateHistory = () => {};
-    }
-
-    listenToHistory(updateHistory: (sessions: SessionList) => void): void {
-        this._updateHistory = updateHistory;
-    }
-
-    refresh() {
-        this._updateHistory(this._getSessions());
-    }
-
-    upsertSession(session: Session): Promise<void> {
-        const index = this._sessions.findIndex(s => s.id === session.id);
-        if (index < 0) {
-            this._sessions.push(session);
-        } else {
-            this._sessions[index] = session;
-        }
-        this._updateHistory(this._getSessions());
-        return Future.sleep(0);
-    }
-    _getSessions(): SessionList {
-        const sessions: SessionList = {};
-        for(const s of this._sessions) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            (sessions as any)[s.id] = s;
-        }
-        return sessions;
-    }
-}
-
 test('Model provide sessions by increasing date', () => {
     const historyRepository = new MockHistoryRepository(...SESSIONS);
     const model = new Model(historyRepository);
-
-    historyRepository.refresh();
 
     const dates = model.getOrderedSessions().map(s => s.date);
 
@@ -187,4 +147,24 @@ test('Model update session', async () => {
     const tags = model.getTags();
 
     expectSetContent(tags, "décontracté", "marathon", "facile");
+});
+
+
+test('Model can delete session', async () => {
+    const historyRepository = new MockHistoryRepository(...SESSIONS);
+    const model = new Model(historyRepository);
+
+    await model.deleteSession(SESSIONS[1].id);
+
+    const sessions = model.getOrderedSessions();
+    const dates = sessions.map(s => s.date);
+
+    expect(dates).toEqual([
+        new Date(2005, 8, 30),
+        new Date(2012, 2, 4),
+    ]);
+
+    const tags = model.getTags();
+
+    expectSetContent(tags, "marathon", "facile");
 });

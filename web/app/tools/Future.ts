@@ -21,4 +21,6 @@ export namespace Future {
     };
     
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+
+    export function forget<T>(_: Promise<T>): void { }
 }

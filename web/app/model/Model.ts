@@ -26,14 +26,16 @@ export default class Model {
         }
     }
 
-    upsertSession(session: Session): void {
-        const previous = this._sessionPerIds.get(session.id);
-        if (previous === undefined) {
-            this._insert(session);
-        } else {
-            this._replace(previous, session);
-        }
-        this._sessionPerIds.set(session.id, session);
+    getSession(id: string): Session | undefined {
+        return this._sessionPerIds.get(id);
+    }
+
+    upsertSession(session: Session): Promise<void> {
+        return this._historyRepository.upsertSession(session);
+    }
+
+    deleteSession(id: string): Promise<void> {
+        return this._historyRepository.deleteSession(id);
     }
 
     getOrderedSessions(tags: string[] | undefined = undefined): Session[] {
@@ -50,28 +52,6 @@ export default class Model {
     getTags(): Set<string> {
         const tags = this._orderedSessions.flatMap(s => s.tags);
         return new Set(tags);
-    }
-
-    private _insert(session: Session) {
-        const position = this._orderedSessions
-            .findIndex(s => Model._properlyOrderedByTime(s, session));
-        if (position < 0) {
-            this._orderedSessions.push(session);
-        } else {
-            this._orderedSessions.copyWithin(position + 1, position);
-            this._orderedSessions[position] = session;
-        }
-    }
-
-    private _replace(previous: Session, session: Session) {
-        const position = this._orderedSessions.indexOf(previous);
-        if (0 <= position) {
-            this._orderedSessions[position] = session;
-        }
-    }
-
-    private static _properlyOrderedByTime(s1: Session, s2: Session): boolean {
-        return s1.date.getTime() <= s2.date.getTime();
     }
 
     private static _compareTime(s1: Session, s2: Session): number {
@@ -103,6 +83,13 @@ export default class Model {
             } else {
                 updated = true;
                 this._sessionPerIds.set(id, receivedSession);
+            }
+        }
+        const ids = new Set<string>(this._sessionPerIds.keys());
+        for(const id of ids) {
+            if (!(id in sessions)) {
+                this._sessionPerIds.delete(id);
+                updated = true;
             }
         }
         if (!updated) { return; }
