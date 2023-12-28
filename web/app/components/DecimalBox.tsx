@@ -41,7 +41,7 @@ export function DecimalBox(props: {
         const updated = mayUpdateValue(valueRef, props.value, range);
         if (refKey.current) { refKey.current.value = range.toFixed(valueRef.current) }
         if (updated || isFirstCall) { onValueChange(valueRef.current) }
-    }, [props.value, range]);
+    }, [props.value, range, isFirstCall, onValueChange]);
 
     const onBlur = useMemo<React.ChangeEventHandler<HTMLInputElement>>(
         () => event => {
@@ -50,7 +50,7 @@ export function DecimalBox(props: {
             input.value = range.toFixed(valueRef.current);
             if (updated) { onValueChange(valueRef.current) }
         },
-        [range, props.onValueChange],
+        [range, onValueChange],
     );
 
     const onClick = useMemo<(positive: boolean) => void>(
@@ -60,7 +60,7 @@ export function DecimalBox(props: {
             if (refKey.current) { refKey.current.value = range.toFixed(valueRef.current) }
             if (updated) { onValueChange(valueRef.current) }
         },
-        [range, props.onValueChange],
+        [range, onValueChange],
     );
 
     return (

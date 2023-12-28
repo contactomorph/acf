@@ -3,7 +3,7 @@ import { RouterClient, UriParams, URLStore, VisibilityProvider } from "./primiti
 
 const PAGE_URI_PARAMETER_NAME = "page";
 
-type MutableUriParams = {
+interface MutableUriParams {
     [key: string]: string | undefined;
 };
 
@@ -128,9 +128,7 @@ class PrivateClient implements RouterClient, VisibilityProvider {
     setVisible(visible: boolean) {
         if (this._visible !== visible) {
             this._visible = visible;
-            if (this._setVisible) {
-                this._setVisible(visible);
-            }
+            this._setVisible(visible);
         }
     }
     subscribe(setVisible: (visible: boolean) => void): void {

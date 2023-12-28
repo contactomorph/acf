@@ -1,17 +1,17 @@
 import { Distance, Duration, Pace, Speed, TimeSpan } from "./units";
 
-export type Interval = {
+export interface Interval {
     readonly isRecovery: boolean,
     readonly speedPercentage: number,
     readonly constraint: Distance | Duration,
 };
 
-export type Round = {
+export interface Round {
     index: number;
     among: number;
 };
 
-export type CompleteInterval = {
+export interface CompleteInterval {
     readonly isRecovery: boolean,
     readonly speedPercentage: number,
     readonly speed: Speed,

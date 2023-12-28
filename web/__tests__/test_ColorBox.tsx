@@ -103,7 +103,7 @@ test('ColorBox adds colors to input text for the user', async () => {
     ]);
 });
 
-test('ColorBox calls the colorizer when the text is provided in props', async () => {
+test('ColorBox calls the colorizer when the text is provided in props', () => {
     const col = new MockColorizer();
 
     const { rerender } = render(<ColorBox

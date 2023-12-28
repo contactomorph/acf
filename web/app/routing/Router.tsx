@@ -3,7 +3,7 @@ import { useEffect, useId, useState, } from "react";
 import { Coordinator } from "./Coordinator";
 import { RouterClient, URLStore, VisibilityProvider } from "./primitives";
 
-export type PageInfo = {
+export interface PageInfo {
     ctor: (client: RouterClient, visible: boolean) => JSX.Element,
     route: string,
 };
@@ -34,7 +34,7 @@ const Wrapper = function(
     const client = props.client;
     const page: JSX.Element = props.ctor(client, visible);
     const style: React.CSSProperties = { visibility: visible ? "visible" : "hidden" };
-    useEffect(() => { client.subscribe(setVisible); });
+    useEffect(() => { client.subscribe(setVisible); }, [client]);
     return (
         <div id={client.wrapperId} className={styles.Wrapper} style={style}>
             {page}
@@ -42,7 +42,7 @@ const Wrapper = function(
     );
 }
 
-type RouterKedgeData = {
+interface RouterKedgeData {
     coordinator: Coordinator,
     wrappers: JSX.Element[],
 };
@@ -91,8 +91,9 @@ export function Router(
     }
 ): JSX.Element {
     const globalId = useId();
+    // eslint-disable-next-line @typescript-eslint/dot-notation
     const kedge = props.kedge['_kedge'];
     const { coordinator, wrappers } = kedge.init(globalId, props.children);
-    useEffect(() => coordinator.goToDefault(), []);
+    useEffect(() => coordinator.goToDefault(), [coordinator]);
     return (<div className={styles.Router}>{wrappers}</div>);
 }

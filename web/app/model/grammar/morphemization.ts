@@ -4,7 +4,7 @@ export enum MorphemeCategory {
     Sigil,
 }
 
-export type Range = {
+export interface Range {
     readonly columnBegin: number,
     readonly columnEnd: number,
     readonly index: number,
@@ -34,7 +34,7 @@ class MorphemePositioner {
     }
 }
 
-export type Morpheme = {
+export interface Morpheme {
     mode: MorphemeCategory,
     margin: string,
     content: string,

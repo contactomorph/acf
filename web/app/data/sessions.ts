@@ -1,6 +1,6 @@
 import { Training } from './trainings';
 
-export type Session = {
+export interface Session {
     readonly id: string;
     readonly date: Date;
     readonly place: string;
@@ -10,6 +10,6 @@ export type Session = {
     readonly formula: string;
 };
 
-export type SessionList = {
+export interface SessionList {
     readonly [id: string] : Session;
 };

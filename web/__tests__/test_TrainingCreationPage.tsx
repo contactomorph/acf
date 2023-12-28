@@ -4,7 +4,10 @@ import { test, expect } from '@jest/globals';
 import { screen, render, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+// eslint-disable-next-line react-refresh/only-export-components
 const NBSP = "\u00A0";
+
+/* eslint-disable @typescript-eslint/class-literal-property-style */
 
 function toBlockInfo(element: HTMLElement): string[] {
     const parts = element.title.split('\n').map(i => i.trim());
@@ -28,6 +31,7 @@ class MockRouterClient implements RouterClient {
     get routes(): readonly string[] { return [this.route]; }
     getUriParam(key: string): string | undefined { return this.currentUriParams[key]; }
     setUriParam(key: string, value: string | undefined): void {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         (this.currentUriParams as any)[key] = value;
         this.step += 1;
     }
@@ -106,7 +110,6 @@ test('TrainingCreationPage propage url and display program when becoming visible
     }, { timeout: 2000 });
     
     const blockInfo = runningBlocks.slice(0, 3).map(toBlockInfo);
-    
 
     expect(blockInfo).toEqual([
         ["3.4815910871268168%", "rgb(211, 53, 29)", `146${NBSP}m`, `→${NBSP}146${NBSP}m`, ],

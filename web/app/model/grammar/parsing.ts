@@ -5,7 +5,7 @@ import { tok, seq, kleft, alt, opt, apply, rep_sc, list_sc, expectEOF } from "ty
 import { Range } from "./morphemization";
 import { LexemeKind, Lexeme, KeywordLexemeKind, NumericLexemeKind, UnknownLexemeKind } from "./lexemization";
 
-export type BaseFormulaToken = {
+export interface BaseFormulaToken {
     readonly margin: string,
     readonly text: string,
     readonly pos: TokenPosition,
@@ -69,6 +69,7 @@ function extractNumber(token: Token<NumericLexemeKind>): number {
 }
 
 function recategoriseAsSpeed(token: Token<NumericLexemeKind.Factor>) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     (token as any).kind = NumericLexemeKind.Speed;
 }
 
@@ -226,13 +227,13 @@ TRAINING.setPattern(
     )
 );
 
-export type Formula = {
+export interface Formula {
     firstToken: FormulaToken | undefined,
     training: Training | undefined,
 };
 
 function markAsNonAppropriate(tokens: ReadonlyArray<FormulaToken>, error: ParseError | undefined) {
-    if (error !== undefined && error.pos !== undefined) {
+    if (error?.pos !== undefined) {
         const errorIndex = error.pos.index;
         const failedToken = tokens.find(t => t.pos.index === errorIndex);
         if (failedToken !== undefined) {
@@ -247,7 +248,7 @@ function markAsNonAppropriate(tokens: ReadonlyArray<FormulaToken>, error: ParseE
 }
 
 export function parse(lexemes: ReadonlyArray<Lexeme>): Formula {
-    let tokens: FormulaToken[] = [];
+    const tokens: FormulaToken[] = [];
     let previousToken: FormulaToken | undefined = undefined;
     for(const lexeme of lexemes) {
         const token = toToken(lexeme);

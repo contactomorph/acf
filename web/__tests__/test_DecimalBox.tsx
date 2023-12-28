@@ -56,7 +56,7 @@ test('DecimalBox notifies appropriate value when clicking buttons and providing 
 });
 
 
-test('DecimalBox notifies appropriate value when changing props', async () => {
+test('DecimalBox notifies appropriate value when changing props', () => {
     const valueRef = { value: null as number | null };
 
     const { rerender } = render(<DecimalBox

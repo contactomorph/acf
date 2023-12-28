@@ -39,7 +39,7 @@ export enum KeywordLexemeKind {
 
 export type LexemeKind = UnknownLexemeKind | NumericLexemeKind | KeywordLexemeKind;
 
-type BaseLexeme = {
+interface BaseLexeme {
     margin: string,
     text: string,
     range: Range,
@@ -115,7 +115,7 @@ function toKeywordLexeme(morpheme: Morpheme, kind: KeywordLexemeKind) : KeywordL
     }
 }
 
-const units: ReadonlyMap<String, [number, NumericLexemeKind]> = new Map<string, [number, NumericLexemeKind]>([
+const units: ReadonlyMap<string, [number, NumericLexemeKind]> = new Map<string, [number, NumericLexemeKind]>([
     ["m", [1, NumericLexemeKind.Distance]],
     ["km", [1000, NumericLexemeKind.Distance]],
     ["s", [1, NumericLexemeKind.Duration]],
@@ -134,7 +134,7 @@ function retrieveKeyword(morpheme: Morpheme): Lexeme | undefined {
 }
 
 function retrieveSpeed(it: ArrayIterator<Morpheme>): Lexeme | undefined {
-    let morpheme = it.current;
+    const morpheme = it.current;
     if (morpheme === undefined)
         return undefined;
     if (SPEED_LEVELS.has(morpheme.content as SpeedLevel))
@@ -171,6 +171,7 @@ function retrieveQuantity(it: ArrayIterator<Morpheme>): Lexeme | undefined {
     const [factor, category] = unit;
     value *= factor;
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-constant-condition
     while(true) {
         morpheme = it.next;
         if (morpheme === undefined || morpheme.mode !== MorphemeCategory.Numeric) {
@@ -178,7 +179,7 @@ function retrieveQuantity(it: ArrayIterator<Morpheme>): Lexeme | undefined {
         }
         it.moveToNext();
         sMorpheme = concatMorpheme(sMorpheme, morpheme);
-        let subValue = parseInt(morpheme.content);
+        const subValue = parseInt(morpheme.content);
         morpheme = it.next;
         if (morpheme === undefined || morpheme.mode !== MorphemeCategory.Text) {
             return toUnknownLexeme(sMorpheme, "Expected unit");

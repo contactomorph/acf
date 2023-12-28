@@ -17,6 +17,20 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    'no-extra-semi': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-namespace': 'off',
+    '@typescript-eslint/array-type': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/consistent-indexed-object-style': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
+    '@typescript-eslint/no-unused-vars': ['warn', { 'argsIgnorePattern': '^_' }],
+    '@typescript-eslint/no-confusing-void-expression': 'off',
+  },
+  settings: {
+    react: {
+      version: "detect",
+    },
   },
   parserOptions: {
     ecmaVersion: 'latest',

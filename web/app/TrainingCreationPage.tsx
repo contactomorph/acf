@@ -21,7 +21,7 @@ const DEFAULT_REF_SPEED = 15;
 const SPEED_URI_ARG = "speed";
 const FORMULA_URI_ARG = "formula";
 
-type TrainingRef = { training: Training | undefined };
+interface TrainingRef { training: Training | undefined };
 
 function retrieveValuesFromUri(
   client: RouterClient,
@@ -66,29 +66,29 @@ export default function TrainingCreationPage(
     if (props.visible) {
       retrieveValuesFromUri(client, setRefSpeed, setFormulaText, trainingRef);
     }
-  }, [props.visible]);
+  }, [client, props.visible]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (props.visible) {
       client.setUriParam(SPEED_URI_ARG, toText(refSpeed));
     }
-  }, [refSpeed, props.visible]);
+  }, [client, refSpeed, props.visible]);
   useEffect(() => {
     if (props.visible) {
       client.setUriParam(FORMULA_URI_ARG, toStringOrUndefined(formulaText));
     }
-  }, [formulaText, props.visible]);
+  }, [client, formulaText, props.visible]);
 
   const colorizer: Colorizer = useCallback((text: string) => {
     const formula = processFormula(text);
     trainingRef.training = formula.training;
     setFormulaText(text);
     return toColoredSpans(formula.firstToken);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const data = useMemo(() => {
     const speedSpecifier = (speedPercentage: number): Speed => {
       const ratio = speedPercentage / 100;
-      return fromKmPerHour(ratio * (refSpeed ?? DEFAULT_REF_SPEED));
+      return fromKmPerHour(ratio * refSpeed);
     };
     const intervals = computeIntervals(trainingRef.training, speedSpecifier);
 
@@ -99,7 +99,7 @@ export default function TrainingCreationPage(
     const durationTitle = totalDuration === "" ? DURATION : `${DURATION}: ${totalDuration}`;
 
     return { intervals, distanceTitle, distanceBlocks, durationTitle, durationBlocks, };
-  }, [refSpeed, formulaText]);
+  }, [refSpeed, formulaText]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { intervals, distanceTitle, distanceBlocks, durationTitle, durationBlocks, } = data;
 

@@ -1,11 +1,11 @@
 
 export type SpeedLevel = "v10" | "vsm" | "vm" | "vma" | "vf";
 
-export type Duration = { readonly in_sec: number };
-export type Distance = { readonly in_meter: number };
-export type Speed = { readonly in_meter_per_sec: number };
+export interface Duration { readonly in_sec: number };
+export interface Distance { readonly in_meter: number };
+export interface Speed { readonly in_meter_per_sec: number };
 
-export type TimeSpan = {
+export interface TimeSpan {
     readonly hr: number,
     readonly min: number,
     readonly sec: number,
@@ -15,7 +15,7 @@ export function fromKmPerHour(in_km_per_hour: number): Speed {
     return { in_meter_per_sec: in_km_per_hour / 3.6 };
 }
 
-export type Pace = { readonly in_time_per_km: TimeSpan };
+export interface Pace { readonly in_time_per_km: TimeSpan };
 
 export function toTimeSpan(duration: Duration): TimeSpan {
     const totalSec = Math.floor(duration.in_sec);

@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+
 export const NBS = '\u00A0';
 export const ARROW = '\u2192';
 export const RULER = '\uD83D\uDCCF';

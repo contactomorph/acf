@@ -4,7 +4,7 @@ import { Distance, Pace, Speed, TimeSpan } from '../data/units';
 import { DISTANCE_COLOR_NAME, DURATION_COLOR_NAME, colorizeSpeed, stringifyDistance, stringifyPace, stringifySpeed, stringifyTimeSpan } from './unit_display';
 import chroma from 'chroma-js';
 
-export type ProgramStep = {
+export interface ProgramStep {
   readonly isRecovery: boolean,
   readonly speedPercentage: number,
   readonly speed: Speed,

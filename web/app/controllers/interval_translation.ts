@@ -2,7 +2,7 @@ import { ARROW, NBS, getIcon } from "../components/icons";
 import { CompleteInterval } from "../data/intervals";
 import { colorizeSpeed, stringifyDistance, stringifyTimeSpan } from '../components/unit_display';
 
-type Block = {
+interface Block {
     readonly color: chroma.Color,
     readonly width: number,
     readonly icon: string;

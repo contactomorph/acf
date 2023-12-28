@@ -9,7 +9,7 @@ import { parseIso } from "../components/date_display";
 
 const databaseURL = "https://acf-allure-default-rtdb.europe-west1.firebasedatabase.app";
 
-export type BackendSession = {
+export interface BackendSession {
     readonly id?: string;
     readonly date?: string;
     readonly place?: string;
@@ -19,7 +19,7 @@ export type BackendSession = {
     readonly formula?: string;
 };
 
-type BackendSessionList = {
+interface BackendSessionList {
     readonly [id: string] : BackendSession;
 };
 
@@ -35,14 +35,16 @@ export default class FirebaseHistoryRepository implements HistoryRepository {
 
     listenToHistory(updateHistory: (session: SessionList) => void): void {
         const starCountRef: DatabaseReference = ref(this._database, "/trainings/list");
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         onValue(starCountRef, snapshot => updateHistory(this._complete(snapshot.val())));
     }
 
     upsertSession(session: Session): Promise<void> {
         const newPostKey = push(child(ref(this._database), '"/trainings/list')).key;
 
-        const updates: any = {};
-        updates['/trainings/list/' + newPostKey] = session;
+        const updates = {};
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        (updates as any)['/trainings/list/' + newPostKey] = session;
       
         return update(ref(this._database), updates);
     }
@@ -63,13 +65,14 @@ export default class FirebaseHistoryRepository implements HistoryRepository {
     */
 
     _complete(beSessions: BackendSessionList): SessionList {
-        const sessions: any = {};
+        const sessions: SessionList = {};
         for (const key in beSessions) {
             const beSession = beSessions[key];
             const tags: string[] = [];
-            const tagsAsObj: any = beSession.tags ?? {};
+            const tagsAsObj = beSession.tags ?? {};
             for(const key in tagsAsObj) {
-                tags.push(tagsAsObj[key]);
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                tags.push((tagsAsObj as any)[key] as string);
             }
             const session: Session = {
                 id: beSession.id ?? key,
@@ -80,7 +83,8 @@ export default class FirebaseHistoryRepository implements HistoryRepository {
                 date: (beSession.date ? parseIso(beSession.date) : null) ?? new Date(),
                 tags: tags,
             };
-            sessions[key] = session;
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            (sessions as any)[key] = session;
         }
 
         return sessions;

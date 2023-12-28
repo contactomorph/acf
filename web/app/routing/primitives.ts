@@ -1,4 +1,4 @@
-export type UriParams = {
+export interface UriParams {
     readonly [key: string]: string | undefined;
 };
 

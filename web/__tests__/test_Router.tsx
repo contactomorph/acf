@@ -70,6 +70,7 @@ test('Router sends appropriate props to pages when navigating', () => {
     expect(store.searchParams.toString()).toEqual("page=deuxieme&bim=bam");
 });
 
+// eslint-disable-next-line react-refresh/only-export-components
 function MockPage(props: { ptr: Ptr<object> }): JSX.Element {
     const someObject = useMemo(() => { return {}; }, []);
     props.ptr.set(someObject);

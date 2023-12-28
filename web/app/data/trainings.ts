@@ -1,22 +1,22 @@
 import { Distance, Duration, Speed } from "./units";
 
-export type FactorForRefSpeed = {
+export interface FactorForRefSpeed {
     minRefSpeed: Speed,
     factor: number,
 };
 
-export type MultiFactor = {
+export interface MultiFactor {
     defaultFactor: number,
     otherFactors: ReadonlyArray<FactorForRefSpeed>,
 };
 
-export type TrainingInterval = {
+export interface TrainingInterval {
     isRecovery: boolean,
     speedPercentage: number,
     constraint: Duration | Distance,
 };
 
-export type TrainingLoop = {
+export interface TrainingLoop {
     multiFactor: MultiFactor,
     intervals: Array<TrainingInterval>
 };

@@ -110,7 +110,7 @@ export function ColorBox(
       formulaRefObj.current.value = props.text;
       daemon.injectText(props.text);
     }
-  }, [props.colorizer, props.text]);
+  }, [props.colorizer, props.text, daemon]);
 
   return (
     <div className={styles.BoxContainer}>

@@ -1,5 +1,7 @@
 export {};
 
+/* eslint @typescript-eslint/no-unsafe-member-access: "off" */
+
 declare global {
     interface Set<T> {
         same(other: ReadonlySet<T>): boolean;
@@ -13,5 +15,5 @@ declare global {
 
 (Set.prototype as any).setContentOf = function (this: ReadonlySet<any>, target: Set<any>): void {
     target.clear();
-    Array.from(this).every(v => target.add(v));
+    Array.from(this).forEach(v => target.add(v));
 };

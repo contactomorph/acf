@@ -40,7 +40,7 @@ export default class Model {
         if (tags === undefined) {
             return this._orderedSessions.slice();
         } else {
-            const set: Set<string> = new Set(tags);
+            const set = new Set<string>(tags);
             return this._orderedSessions.filter(s => {
                 return s.tags.length === 0 || s.tags.some(t => set.has(t));
             });
@@ -53,7 +53,8 @@ export default class Model {
     }
 
     private _insert(session: Session) {
-        let position = this._orderedSessions.findIndex(s => Model._properlyOrderedByTime(s, session));
+        const position = this._orderedSessions
+            .findIndex(s => Model._properlyOrderedByTime(s, session));
         if (position < 0) {
             this._orderedSessions.push(session);
         } else {
@@ -89,7 +90,7 @@ export default class Model {
     }
 
     private _update(sessions: SessionList) {
-        let updated: boolean = false;
+        let updated = false;
         for(const key in sessions) {
             const receivedSession = sessions[key];
             const id = receivedSession.id;
@@ -107,6 +108,7 @@ export default class Model {
         if (!updated) { return; }
         this._orderedSessions.length = 0;
         this._sessionPerIds.forEach(s => this._orderedSessions.push(s));
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         this._orderedSessions.sort(Model._compareTime);
         this._lambdas.forEach(lambda => lambda());
     }

@@ -3,7 +3,7 @@ import styles from './RunningBar.module.css';
 import { Properties } from 'csstype';
 import { Fragment, useEffect, useRef } from 'react';
 
-export type Block = {
+export interface Block {
     readonly color: chroma.Color,
     readonly width: number,
     readonly icon: string;
@@ -70,6 +70,7 @@ export function RunningBar(
     });
 
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (window?.ResizeObserver) {
             const observer = new window.ResizeObserver(() => {
                 mayExtendSequence(innerRef.current!, seqRef.current!, minProportionRef.current);

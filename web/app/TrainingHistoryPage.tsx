@@ -17,9 +17,10 @@ export default function TrainingHistoryPage(
 
     const [version, setVersion] = useState({});
 
-    const [allTags] = useState(() => new Set<string>());
-    const [activeTags] = useState(() => new Set<string>());
+    const allTags = useMemo(() => new Set<string>(), []);
+    const activeTags = useMemo(() => new Set<string>(), []);
 
+    /* eslint-disable react-hooks/exhaustive-deps */
     useMemo(() => {
         if (model) {
             const modelTags = model.getTags();
@@ -29,6 +30,7 @@ export default function TrainingHistoryPage(
             }
         }
     }, [model, version]);
+    /* eslint-enable react-hooks/exhaustive-deps */
     
     const [startingDate, setStartingDate] = useState<Date>(() => new Date());
     useEffect(() => {

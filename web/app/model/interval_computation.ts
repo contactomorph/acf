@@ -4,7 +4,7 @@ import { MultiFactor, Training } from "../data/trainings";
 
 type SpeedSpecifier = (speedPercentage: number) => Speed;
 
-type MutableInterval = {
+interface MutableInterval {
     isRecovery: boolean,
     speedPercentage: number,
     speed: Speed,
@@ -78,8 +78,8 @@ function pushMultipleRounds(to: CompleteInterval[], from: ReadonlyArray<MutableI
 }
 
 function setCumulativeQuantities(intervals: ReadonlyArray<MutableInterval>) {
-    let cumulativeMeters: number = 0;
-    let cumulativeSeconds: number = 0;
+    let cumulativeMeters = 0;
+    let cumulativeSeconds = 0;
     for (const interval of intervals) {
         cumulativeMeters += interval.distance.in_meter;
         interval.cumulativeDistance = { in_meter: cumulativeMeters };
