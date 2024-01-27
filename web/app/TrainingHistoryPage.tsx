@@ -1,3 +1,4 @@
+import cstyles from './TrainingPage.module.css';
 import styles from './TrainingHistoryPage.module.css';
 import Model from './model/Model';
 import { SessionBar } from './components/SessionBar';
@@ -74,7 +75,7 @@ export default function TrainingHistoryPage(
     }
 
     return (<div className={styles.Page}>
-        <div>
+        <div className={cstyles.BoxText}>
             <input
                 type="button"
                 onClick={() => client.goTo('creation', { id: uuidv4() })}

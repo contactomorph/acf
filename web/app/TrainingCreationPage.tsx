@@ -1,3 +1,4 @@
+import cstyles from './TrainingPage.module.css';
 import styles from './TrainingCreationPage.module.css';
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Speed, fromKmPerHour } from './data/units';
@@ -61,6 +62,16 @@ function toText(s: number): string | undefined {
   return s === DEFAULT_REF_SPEED ? undefined : s.toFixed(DEC_COUNT_REF_SPEED);
 }
 
+function createDisplayUrl(): string {
+  const params = new URLSearchParams(window.location.search);
+  params.set('page', 'display');
+  return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+}
+
+function saveInClipboard(text: string): void {
+  Future.forget(navigator.clipboard.writeText(text));
+}
+
 export default function TrainingCreationPage(
   props: { client: RouterClient, model: Model, visible: boolean, }
 ): JSX.Element {
@@ -69,6 +80,8 @@ export default function TrainingCreationPage(
   const trainingRef = useMemo<TrainingRef>(() => { return { training: undefined }; }, []);
   const placeRefObj = useRef<HTMLInputElement>(null);
   const commentRefObj = useRef<HTMLInputElement>(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const displayUrl = useMemo<string>(() => createDisplayUrl(), [props.visible]);
   
   const [version, setVersion] = useState({});
   
@@ -174,10 +187,15 @@ export default function TrainingCreationPage(
 
   return (
     <div className={styles.Page}>
-      <div>
+      <div className={cstyles.BoxText}>
         <input type="button" onClick={() => client.goTo('history', {})} value={`Revenir`} />
         <input type="button" onClick={() => deleteSession()} value={`Supprimer`} />
         <input type="button" onClick={() => upsertSession(formulaText)} value={`Sauver`} />
+        <div>
+          Lien vers l&apos;entraînement:
+          <a href={displayUrl} className={styles.UnmarkedLink} target="_blank" rel="noreferrer">🔗</a>
+          <span className={styles.ToCopy} onClick={() => saveInClipboard(displayUrl)}>📑</span>
+        </div>
       </div>
       <input type='text' className={styles.BoxText} ref={placeRefObj} role='placeText' />
       <input type='text' className={styles.BoxText} ref={commentRefObj} role='commentText' />

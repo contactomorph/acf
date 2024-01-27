@@ -7,6 +7,7 @@ import FirebaseHistoryRepository from './backend/FirebaseHistoryRepository';
 import { Router, RouterKedge } from './routing/Router.tsx';
 import TrainingHistoryPage from './TrainingHistoryPage.tsx';
 import TrainingCreationPage from './TrainingCreationPage.tsx';
+import TrainingDisplayPage from './TrainingDisplayPage.tsx';
 
 /* eslint-disable react-refresh/only-export-components */
 const MODEL = new Model(new FirebaseHistoryRepository());
@@ -27,6 +28,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         {{
           ctor: (cl, v) => (<TrainingCreationPage client={cl} model={MODEL} visible={v} />),
           route: 'creation',
+        }}
+        {{
+          ctor: (cl, v) => (<TrainingDisplayPage client={cl} model={MODEL} visible={v} />),
+          route: 'display',
         }}
       </Router>
     </main>
