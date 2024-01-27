@@ -70,6 +70,8 @@ export default function TrainingCreationPage(
   const placeRefObj = useRef<HTMLInputElement>(null);
   const commentRefObj = useRef<HTMLInputElement>(null);
   
+  const [version, setVersion] = useState({});
+  
   const client = props.client;
   const model = props.model;
 
@@ -96,12 +98,18 @@ export default function TrainingCreationPage(
         setFormulaText,
         trainingRef);
     }
-  }, [client, model, props.visible]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [client, model, props.visible, version]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (props.visible) {
       client.setUriParam(SPEED_URI_ARG, toText(refSpeed));
     }
   }, [client, refSpeed]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    setVersion({});
+    const lambda = () => setVersion({});
+    model.subscribeToChange(lambda);
+    return () => model.unsubscribe(lambda);
+  }, [model]);
 
   const colorizer: Colorizer = useCallback((text: string) => {
     const formula = processFormula(text);
