@@ -28,7 +28,7 @@ const s0: Session = {
 const s1: Session = {
     id: "CEE9E48C-825C-4FDF-B617-F6D4E08ECE0D",
     comment: "Trop dur",
-    formula: "2 * (3km à vma)",
+    formula: `4 * (40" à 100% recup 30", 1' à 90% recup 40") recup 2'30", 4 * (40" à 100% recup 30", 1' à 90% recup 40")`,
     place: "Stade Leo Lagrange",
     date: new Date(2031, 3, 13),
     tags: [ "club" ],

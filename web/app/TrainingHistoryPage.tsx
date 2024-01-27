@@ -65,7 +65,7 @@ export default function TrainingHistoryPage(
     const sessionBars = model.getOrderedSessions(Array.from(activeTags))
         .filter(s => startingDate <= s.date)
         .map(s => {
-            const onClick = () => client.goTo('creation', { id: s.id, formula: s.formula });
+            const onClick = () => client.goTo('creation', { id: s.id });
             return (<SessionBar session={s} key={s.id} onClick={onClick}/>);
         });
 
@@ -77,7 +77,7 @@ export default function TrainingHistoryPage(
         <div>
             <input
                 type="button"
-                onClick={() => client.goTo('creation', { id: uuidv4(), formula: "" })}
+                onClick={() => client.goTo('creation', { id: uuidv4() })}
                 value={`Nouveau`}
                 role='new_training'
             />

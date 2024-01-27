@@ -47,7 +47,7 @@ test('TrainingCreationPage updates url and display program when user provides te
 
     render(<TrainingCreationPage client={client} model={model} visible={true} />);
 
-    expect(client.step).toBe(2);
+    expect(client.step).toBe(1);
     expect(client.currentUriParams).toEqual({});
 
     let runningBlocks = screen.queryAllByRole('running_block');
@@ -59,12 +59,9 @@ test('TrainingCreationPage updates url and display program when user provides te
     const blurred = fireEvent.focusOut(colorBoxInput);
     
     expect(blurred).toBe(true);
-    expect(client.step).toBe(3)
+    expect(client.step).toBe(1)
 
-    expect(client.currentUriParams).toEqual({
-        "formula": "2min a vma",
-        "speed": undefined,
-    });
+    expect(client.currentUriParams).toEqual({ "speed": undefined, });
 
     runningBlocks = screen.queryAllByRole('running_block');
     expect(runningBlocks.length).not.toBe(0);
@@ -93,19 +90,19 @@ test('TrainingCreationPage propage url and display program when becoming visible
     expect(runningBlocks).toEqual([]);
 
     client.currentUriParams = {
-        "formula": `4 * (40" à 100% recup 30", 1' à 90% recup 40") recup 2'30", 4 * (40" à 100% recup 30", 1' à 90% recup 40")`,
         "speed": "13.2",
+        "id": "CEE9E48C-825C-4FDF-B617-F6D4E08ECE0D",
     };
 
     rerender(
         <TrainingCreationPage client={client} model={model} visible={true} />
     );
 
-    expect(client.step).toBe(2);
+    expect(client.step).toBe(1);
 
     expect(client.currentUriParams).toEqual({
-        "formula": `4 * (40" à 100% recup 30", 1' à 90% recup 40") recup 2'30", 4 * (40" à 100% recup 30", 1' à 90% recup 40")`,
         "speed": "13.2",
+        "id": "CEE9E48C-825C-4FDF-B617-F6D4E08ECE0D",
     });
 
     await waitFor(() => {

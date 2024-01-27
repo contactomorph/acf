@@ -23,46 +23,27 @@ const MAX_REF_SPEED = 25;
 const DEC_COUNT_REF_SPEED = 1;
 const DEFAULT_REF_SPEED = 15;
 const SPEED_URI_ARG = "speed";
-const FORMULA_URI_ARG = "formula";
 const ID_URI_ARG = "id";
 
 interface TrainingRef { training: Training | undefined };
 
-function retrieveValuesFromUri(
-  client: RouterClient,
-  setRefSpeed: (speed: number) => void,
-  setFormulaText: (formulaText: string) => void,
-  trainingRef: TrainingRef,
-): void {
-  const speedText = client.getUriParam(SPEED_URI_ARG);
-  if (speedText != undefined) {
-    let speed = Number.parseFloat(speedText);
-    if (Number.isFinite(speed)) {
-      speed = Math.max(Math.min(speed, MAX_REF_SPEED), MIN_REF_SPEED);
-      setRefSpeed(speed);
-    }
-  }
-  const formulaText = client.getUriParam(FORMULA_URI_ARG);
-  if (formulaText != undefined) {
-    const formula = processFormula(formulaText);
-    trainingRef.training = formula.training;
-    setFormulaText(formulaText);
-  }
-}
-
-function retrieveValuesFromId(
+function retrieveValuesFromModel(
   id: string | undefined,
   model: Model,
   placeInput: HTMLInputElement | null,
   commentInput: HTMLInputElement | null,
+  setFormulaText: (formulaText: string) => void,
+  trainingRef: TrainingRef,
 ): void {
   let place = "";
   let comment = "";
+  let formulaText = "";
   if (id) {
     const session = model.getSession(id);
     if (session) {
       place = session.place;
       comment = session.comment;
+      formulaText = session.formula;
     }
   }
   if (placeInput) {
@@ -71,10 +52,9 @@ function retrieveValuesFromId(
   if (commentInput) {
     commentInput.value = comment;
   }
-}
-
-function toStringOrUndefined(s: string): string | undefined {
-  return s === "" ? undefined : s;
+  const formula = processFormula(formulaText);
+  trainingRef.training = formula.training;
+  setFormulaText(formulaText);
 }
 
 function toText(s: number): string | undefined {
@@ -95,21 +75,33 @@ export default function TrainingCreationPage(
 
   useMemo(() => {
     if (props.visible) {
-      retrieveValuesFromUri(client, setRefSpeed, setFormulaText, trainingRef);
-      const id = client.getUriParam(ID_URI_ARG);
-      retrieveValuesFromId(id, model, placeRefObj.current, commentRefObj.current);
+      const speedText = client.getUriParam(SPEED_URI_ARG);
+      if (speedText != undefined) {
+        let speed = Number.parseFloat(speedText);
+        if (Number.isFinite(speed)) {
+          speed = Math.max(Math.min(speed, MAX_REF_SPEED), MIN_REF_SPEED);
+          setRefSpeed(speed);
+        }
+      }
     }
-  }, [client, props.visible]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [client, props.visible]);
+  useMemo(() => {
+    if (props.visible) {
+      const id = client.getUriParam(ID_URI_ARG);
+      retrieveValuesFromModel(
+        id,
+        model,
+        placeRefObj.current,
+        commentRefObj.current,
+        setFormulaText,
+        trainingRef);
+    }
+  }, [client, model, props.visible]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (props.visible) {
       client.setUriParam(SPEED_URI_ARG, toText(refSpeed));
     }
   }, [client, refSpeed]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (props.visible) {
-      client.setUriParam(FORMULA_URI_ARG, toStringOrUndefined(formulaText));
-    }
-  }, [client, formulaText]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const colorizer: Colorizer = useCallback((text: string) => {
     const formula = processFormula(text);
