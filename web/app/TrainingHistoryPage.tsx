@@ -35,7 +35,7 @@ export default function TrainingHistoryPage(
     }, [model, version, visible]);
     /* eslint-enable react-hooks/exhaustive-deps */
     
-    const [startingDate, setStartingDate] = useState<Date>(() => new Date());
+    const [startingDate, setStartingDate] = useState<Date | null>(null);
     useEffect(() => {
         setVersion({});
         const lambda = () => setVersion({});
@@ -64,15 +64,11 @@ export default function TrainingHistoryPage(
     });
 
     const sessionBars = model.getOrderedSessions(Array.from(activeTags))
-        .filter(s => startingDate <= s.date)
+        .filter(s => startingDate == null || startingDate <= s.date)
         .map(s => {
             const onClick = () => client.goTo('creation', { id: s.id });
             return (<SessionBar session={s} key={s.id} onClick={onClick}/>);
         });
-
-    function onDateChange(date: Date | null) {
-        if (date !== null) { setStartingDate(date); }
-    }
 
     return (<div className={styles.Page}>
         <div className={cstyles.BoxText}>
@@ -90,10 +86,10 @@ export default function TrainingHistoryPage(
                         <td>{WATCH}</td>
                         <td>
                             <DatePicker
-                                selected={startingDate}
-                                onChange={onDateChange}
                                 locale={frLocale}
                                 dateFormat="dd/MM/yyyy"
+                                selected={startingDate}
+                                onChange={setStartingDate}
                             />
                         </td>
                     </tr>

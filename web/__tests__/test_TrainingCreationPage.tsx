@@ -53,7 +53,7 @@ test('TrainingCreationPage updates url and display program when user provides te
     let runningBlocks = screen.queryAllByRole('running_block');
     expect(runningBlocks).toEqual([]);
     
-    const colorBoxInput = screen.getByRole<HTMLInputElement>('textbox');
+    const colorBoxInput = screen.getAllByRole<HTMLInputElement>('textbox')[1];
     
     await user.type(colorBoxInput, '2min a vma');
     const blurred = fireEvent.focusOut(colorBoxInput);

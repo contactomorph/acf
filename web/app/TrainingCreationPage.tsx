@@ -16,6 +16,9 @@ import Model from './model/Model';
 import { Session } from './data/sessions';
 import { validate } from 'uuid';
 import { Future } from './tools/Future';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import frLocale from "date-fns/locale/fr";
 
 const DISTANCE = '\uD83D\uDCCF Distance';
 const DURATION = '\u23F1\uFE0F Durée';
@@ -34,10 +37,12 @@ function retrieveValuesFromModel(
   placeInput: HTMLInputElement | null,
   commentInput: HTMLInputElement | null,
   setFormulaText: (formulaText: string) => void,
+  setDate: (date: Date | null) => void,
   trainingRef: TrainingRef,
 ): void {
   let place = "";
   let comment = "";
+  let date = null;
   let formulaText = "";
   if (id) {
     const session = model.getSession(id);
@@ -45,6 +50,7 @@ function retrieveValuesFromModel(
       place = session.place;
       comment = session.comment;
       formulaText = session.formula;
+      date = session.date;
     }
   }
   if (placeInput) {
@@ -56,6 +62,7 @@ function retrieveValuesFromModel(
   const formula = processFormula(formulaText);
   trainingRef.training = formula.training;
   setFormulaText(formulaText);
+  setDate(date);
 }
 
 function toText(s: number): string | undefined {
@@ -77,6 +84,7 @@ export default function TrainingCreationPage(
 ): JSX.Element {
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
   const [formulaText, setFormulaText] = useState<string>("");
+  const [date, setDate] = useState<Date | null>(null);
   const trainingRef = useMemo<TrainingRef>(() => { return { training: undefined }; }, []);
   const placeRefObj = useRef<HTMLInputElement>(null);
   const commentRefObj = useRef<HTMLInputElement>(null);
@@ -109,6 +117,7 @@ export default function TrainingCreationPage(
         placeRefObj.current,
         commentRefObj.current,
         setFormulaText,
+        setDate,
         trainingRef);
     }
   }, [client, model, props.visible, version]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -149,12 +158,14 @@ export default function TrainingCreationPage(
 
   const { intervals, distanceTitle, distanceBlocks, durationTitle, durationBlocks, } = data;
 
-  const upsertSession = useCallback((formula: string) => {
+  const upsertSession = useCallback((formula: string, date: Date | null) => {
     const id = client.getUriParam(ID_URI_ARG);
     if (id !== undefined && validate(id))
     {
-      const date = new Date();
-      date.setUTCDate(date.getUTCDate() + 4 * 365);
+      if (!date) {
+        date = new Date();
+        date.setUTCDate(date.getUTCDate() + 4 * 365);
+      }
       const place = placeRefObj.current?.value ?? "";
       const comment = commentRefObj.current?.value ?? "";
       const training = trainingRef.training ?? null;
@@ -190,12 +201,19 @@ export default function TrainingCreationPage(
       <div className={cstyles.BoxText}>
         <input type="button" onClick={() => client.goTo('history', {})} value={`Revenir`} />
         <input type="button" onClick={() => deleteSession()} value={`Supprimer`} />
-        <input type="button" onClick={() => upsertSession(formulaText)} value={`Sauver`} />
+        <input type="button" onClick={() => upsertSession(formulaText, date)} value={`Sauver`} />
         <div>
           Lien vers l&apos;entraînement:
           <a href={displayUrl} className={styles.UnmarkedLink} target="_blank" rel="noreferrer">🔗</a>
           <span className={styles.ToCopy} onClick={() => saveInClipboard(displayUrl)}>📑</span>
         </div>
+        <DatePicker
+          locale={frLocale}
+          dateFormat="dd/MM/yyyy kk:mm"
+          onChange={setDate}
+          selected={date}
+          showTimeSelect
+        />
       </div>
       <input type='text' className={styles.BoxText} ref={placeRefObj} role='placeText' />
       <input type='text' className={styles.BoxText} ref={commentRefObj} role='commentText' />
