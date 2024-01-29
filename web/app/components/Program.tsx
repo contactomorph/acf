@@ -1,7 +1,7 @@
 import styles from './Program.module.css';
-import { ARROW, CHRONO, NBS, RULER, SHOES, getIcon } from './icons';
+import { CHRONO, NBS, RULER, SHOES, getIcon } from './icons';
 import { Distance, Pace, Speed, TimeSpan } from '../data/units';
-import { DISTANCE_COLOR_NAME, DURATION_COLOR_NAME, colorizeSpeed, stringifyDistance, stringifyPace, stringifySpeed, stringifyTimeSpan } from './unit_display';
+import { DISTANCE_COLOR_NAME, DURATION_COLOR_NAME, colorizeSpeed, stringifyDistance, stringifySpeed, stringifyTimeSpan } from './unit_display';
 import chroma from 'chroma-js';
 
 export interface ProgramStep {
@@ -39,9 +39,6 @@ function Step(props: { step: ProgramStep, index: number }): JSX.Element {
     stringifySpeed(step.speed),
     stringifyDistance(step.distance),
     stringifyTimeSpan(step.timeSpan),
-    stringifyPace(step.pace),
-    ARROW + NBS + stringifyDistance(step.cumulativeDistance),
-    ARROW + NBS + stringifyTimeSpan(step.cumulativeTimeSpan),
   ];
   const tds = texts.map((t, i) => {
     if (i === 0 ) {
@@ -64,7 +61,7 @@ function Step(props: { step: ProgramStep, index: number }): JSX.Element {
 }
 
 export function Program(props: { steps: ReadonlyArray<ProgramStep> }): JSX.Element {
-    const texts = [getIcon(false), SHOES, RULER, CHRONO, SHOES, ARROW + RULER, ARROW + CHRONO, ];
+    const texts = [getIcon(false), SHOES, RULER, CHRONO ];
 
     const ths = texts.map((t, i) => {
       const style = {

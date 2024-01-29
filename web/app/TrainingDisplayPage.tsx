@@ -3,8 +3,6 @@ import { useState, useMemo, useEffect } from 'react';
 import { Speed, fromKmPerHour } from './data/units';
 import { processFormula } from './model/FormulaProcessor';
 import { computeIntervals } from './model/interval_computation';
-import { toDistanceBlocks, toDurationBlocks } from './controllers/interval_translation';
-import { RunningBar } from './components/RunningBar';
 import { Program } from './components/Program';
 import { DecimalBox } from './components/DecimalBox';
 import { RouterClient } from './routing/primitives';
@@ -13,8 +11,6 @@ import { Session } from './data/sessions';
 import { SessionBar } from './components/SessionBar';
 import { SHOES } from './components/icons';
 
-const DISTANCE = '\uD83D\uDCCF Distance';
-const DURATION = '\u23F1\uFE0F Durée';
 const MIN_REF_SPEED = 5;
 const MAX_REF_SPEED = 25;
 const DEC_COUNT_REF_SPEED = 1;
@@ -90,16 +86,10 @@ export default function TrainingDisplayPage(
     const formula = processFormula(session.formula);
     const intervals = computeIntervals(formula.training, speedSpecifier);
 
-    const [distanceBlocks, totalDistance] = toDistanceBlocks(intervals);
-    const [durationBlocks, totalDuration] = toDurationBlocks(intervals);
-  
-    const distanceTitle = totalDistance === "" ? DISTANCE : `${DISTANCE}: ${totalDistance}`;
-    const durationTitle = totalDuration === "" ? DURATION : `${DURATION}: ${totalDuration}`;
-
-    return { intervals, distanceTitle, distanceBlocks, durationTitle, durationBlocks, };
+    return { intervals };
   }, [refSpeed, session.formula]);
 
-  const { intervals, distanceTitle, distanceBlocks, durationTitle, durationBlocks, } = data;
+  const { intervals } = data;
 
   return (
     <div className={styles.Page}>
@@ -117,8 +107,6 @@ export default function TrainingDisplayPage(
         decimalCount={DEC_COUNT_REF_SPEED}
         label={`${SHOES}VMA`}
       />
-      <RunningBar blocks={distanceBlocks} title={distanceTitle} />
-      <RunningBar blocks={durationBlocks} title={durationTitle} />
       <Program steps={intervals} />
     </div>
   )

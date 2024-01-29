@@ -5,9 +5,7 @@ import { Speed, fromKmPerHour } from './data/units';
 import { Training } from './data/trainings';
 import { processFormula } from './model/FormulaProcessor';
 import { computeIntervals } from './model/interval_computation';
-import { toDistanceBlocks, toDurationBlocks } from './controllers/interval_translation';
 import { toColoredSpans } from './controllers/grammar_coloration';
-import { RunningBar } from './components/RunningBar';
 import { Program } from './components/Program';
 import { ColorBox, Colorizer } from './components/ColorBox';
 import { DecimalBox } from './components/DecimalBox';
@@ -23,8 +21,6 @@ import { ExpandableTagSet } from './components/TagSet';
 import { CALENDAR, CHECK_BOX, COMMENT, PIN, SHOES, getIcon } from './components/icons';
 import { SharedLink } from './components/SharedLink';
 
-const DISTANCE = '\uD83D\uDCCF Distance';
-const DURATION = '\u23F1\uFE0F Durée';
 const MIN_REF_SPEED = 5;
 const MAX_REF_SPEED = 25;
 const DEC_COUNT_REF_SPEED = 1;
@@ -155,16 +151,10 @@ export default function TrainingCreationPage(
     };
     const intervals = computeIntervals(trainingRef.training, speedSpecifier);
 
-    const [distanceBlocks, totalDistance] = toDistanceBlocks(intervals);
-    const [durationBlocks, totalDuration] = toDurationBlocks(intervals);
-  
-    const distanceTitle = totalDistance === "" ? DISTANCE : `${DISTANCE}: ${totalDistance}`;
-    const durationTitle = totalDuration === "" ? DURATION : `${DURATION}: ${totalDuration}`;
-
-    return { intervals, distanceTitle, distanceBlocks, durationTitle, durationBlocks, };
+    return { intervals };
   }, [refSpeed, formulaText]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { intervals, distanceTitle, distanceBlocks, durationTitle, durationBlocks, } = data;
+  const { intervals } = data;
 
   const upsertSession = useCallback((formula: string, tags: Set<string>, date: Date | null) => {
     const id = client.getUriParam(ID_URI_ARG);
@@ -255,8 +245,6 @@ export default function TrainingCreationPage(
         decimalCount={DEC_COUNT_REF_SPEED}
         label={`${SHOES}VMA`}
       />
-      <RunningBar blocks={distanceBlocks} title={distanceTitle} />
-      <RunningBar blocks={durationBlocks} title={durationTitle} />
       <Program steps={intervals} />
     </div>
   )
