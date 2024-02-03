@@ -1,5 +1,5 @@
 import { Distance, Duration, assignPercentage, fromKmPerHour } from '../../data/units';
-import { FactorForRefSpeed, TrainingInterval, Training, MultiFactor, TrainingLoop } from '../../data/trainings';
+import { FactorForRefSpeed, TrainingInterval, Training, MultiFactor } from '../../data/trainings';
 import { Token, TokenPosition, rule, ParseError } from "typescript-parsec";
 import { tok, seq, kleft, alt, opt, apply, rep_sc, list_sc, expectEOF } from "typescript-parsec";
 import { Range } from "./morphemization";
@@ -79,7 +79,6 @@ const INTERVAL = rule<LexemeKind, TrainingInterval>();
 const RECOVERY = rule<LexemeKind, TrainingInterval>();
 const INTERVAL_WITH_RECOVERY = rule<LexemeKind, TrainingInterval[]>();
 const SEQUENCE = rule<LexemeKind, TrainingInterval[]>();
-const REPEATED_INTERVAL = rule<LexemeKind, Training>();
 const REPEATED_SEQUENCE = rule<LexemeKind, Training>();
 const TRAINING = rule<LexemeKind, Training>();
 
@@ -179,34 +178,20 @@ SEQUENCE.setPattern(
     )
 );
 
-REPEATED_INTERVAL.setPattern(
-    apply(
-        seq(
-            VARIABLE_FACTOR,
-            tok(KeywordLexemeKind.Times),
-            INTERVAL_WITH_RECOVERY
-        ),
-        ([multiFactor, _times, intervals]) => {
-            const loop: TrainingLoop = {
-                multiFactor,
-                intervals: [intervals[0]]
-            };
-            const recovery = intervals.at(1);
-            return recovery === undefined ? [loop] : [loop, recovery];
-        }
-    )
-);
-
 REPEATED_SEQUENCE.setPattern(
     apply(
         seq(
             VARIABLE_FACTOR,
             tok(KeywordLexemeKind.Times),
-            SEQUENCE,
-            opt(RECOVERY)
+            alt(INTERVAL, SEQUENCE),
+            opt(RECOVERY),
         ),
-        ([multiFactor, _times, intervals, optRecovery]) => {
-            const training: Training = [{multiFactor, intervals}];
+        ([multiFactor, _times, intervalOrSeq, optRecovery]) => {
+            const intervals: TrainingInterval[] =
+                Array.isArray(intervalOrSeq) ?
+                intervalOrSeq :
+                [intervalOrSeq];
+            const training: Training = [{ multiFactor, intervals }];
             if (optRecovery !== undefined)
                 training.push(optRecovery);
             return training;
@@ -218,7 +203,7 @@ TRAINING.setPattern(
     apply(
         kleft(
             list_sc(
-                alt(INTERVAL_WITH_RECOVERY, REPEATED_INTERVAL, REPEATED_SEQUENCE),
+                alt(INTERVAL_WITH_RECOVERY, REPEATED_SEQUENCE),
                 tok(KeywordLexemeKind.Then)
             ),
             opt(tok(KeywordLexemeKind.Then))
