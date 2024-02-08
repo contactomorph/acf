@@ -3,13 +3,14 @@ import styles from './TrainingHistoryPage.module.css';
 import Model from './model/Model';
 import { SessionBar } from './components/SessionBar';
 import { RouterClient } from './routing/primitives';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import frLocale from "date-fns/locale/fr";
 import './tools/set-extensions';
 import { CHECK_BOX, WATCH } from './components/icons';
 import { v4 as uuidv4 } from 'uuid';
+import { ActivableTagSet } from './components/TagSet';
 
 export default function TrainingHistoryPage(
     props: { client: RouterClient, model: Model, visible: boolean }
@@ -42,26 +43,6 @@ export default function TrainingHistoryPage(
         model.subscribeToChange(lambda);
         return () => model.unsubscribe(lambda);
     }, [model]);
-    const toggle = useCallback((t: string, target: HTMLSpanElement) => {
-        if (activeTags.has(t)) {
-            target.className = styles.InactiveTag;
-            activeTags.delete(t);
-        } else {
-            target.className = styles.ActiveTag;
-            activeTags.add(t);
-        }
-        setVersion({});
-    }, [activeTags]);
-
-    const spans: JSX.Element[] = Array.from(allTags.entries()).map(([t]) => {
-        const className = activeTags.has(t) ? styles.ActiveTag : styles.InactiveTag;
-        return (<>
-            <span className={className} onClick={e => toggle(t, e.currentTarget)}>
-                &nbsp;{t}&nbsp;
-            </span>
-            &nbsp;
-        </>);
-    });
 
     const sessionBars = model.getOrderedSessions(Array.from(activeTags))
         .filter(s => startingDate == null || startingDate <= s.date)
@@ -95,7 +76,13 @@ export default function TrainingHistoryPage(
                     </tr>
                     <tr key="tags">
                         <td>{CHECK_BOX}</td>
-                        <td>{spans}</td>
+                        <td>
+                            <ActivableTagSet
+                                activeTags={activeTags}
+                                allTags={allTags}
+                                onChange={() => setVersion({})}
+                            />
+                        </td>
                     </tr>
                 </tbody>
             </table>

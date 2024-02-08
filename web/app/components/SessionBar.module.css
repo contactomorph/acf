@@ -10,13 +10,3 @@ div.Bar {
     text-align: left;
     cursor: pointer;
 }
-
-span.Tag {
-    background-color: red;
-    border-style: solid;
-    border-radius: 5px;
-    border-width: 2px;
-    border-color: darkred;
-    color: white;
-    font-weight: bold;
-}

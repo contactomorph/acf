@@ -19,6 +19,7 @@ import { Future } from './tools/Future';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import frLocale from "date-fns/locale/fr";
+import { ExpandableTagSet } from './components/TagSet';
 
 const DISTANCE = '\uD83D\uDCCF Distance';
 const DURATION = '\u23F1\uFE0F Durée';
@@ -38,12 +39,14 @@ function retrieveValuesFromModel(
   commentInput: HTMLInputElement | null,
   setFormulaText: (formulaText: string) => void,
   setDate: (date: Date | null) => void,
+  activeTags: Set<string>,
   trainingRef: TrainingRef,
 ): void {
   let place = "";
   let comment = "";
   let date = null;
   let formulaText = "";
+  activeTags.clear();
   if (id) {
     const session = model.getSession(id);
     if (session) {
@@ -51,6 +54,7 @@ function retrieveValuesFromModel(
       comment = session.comment;
       formulaText = session.formula;
       date = session.date;
+      session.tags.forEach(t => activeTags.add(t));
     }
   }
   if (placeInput) {
@@ -82,6 +86,7 @@ function saveInClipboard(text: string): void {
 export default function TrainingCreationPage(
   props: { client: RouterClient, model: Model, visible: boolean, }
 ): JSX.Element {
+  const {client, model, visible} = props;
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
   const [formulaText, setFormulaText] = useState<string>("");
   const [date, setDate] = useState<Date | null>(null);
@@ -89,15 +94,19 @@ export default function TrainingCreationPage(
   const placeRefObj = useRef<HTMLInputElement>(null);
   const commentRefObj = useRef<HTMLInputElement>(null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const displayUrl = useMemo<string>(() => createDisplayUrl(), [props.visible]);
+  const displayUrl = useMemo<string>(() => createDisplayUrl(), [visible]);
   
   const [version, setVersion] = useState({});
-  
-  const client = props.client;
-  const model = props.model;
+
+  const {allTags, activeTags} = useMemo(() => {
+    return {
+      allTags: model.getTags() as ReadonlySet<string>,
+      activeTags: new Set<string>(),
+    };
+  }, [model, version]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useMemo(() => {
-    if (props.visible) {
+    if (visible) {
       const speedText = client.getUriParam(SPEED_URI_ARG);
       if (speedText != undefined) {
         let speed = Number.parseFloat(speedText);
@@ -107,7 +116,7 @@ export default function TrainingCreationPage(
         }
       }
     }
-  }, [client, props.visible]);
+  }, [client, visible]);
   useMemo(() => {
     if (props.visible) {
       const id = client.getUriParam(ID_URI_ARG);
@@ -118,11 +127,12 @@ export default function TrainingCreationPage(
         commentRefObj.current,
         setFormulaText,
         setDate,
+        activeTags,
         trainingRef);
     }
-  }, [client, model, props.visible, version]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [client, model, visible, version]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (props.visible) {
+    if (visible) {
       client.setUriParam(SPEED_URI_ARG, toText(refSpeed));
     }
   }, [client, refSpeed]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -158,7 +168,7 @@ export default function TrainingCreationPage(
 
   const { intervals, distanceTitle, distanceBlocks, durationTitle, durationBlocks, } = data;
 
-  const upsertSession = useCallback((formula: string, date: Date | null) => {
+  const upsertSession = useCallback((formula: string, tags: Set<string>, date: Date | null) => {
     const id = client.getUriParam(ID_URI_ARG);
     if (id !== undefined && validate(id))
     {
@@ -175,7 +185,7 @@ export default function TrainingCreationPage(
         date,
         formula,
         place,
-        tags: [],
+        tags: Array.from(tags),
         training,
       };
       const promise = model.upsertSession(session);
@@ -184,7 +194,6 @@ export default function TrainingCreationPage(
     client.goTo('history', {});
   }, [model, client]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  
   const deleteSession = useCallback(() => {
     const id = client.getUriParam(ID_URI_ARG);
     if (id !== undefined && validate(id))
@@ -201,7 +210,10 @@ export default function TrainingCreationPage(
       <div className={cstyles.BoxText}>
         <input type="button" onClick={() => client.goTo('history', {})} value={`Revenir`} />
         <input type="button" onClick={() => deleteSession()} value={`Supprimer`} />
-        <input type="button" onClick={() => upsertSession(formulaText, date)} value={`Sauver`} />
+        <input type="button" onClick={() => upsertSession(formulaText, activeTags, date)} value={`Sauver`} />
+        <div style={{ height: "30px", verticalAlign: "middle" }}>
+          <ExpandableTagSet allTags={allTags} activeTags={activeTags} />
+        </div>
         <div>
           Lien vers l&apos;entraînement:
           <a href={displayUrl} className={styles.UnmarkedLink} target="_blank" rel="noreferrer">🔗</a>

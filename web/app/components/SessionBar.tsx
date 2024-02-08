@@ -3,18 +3,15 @@ import { Session } from "../data/sessions";
 import { DATE_TIME_FORMAT } from './date_display';
 import { CHECK_BOX, COMMENT, PIN, WATCH, getIcon } from './icons';
 import { MouseEventHandler } from 'react';
+import { ImmutableTagSet } from './TagSet';
 
 export function SessionBar(
     props: { session: Session, onClick: MouseEventHandler }
 ) : JSX.Element {
-    const tags = props.session.tags.map(
-        t => {
-            return (<><span className={styles.Tag}>&nbsp;{t}&nbsp;</span> </>);
-        }
-    );
+    const tags = new Set<string>(props.session.tags);
 
-    const tagLine = 0 < tags.length ?
-        (<tr><td>{CHECK_BOX}</td><td>{tags}</td></tr>) :
+    const tagLine = 0 < tags.size ?
+        (<tr><td>{CHECK_BOX}</td><td><ImmutableTagSet tags={tags} /></td></tr>) :
         (<></>);
 
     const commentLine = props.session.comment !== "" ?
