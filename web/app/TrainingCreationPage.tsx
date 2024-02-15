@@ -86,7 +86,7 @@ function saveInClipboard(text: string): void {
 export default function TrainingCreationPage(
   props: { client: RouterClient, model: Model, visible: boolean, }
 ): JSX.Element {
-  const {client, model, visible} = props;
+  const { client, model, visible } = props;
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
   const [formulaText, setFormulaText] = useState<string>("");
   const [date, setDate] = useState<Date | null>(null);
@@ -98,7 +98,7 @@ export default function TrainingCreationPage(
   
   const [version, setVersion] = useState({});
 
-  const {allTags, activeTags} = useMemo(() => {
+  const { allTags, activeTags } = useMemo(() => {
     return {
       allTags: model.getTags() as ReadonlySet<string>,
       activeTags: new Set<string>(),
@@ -118,7 +118,7 @@ export default function TrainingCreationPage(
     }
   }, [client, visible]);
   useMemo(() => {
-    if (props.visible) {
+    if (visible) {
       const id = client.getUriParam(ID_URI_ARG);
       retrieveValuesFromModel(
         id,

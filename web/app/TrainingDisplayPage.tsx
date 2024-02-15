@@ -40,15 +40,13 @@ function getDefaultSession(): Session {
 export default function TrainingDisplayPage(
   props: { client: RouterClient, model: Model, visible: boolean, }
 ): JSX.Element {
+  const { client, model, visible} = props;
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
   const [session, setSession] = useState<Session>(getDefaultSession);
   const [version, setVersion] = useState({});
-  
-  const client = props.client;
-  const model = props.model;
 
   useMemo(() => {
-    if (props.visible) {
+    if (visible) {
       const speedText = client.getUriParam(SPEED_URI_ARG);
       if (speedText != undefined) {
         let speed = Number.parseFloat(speedText);
@@ -58,9 +56,9 @@ export default function TrainingDisplayPage(
         }
       }
     }
-  }, [client, props.visible]);
+  }, [client, visible]);
   useMemo(() => {
-    if (props.visible) {
+    if (visible) {
       const id = client.getUriParam(ID_URI_ARG);
       if (id) {
         const session = model.getSession(id);
@@ -69,9 +67,9 @@ export default function TrainingDisplayPage(
         }
       }
     }
-  }, [client, model, props.visible, version]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [client, model, visible, version]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (props.visible) {
+    if (visible) {
       client.setUriParam(SPEED_URI_ARG, toText(refSpeed));
     }
   }, [client, refSpeed]); // eslint-disable-line react-hooks/exhaustive-deps

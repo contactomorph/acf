@@ -31,8 +31,7 @@ const COLOR_SCALES: ReadonlyArray<(value: number) => string> = [
 ];
 
 function Step(props: { step: ProgramStep, index: number }): JSX.Element {
-  const step = props.step;
-  const index: number = props.index;
+  const { step, index } = props;
   const proportion = index % 2 === 0 ? 0.1 : 0.2;
   const speedColor = colorizeSpeed(step.speedPercentage);
   const texts = [

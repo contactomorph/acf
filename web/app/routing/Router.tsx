@@ -30,9 +30,9 @@ const Wrapper = function(
         ctor: (client: RouterClient, visible: boolean) => JSX.Element,
     }
 ): JSX.Element {
+    const { client, ctor } = props;
     const [visible, setVisible] = useState(false);
-    const client = props.client;
-    const page: JSX.Element = props.ctor(client, visible);
+    const page: JSX.Element = ctor(client, visible);
     const style: React.CSSProperties = { visibility: visible ? "visible" : "hidden" };
     useEffect(() => { client.subscribe(setVisible); }, [client]);
     return (

@@ -27,21 +27,21 @@ export function DecimalBox(props: {
     maxValue?: number,
     decimalCount?: number,
 }) : JSX.Element {
-    const onValueChange = props.onValueChange;
+    const { onValueChange, value, minValue, maxValue, decimalCount } = props;
     const range: DiscreteRange = useMemo(
-        () => new DiscreteRange(props.decimalCount, props.minValue, props.maxValue),
-        [props.decimalCount, props.minValue, props.maxValue],
+        () => new DiscreteRange(decimalCount, minValue, maxValue),
+        [decimalCount, minValue, maxValue],
     );
 
     const refKey = useRef<HTMLInputElement>(null);
-    const valueRef = useRef(range.clamp(props.value));
+    const valueRef = useRef(range.clamp(value));
     const isFirstCall = refKey.current === null;
 
     useEffect(() => {
-        const updated = mayUpdateValue(valueRef, props.value, range);
+        const updated = mayUpdateValue(valueRef, value, range);
         if (refKey.current) { refKey.current.value = range.toFixed(valueRef.current) }
         if (updated || isFirstCall) { onValueChange(valueRef.current) }
-    }, [props.value, range, isFirstCall, onValueChange]);
+    }, [value, range, isFirstCall, onValueChange]);
 
     const onBlur = useMemo<React.ChangeEventHandler<HTMLInputElement>>(
         () => event => {

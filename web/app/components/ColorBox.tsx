@@ -87,6 +87,7 @@ function onKeyUp(e: React.KeyboardEvent<HTMLElement>): void {
 export function ColorBox(
   props: { colorizer: Colorizer, text?: string, }
 ) : JSX.Element {
+  const { colorizer, text } = props;
   const formulaRefObj = useRef<HTMLInputElement>(null);
   const backdropRefObj = useRef<HTMLDivElement>(null);
   const [content, setContent] = useState(EMPTY_CONTENT);
@@ -102,15 +103,15 @@ export function ColorBox(
   });
 
   const daemon = useMemo(() => {
-    return new ColorizingDaemon(setContent, props.colorizer);
-  }, [props.colorizer]);
+    return new ColorizingDaemon(setContent, colorizer);
+  }, [colorizer]);
 
   useEffect(() => {
-    if (props.text !== undefined && formulaRefObj.current) {
-      formulaRefObj.current.value = props.text;
-      daemon.injectText(props.text);
+    if (text !== undefined && formulaRefObj.current) {
+      formulaRefObj.current.value = text;
+      daemon.injectText(text);
     }
-  }, [props.colorizer, props.text, daemon]);
+  }, [colorizer, text, daemon]);
 
   return (
     <div className={styles.BoxContainer}>

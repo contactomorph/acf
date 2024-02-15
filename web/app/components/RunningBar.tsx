@@ -11,21 +11,20 @@ export interface Block {
 };
 
 function RunningBlock(props: { block: Block, proportion: number }) : JSX.Element {
-    const block = props.block;
-    const texts = block.texts.map((t, i) => (<Fragment key={i}><br/>{t}</Fragment>));
-    const color = block.color;
+    const { block: { texts, color, icon }, proportion } = props;
+    const textFragments = texts.map((t, i) => (<Fragment key={i}><br/>{t}</Fragment>));
     const backgroundColor = color.desaturate().hex();
     const borderColor = color.darken(2).hex();
     const textColor = color.luminance() > 0.5 ? color.darken(3).hex() : color.brighten(3).hex();
     const style: Properties = {
-        width: `${100 * props.proportion}%`,
+        width: `${100 * proportion}%`,
         borderColor,
         backgroundColor,
         color: textColor,
     };
-    const title = `${block.icon}\n${block.texts.join('\n')}`;
+    const title = `${icon}\n${texts.join('\n')}`;
     return (<div role="running_block" className={styles.BarBlock} style={style} title={title}>
-        <span className={styles.BarHeader}>{block.icon}</span>{texts}
+        <span className={styles.BarHeader}>{icon}</span>{textFragments}
     </div>);
 }
 
@@ -52,10 +51,11 @@ function mayExtendSequence(
 export function RunningBar(
     props: { blocks: ReadonlyArray<Block>, title: string }
 ) : JSX.Element {
-    const totalWidth = props.blocks.reduce((w, b) => w + b.width, 0);
+    const { blocks, title } = props;
+    const totalWidth = blocks.reduce((w, b) => w + b.width, 0);
 
     const minProportionRef = useRef(1.0);
-    minProportionRef.current = props.blocks.reduce(
+    minProportionRef.current = blocks.reduce(
         (mp, b) => Math.min(b.width / totalWidth, mp),
         1.0,
     );
@@ -80,11 +80,11 @@ export function RunningBar(
         }
     }, []);
 
-    const runningBlocks = props.blocks.map(
+    const runningBlocks = blocks.map(
         (b, i) => (<RunningBlock key={i} proportion={b.width / totalWidth} block={b}/>)
     );
     return (<div className={styles.Bar}>
-        <div className={styles.BarTitle}>{props.title}</div>
+        <div className={styles.BarTitle}>{title}</div>
         <div ref={innerRef} className={styles.BarInner}>
             <div ref={seqRef} className={styles.BarBlockSequence}>{runningBlocks}</div>
         </div>

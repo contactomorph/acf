@@ -6,7 +6,7 @@ function MutableTag(props: {
     active: boolean,
     onClick: () => void,
 }) : JSX.Element {
-    const {name, active, onClick} = props;
+    const { name, active, onClick } = props;
     const className = active ? styles.ActiveTag : styles.InactiveTag;
     return (<span className={className} onClick={() => onClick()}>
         &nbsp;{name}&nbsp;
@@ -17,7 +17,7 @@ function ImmutableTag(props: {
     name: string,
     active: boolean,
 }) : JSX.Element {
-    const {name, active} = props;
+    const { name, active } = props;
     const className = active ? styles.ActiveTag : styles.InactiveTag;
     return (<span className={className}>&nbsp;{name}&nbsp;</span>)
 }
@@ -101,7 +101,7 @@ export function ActivableTagSet(props: {
     onChange: (() => void),
 }) : JSX.Element {
     const [, setVersion] = useState({});
-    const {allTags, activeTags, onChange} = props;
+    const { allTags, activeTags, onChange } = props;
     const store = useMemo(
         () => new TagStorage(
             allTags,
@@ -124,7 +124,7 @@ export function ExpandableTagSet(props: {
     activeTags: Set<string>,
 }) : JSX.Element {
     const [, setVersion] = useState({});
-    const {allTags, activeTags} = props;
+    const { allTags, activeTags } = props;
     const store = useMemo(
         () => new TagStorage(
             allTags,

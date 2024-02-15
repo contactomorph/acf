@@ -15,10 +15,7 @@ import { ActivableTagSet } from './components/TagSet';
 export default function TrainingHistoryPage(
     props: { client: RouterClient, model: Model, visible: boolean }
 ): JSX.Element {
-    const client = props.client;
-    const model = props.model;
-    const visible = props.visible;
-
+    const { client, model, visible} = props;
     const [version, setVersion] = useState({});
 
     const allTags = useMemo(() => new Set<string>(), []);
