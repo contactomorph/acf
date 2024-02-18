@@ -20,6 +20,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import frLocale from "date-fns/locale/fr";
 import { ExpandableTagSet } from './components/TagSet';
+import { CALENDAR, CHECK_BOX, COMMENT, PIN, getIcon } from './components/icons';
 
 const DISTANCE = '\uD83D\uDCCF Distance';
 const DURATION = '\u23F1\uFE0F Durée';
@@ -209,27 +210,50 @@ export default function TrainingCreationPage(
     <div className={styles.Page}>
       <div className={cstyles.BoxText}>
         <input type="button" onClick={() => client.goTo('history', {})} value={`Revenir`} />
-        <input type="button" onClick={() => deleteSession()} value={`Supprimer`} />
-        <input type="button" onClick={() => upsertSession(formulaText, activeTags, date)} value={`Sauver`} />
-        <div style={{ height: "30px", verticalAlign: "middle" }}>
-          <ExpandableTagSet allTags={allTags} activeTags={activeTags} />
-        </div>
+        <span>&nbsp;</span>
+        <input type="button" onClick={() => deleteSession()} value={`Supprimer la séance`} />
+        <span>&nbsp;</span>
+        <input type="button" onClick={() => upsertSession(formulaText, activeTags, date)} value={`Enregistrer les modifications`} />
         <div>
-          Lien vers l&apos;entraînement:
+          Lien à partager:
           <a href={displayUrl} className={styles.UnmarkedLink} target="_blank" rel="noreferrer">🔗</a>
           <span className={styles.ToCopy} onClick={() => saveInClipboard(displayUrl)}>📑</span>
         </div>
-        <DatePicker
-          locale={frLocale}
-          dateFormat="dd/MM/yyyy kk:mm"
-          onChange={setDate}
-          selected={date}
-          showTimeSelect
-        />
+        <table style={{width: "100%"}}>
+          <tbody>
+            <tr>
+              <td className={cstyles.Label}>{getIcon(false)}&nbsp;Programme&nbsp;</td>
+              <td><ColorBox colorizer={colorizer} text={formulaText} /></td>
+            </tr>
+            <tr>
+              <td className={cstyles.Label}>{CALENDAR}&nbsp;Date&nbsp;</td>
+              <td>
+                <DatePicker
+                  locale={frLocale}
+                  dateFormat="dd/MM/yyyy kk:mm"
+                  onChange={setDate}
+                  selected={date}
+                  showTimeSelect
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className={cstyles.Label}>{PIN}&nbsp;Lieu&nbsp;</td>
+              <td><input type='text' style={{width: "100%"}} ref={placeRefObj} role='placeText' /></td>
+            </tr>
+            <tr>
+              <td className={cstyles.Label}>{CHECK_BOX}&nbsp;Catégories&nbsp;</td>
+              <td style={{ height: "30px", verticalAlign: "middle" }}>
+                <ExpandableTagSet allTags={allTags} activeTags={activeTags} />
+              </td>
+            </tr>
+            <tr>
+              <td className={cstyles.Label}>{COMMENT}&nbsp;Notes&nbsp;</td>
+              <td><input type='text' style={{width: "100%"}} ref={commentRefObj} role='commentText' /></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <input type='text' className={styles.BoxText} ref={placeRefObj} role='placeText' />
-      <input type='text' className={styles.BoxText} ref={commentRefObj} role='commentText' />
-      <ColorBox colorizer={colorizer} text={formulaText} />
       <DecimalBox
         onValueChange={setRefSpeed}
         value={refSpeed}

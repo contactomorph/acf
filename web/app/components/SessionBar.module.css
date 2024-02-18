@@ -10,3 +10,10 @@ div.Bar {
     text-align: left;
     cursor: pointer;
 }
+
+td.Label {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: small;
+    color: #544;
+    width: 3cm;
+}

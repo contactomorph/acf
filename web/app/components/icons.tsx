@@ -7,7 +7,7 @@ export const CHRONO = '\u23F1\uFE0F';
 export const SHOES = '\uD83D\uDC5F';
 
 export const PIN = '\u{1F4CD}';
-export const WATCH = '\u231A';
+export const CALENDAR = '\u{1F4C5}';
 export const COMMENT = '\u2757';
 export const CHECK_BOX = '\u2611\uFE0F';
 

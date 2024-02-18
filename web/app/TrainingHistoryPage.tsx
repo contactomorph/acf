@@ -8,7 +8,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import frLocale from "date-fns/locale/fr";
 import './tools/set-extensions';
-import { CHECK_BOX, WATCH } from './components/icons';
+import { CHECK_BOX, CALENDAR } from './components/icons';
 import { v4 as uuidv4 } from 'uuid';
 import { ActivableTagSet } from './components/TagSet';
 
@@ -33,7 +33,7 @@ export default function TrainingHistoryPage(
     }, [model, version, visible]);
     /* eslint-enable react-hooks/exhaustive-deps */
     
-    const [startingDate, setStartingDate] = useState<Date | null>(null);
+    const [startingDate, setStartingDate] = useState<Date | null>(() => new Date());
     useEffect(() => {
         setVersion({});
         const lambda = () => setVersion({});
@@ -53,15 +53,18 @@ export default function TrainingHistoryPage(
             <input
                 type="button"
                 onClick={() => client.goTo('creation', { id: uuidv4() })}
-                value={`Nouveau`}
+                value={`Nouvelle séance`}
                 role='new_training'
             />
         </div>
         <div className={styles.Bar}>
-            <table>
+            <table style={{width: "100%"}}>
                 <tbody>
+                    <tr aria-colspan={2}>
+                        <td>Filtres</td>
+                    </tr>
                     <tr key="from">
-                        <td>{WATCH}</td>
+                        <td className={cstyles.Label}>{CALENDAR}&nbsp;À partir du&nbsp;</td>
                         <td>
                             <DatePicker
                                 locale={frLocale}
@@ -72,7 +75,7 @@ export default function TrainingHistoryPage(
                         </td>
                     </tr>
                     <tr key="tags">
-                        <td>{CHECK_BOX}</td>
+                        <td className={cstyles.Label}>{CHECK_BOX}&nbsp;Pour&nbsp;</td>
                         <td>
                             <ActivableTagSet
                                 activeTags={activeTags}

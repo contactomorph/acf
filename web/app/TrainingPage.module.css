@@ -11,3 +11,10 @@ div.BoxText {
   border-color: darkgrey;
   box-sizing: border-box;
 }
+
+td.Label {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: small;
+  color: #544;
+  width: 3cm;
+}
