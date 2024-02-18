@@ -21,11 +21,3 @@ input.BoxText {
   font-weight: bold;
   color: black;
 }
-
-a.UnmarkedLink {
-  text-decoration: none;
-}
-
-span.ToCopy {
-  cursor: copy;
-}

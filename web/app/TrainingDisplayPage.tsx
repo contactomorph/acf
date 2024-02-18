@@ -102,7 +102,7 @@ export default function TrainingDisplayPage(
 
   return (
     <div className={styles.Page}>
-      <SessionBar session={session} onClick={() => {}} />
+      <SessionBar session={session} onClick={() => {}} prefix={undefined} />
       <DecimalBox
         onValueChange={setRefSpeed}
         value={refSpeed}

@@ -11,6 +11,14 @@ import './tools/set-extensions';
 import { CHECK_BOX, CALENDAR } from './components/icons';
 import { v4 as uuidv4 } from 'uuid';
 import { ActivableTagSet } from './components/TagSet';
+import { SharedLink } from './components/SharedLink';
+
+function createDisplayUrl(id: string): string {
+    const params = new URLSearchParams(window.location.search);
+    params.set('page', 'display');
+    params.set('id', id);
+    return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+}
 
 export default function TrainingHistoryPage(
     props: { client: RouterClient, model: Model, visible: boolean }
@@ -45,7 +53,12 @@ export default function TrainingHistoryPage(
         .filter(s => startingDate == null || startingDate <= s.date)
         .map(s => {
             const onClick = () => client.goTo('creation', { id: s.id });
-            return (<SessionBar session={s} key={s.id} onClick={onClick}/>);
+            return (<SessionBar
+                session={s}
+                key={s.id}
+                onClick={onClick}
+                footer={<SharedLink url={createDisplayUrl(s.id)}/>}
+            />);
         });
 
     return (<div className={styles.Page}>

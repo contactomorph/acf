@@ -21,6 +21,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import frLocale from "date-fns/locale/fr";
 import { ExpandableTagSet } from './components/TagSet';
 import { CALENDAR, CHECK_BOX, COMMENT, PIN, getIcon } from './components/icons';
+import { SharedLink } from './components/SharedLink';
 
 const DISTANCE = '\uD83D\uDCCF Distance';
 const DURATION = '\u23F1\uFE0F Durée';
@@ -78,10 +79,6 @@ function createDisplayUrl(): string {
   const params = new URLSearchParams(window.location.search);
   params.set('page', 'display');
   return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-}
-
-function saveInClipboard(text: string): void {
-  Future.forget(navigator.clipboard.writeText(text));
 }
 
 export default function TrainingCreationPage(
@@ -214,11 +211,6 @@ export default function TrainingCreationPage(
         <input type="button" onClick={() => deleteSession()} value={`Supprimer la séance`} />
         <span>&nbsp;</span>
         <input type="button" onClick={() => upsertSession(formulaText, activeTags, date)} value={`Enregistrer les modifications`} />
-        <div>
-          Lien à partager:
-          <a href={displayUrl} className={styles.UnmarkedLink} target="_blank" rel="noreferrer">🔗</a>
-          <span className={styles.ToCopy} onClick={() => saveInClipboard(displayUrl)}>📑</span>
-        </div>
         <table style={{width: "100%"}}>
           <tbody>
             <tr>
@@ -253,6 +245,7 @@ export default function TrainingCreationPage(
             </tr>
           </tbody>
         </table>
+        <SharedLink url={displayUrl} />
       </div>
       <DecimalBox
         onValueChange={setRefSpeed}

@@ -6,9 +6,9 @@ import { MouseEventHandler } from 'react';
 import { ImmutableTagSet } from './TagSet';
 
 export function SessionBar(
-    props: { session: Session, onClick: MouseEventHandler }
+    props: { session: Session, onClick: MouseEventHandler, footer: JSX.Element | undefined }
 ) : JSX.Element {
-    const { session: { id, comment, formula, date, place, tags }, onClick } = props;
+    const { session: { id, comment, formula, date, place, tags }, onClick, footer } = props;
     const tagSet = new Set<string>(tags);
 
     const tagLine = 0 < tagSet.size ?
@@ -29,5 +29,6 @@ export function SessionBar(
                 {commentLine}
             </tbody>
         </table>
+        {footer}
     </div>);
 }
