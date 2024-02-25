@@ -26,8 +26,9 @@ export function DecimalBox(props: {
     minValue?: number,
     maxValue?: number,
     decimalCount?: number,
+    label?: string
 }) : JSX.Element {
-    const { onValueChange, value, minValue, maxValue, decimalCount } = props;
+    const { onValueChange, value, minValue, maxValue, decimalCount, label } = props;
     const range: DiscreteRange = useMemo(
         () => new DiscreteRange(decimalCount, minValue, maxValue),
         [decimalCount, minValue, maxValue],
@@ -63,8 +64,11 @@ export function DecimalBox(props: {
         [range, onValueChange],
     );
 
+    const labelDiv = label ? (<div className={styles.Label}>{label}</div>) : (<></>);
+
     return (
       <div className={styles.BoxContainer}>
+        {labelDiv}
         <input
             type='button'
             role='minus'

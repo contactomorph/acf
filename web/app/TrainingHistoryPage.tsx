@@ -58,6 +58,7 @@ export default function TrainingHistoryPage(
                 key={s.id}
                 onClick={onClick}
                 footer={<SharedLink url={createDisplayUrl(s.id)}/>}
+                includesText={true}
             />);
         });
 

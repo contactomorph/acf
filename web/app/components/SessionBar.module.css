@@ -8,6 +8,9 @@ div.Bar {
     box-sizing: border-box;
     padding: 5px;
     text-align: left;
+}
+
+div.Clickable {
     cursor: pointer;
 }
 
@@ -16,4 +19,11 @@ td.Label {
     font-size: small;
     color: #544;
     width: 3cm;
+}
+
+td.ShortLabel {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: small;
+    color: #544;
+    width: 1cm;
 }

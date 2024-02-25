@@ -7,7 +7,7 @@ function MutableTag(props: {
     onClick: () => void,
 }) : JSX.Element {
     const { name, active, onClick } = props;
-    const className = active ? styles.ActiveTag : styles.InactiveTag;
+    const className = active ? `${styles.ActiveTag} ${styles.Clickable}` : styles.InactiveTag;
     return (<span className={className} onClick={() => onClick()}>
         &nbsp;{name}&nbsp;
     </span>)
@@ -15,11 +15,9 @@ function MutableTag(props: {
 
 function ImmutableTag(props: {
     name: string,
-    active: boolean,
 }) : JSX.Element {
-    const { name, active } = props;
-    const className = active ? styles.ActiveTag : styles.InactiveTag;
-    return (<span className={className}>&nbsp;{name}&nbsp;</span>)
+    const { name } = props;
+    return (<span className={styles.ActiveTag}>&nbsp;{name}&nbsp;</span>)
 }
 
 interface TagInfo {name: string, active: boolean};
@@ -90,7 +88,6 @@ export function ImmutableTagSet(props: { tags: ReadonlySet<string>, }) : JSX.Ele
     const tags = Array.from(props.tags).map(name => (<ImmutableTag
         name={name}
         key={`tag_${name}`}
-        active={true}
     />));
     return toTagDiv(tags);
 }

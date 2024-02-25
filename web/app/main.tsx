@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import icon from './assets/icon.svg';
 import './index.css';
 import Model from './model/Model';
-import FirebaseHistoryRepository from './backend/FirebaseHistoryRepository';
+import FirebaseHistoryRepository from './backend/MockHistoryRepository';
 import { Router, RouterKedge } from './routing/Router.tsx';
 import TrainingHistoryPage from './TrainingHistoryPage.tsx';
 import TrainingCreationPage from './TrainingCreationPage.tsx';

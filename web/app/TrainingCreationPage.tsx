@@ -20,7 +20,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import frLocale from "date-fns/locale/fr";
 import { ExpandableTagSet } from './components/TagSet';
-import { CALENDAR, CHECK_BOX, COMMENT, PIN, getIcon } from './components/icons';
+import { CALENDAR, CHECK_BOX, COMMENT, PIN, SHOES, getIcon } from './components/icons';
 import { SharedLink } from './components/SharedLink';
 
 const DISTANCE = '\uD83D\uDCCF Distance';
@@ -253,6 +253,7 @@ export default function TrainingCreationPage(
         minValue={MIN_REF_SPEED}
         maxValue={MAX_REF_SPEED}
         decimalCount={DEC_COUNT_REF_SPEED}
+        label={`${SHOES}VMA`}
       />
       <RunningBar blocks={distanceBlocks} title={distanceTitle} />
       <RunningBar blocks={durationBlocks} title={durationTitle} />

@@ -6,6 +6,9 @@ span.ActiveTag {
     border-color: darkred;
     color: white;
     font-weight: bold;
+}
+
+span.Clickable {
     cursor: pointer;
 }
 

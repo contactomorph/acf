@@ -1,5 +1,4 @@
 div.BoxContainer, input.BoxText {
-    border: none;
     margin: 0;
     padding: 0;
 }
@@ -7,18 +6,45 @@ div.BoxContainer, input.BoxText {
 div.BoxContainer {
     width: 90%;
     height: 30px;
-    background-color: white;
+    background-color: lightgrey;
     border-radius: 5px;
     display: flex;
     flex-direction: row;
+    justify-content: center;
+    align-items: center; 
+    vertical-align: middle;
+    text-align: center;
+}
+
+div.Label {
+  width: 3cm;
+  height: 100%;
+  background-color: lightgrey;
+  text-align: center;
+  display: inline-block;
+  border-radius: 5px 0 0 5px;
+}
+
+input.BoxMinusButton {
+  width: 60px;
+  height: 100%;
+  border-radius: 5px 0 0 5px;
+}
+
+input.BoxPlusButton {
+  width: 60px;
+  height: 100%;
+  border-radius: 0 5px 5px 0;
 }
 
 input.BoxText {
-    width: 100%;
+    border: none;
     top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
     text-align: center;
-    background-color: transparent;
+    background-color: white;
     -moz-appearance: textfield; /* Firefox */
 }
 
@@ -27,14 +53,4 @@ input.BoxText::-webkit-outer-spin-button,
 input.BoxText::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
-}
-
-input.BoxMinusButton {
-  width: 60px;
-  border-radius: 5px 0 0 5px;
-}
-
-input.BoxPlusButton {
-  width: 60px;
-  border-radius: 0 5px 5px 0;
 }

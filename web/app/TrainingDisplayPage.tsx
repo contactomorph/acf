@@ -11,6 +11,7 @@ import { RouterClient } from './routing/primitives';
 import Model from './model/Model';
 import { Session } from './data/sessions';
 import { SessionBar } from './components/SessionBar';
+import { SHOES } from './components/icons';
 
 const DISTANCE = '\uD83D\uDCCF Distance';
 const DURATION = '\u23F1\uFE0F Durée';
@@ -102,13 +103,19 @@ export default function TrainingDisplayPage(
 
   return (
     <div className={styles.Page}>
-      <SessionBar session={session} onClick={() => {}} prefix={undefined} />
+      <SessionBar
+        session={session}
+        onClick={undefined}
+        footer={undefined}
+        includesText={false}
+      />
       <DecimalBox
         onValueChange={setRefSpeed}
         value={refSpeed}
         minValue={MIN_REF_SPEED}
         maxValue={MAX_REF_SPEED}
         decimalCount={DEC_COUNT_REF_SPEED}
+        label={`${SHOES}VMA`}
       />
       <RunningBar blocks={distanceBlocks} title={distanceTitle} />
       <RunningBar blocks={durationBlocks} title={durationTitle} />
