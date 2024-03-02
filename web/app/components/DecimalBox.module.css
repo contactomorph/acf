@@ -1,8 +1,5 @@
-div.BoxContainer, input.BoxText {
-    padding: 0;
-}
-
 div.BoxContainer {
+    padding: 2px;
     width: 90%;
     height: 30px;
     background-color: lightgrey;
@@ -37,6 +34,7 @@ input.BoxPlusButton {
 }
 
 input.BoxText {
+    padding: 0;
     border: none;
     top: 0;
     left: 0;

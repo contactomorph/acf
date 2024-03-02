@@ -6,7 +6,7 @@ div.BoxText {
   text-align: left;
   background-color: lightgrey;
   border-style: solid;
-  border-radius: 10px;
+  border-radius: 5px;
   border-width: 0;
   box-sizing: border-box;
 }
@@ -16,4 +16,8 @@ td.Label {
   font-size: small;
   color: #544;
   width: 3cm;
+}
+
+input.Command {
+  border: none;
 }

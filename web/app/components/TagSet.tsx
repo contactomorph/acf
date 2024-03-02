@@ -134,6 +134,7 @@ export function ExpandableTagSet(props: {
         () => (<input
             type='text'
             key="new_tag"
+            style={{ border: "none" }}
             onBlur={e => transfer(e.target, store)}
         />),
         [store]

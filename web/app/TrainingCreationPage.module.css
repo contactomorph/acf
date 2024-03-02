@@ -12,7 +12,7 @@
   margin-bottom: 10px;
 }
 
-input.BoxText {
+div.BoxText {
   height: 30px;
   width: 90%;
   border: none;
@@ -24,4 +24,9 @@ input.BoxText {
   font-size: 16px;
   font-weight: bold;
   color: black;
+}
+
+input.TextField {
+  width: 100%;
+  border: none;
 }

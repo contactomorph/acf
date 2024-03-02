@@ -196,11 +196,26 @@ export default function TrainingCreationPage(
   return (
     <div className={styles.Page}>
       <div className={cstyles.BoxText}>
-        <input type="button" onClick={() => client.goTo('history', {})} value={`Revenir`} />
+        <input
+          type="button"
+          className={cstyles.Command}
+          onClick={() => client.goTo('history', {})}
+          value={`Revenir`}
+        />
         <span>&nbsp;</span>
-        <input type="button" onClick={() => deleteSession()} value={`Supprimer la séance`} />
+        <input
+          type="button"
+          className={cstyles.Command}
+          onClick={() => deleteSession()}
+          value={`Supprimer la séance`}
+        />
         <span>&nbsp;</span>
-        <input type="button" onClick={() => upsertSession(formulaText, activeTags, date)} value={`Enregistrer les modifications`} />
+        <input
+          type="button"
+          className={cstyles.Command}
+          onClick={() => upsertSession(formulaText, activeTags, date)}
+          value={`Enregistrer les modifications`}
+        />
       </div>
       <div className={cstyles.BoxText}>
         <table style={{width: "100%"}}>
@@ -213,6 +228,7 @@ export default function TrainingCreationPage(
               <td className={cstyles.Label}>{CALENDAR}&nbsp;Date&nbsp;</td>
               <td>
                 <DatePicker
+                  className={styles.TextField}
                   locale={frLocale}
                   dateFormat="dd/MM/yyyy kk:mm"
                   onChange={setDate}
@@ -223,7 +239,7 @@ export default function TrainingCreationPage(
             </tr>
             <tr>
               <td className={cstyles.Label}>{PIN}&nbsp;Lieu&nbsp;</td>
-              <td><input type='text' style={{width: "100%"}} ref={placeRefObj} role='placeText' /></td>
+              <td><input type='text' className={styles.TextField} ref={placeRefObj} role='placeText' /></td>
             </tr>
             <tr>
               <td className={cstyles.Label}>{CHECK_BOX}&nbsp;Catégories&nbsp;</td>
@@ -233,7 +249,7 @@ export default function TrainingCreationPage(
             </tr>
             <tr>
               <td className={cstyles.Label}>{COMMENT}&nbsp;Notes&nbsp;</td>
-              <td><input type='text' style={{width: "100%"}} ref={commentRefObj} role='commentText' /></td>
+              <td><input type='text' className={styles.TextField} ref={commentRefObj} role='commentText' /></td>
             </tr>
           </tbody>
         </table>

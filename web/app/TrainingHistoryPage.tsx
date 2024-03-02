@@ -66,6 +66,7 @@ export default function TrainingHistoryPage(
         <div className={cstyles.BoxText}>
             <input
                 type="button"
+                className={cstyles.Command}
                 onClick={() => client.goTo('creation', { id: uuidv4() })}
                 value={`Nouvelle séance`}
                 role='new_training'
