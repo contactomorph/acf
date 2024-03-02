@@ -6,7 +6,7 @@ div.BarTitle, div.BarInner {
 }
 
 div.Bar {
-    width: 90%;
+    width: 100%;
     height: 120px;
     background-color: lightgrey;
     border-style: solid;
