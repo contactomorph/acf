@@ -8,6 +8,10 @@
   margin: 0;
 }
 
+.Page > * { 
+  margin-bottom: 10px;
+}
+
 input.BoxText {
   height: 30px;
   width: 90%;

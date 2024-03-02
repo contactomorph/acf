@@ -8,6 +8,10 @@
     margin: 0;
 }
 
+.Page > * { 
+  margin-bottom: 10px;
+}
+
 div.Bar {
     width: 90%;
     background-color: lightgrey;
