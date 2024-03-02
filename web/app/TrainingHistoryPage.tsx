@@ -41,7 +41,7 @@ export default function TrainingHistoryPage(
     }, [model, version, visible]);
     /* eslint-enable react-hooks/exhaustive-deps */
     
-    const [startingDate, setStartingDate] = useState<Date | null>(() => new Date());
+    const [startingDate, setStartingDate] = useState<Date | null>(null);
     useEffect(() => {
         setVersion({});
         const lambda = () => setVersion({});
