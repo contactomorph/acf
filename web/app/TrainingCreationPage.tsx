@@ -201,6 +201,8 @@ export default function TrainingCreationPage(
         <input type="button" onClick={() => deleteSession()} value={`Supprimer la séance`} />
         <span>&nbsp;</span>
         <input type="button" onClick={() => upsertSession(formulaText, activeTags, date)} value={`Enregistrer les modifications`} />
+      </div>
+      <div className={cstyles.BoxText}>
         <table style={{width: "100%"}}>
           <tbody>
             <tr>
@@ -235,8 +237,8 @@ export default function TrainingCreationPage(
             </tr>
           </tbody>
         </table>
-        <SharedLink url={displayUrl} />
       </div>
+      <div className={cstyles.BoxText}><SharedLink url={displayUrl} /></div>
       <DecimalBox
         onValueChange={setRefSpeed}
         value={refSpeed}

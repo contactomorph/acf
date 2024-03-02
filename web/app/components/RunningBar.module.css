@@ -11,8 +11,7 @@ div.Bar {
     background-color: lightgrey;
     border-style: solid;
     border-radius: 10px;
-    border-width: 2px;
-    border-color: darkgrey;
+    border-width: 0;
     box-sizing: border-box;
     padding: 5px;
 }
@@ -48,8 +47,7 @@ div.BarBlock {
     background-color: lightgrey;
     border-style: solid;
     border-radius: 10px;
-    border-width: 2px;
-    border-color: darkgrey;
+    border-width: 0;
     box-sizing: border-box;
     overflow: hidden;
     font-size: 13pt;

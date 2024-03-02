@@ -7,8 +7,7 @@ div.BoxText {
   background-color: lightgrey;
   border-style: solid;
   border-radius: 10px;
-  border-width: 2px;
-  border-color: darkgrey;
+  border-width: 0;
   box-sizing: border-box;
 }
 

@@ -2,8 +2,7 @@ span.ActiveTag {
     background-color: red;
     border-style: solid;
     border-radius: 5px;
-    border-width: 2px;
-    border-color: darkred;
+    border-width: 0;
     color: white;
     font-weight: bold;
 }
@@ -16,8 +15,7 @@ span.InactiveTag {
     background-color: gray;
     border-style: solid;
     border-radius: 5px;
-    border-width: 2px;
-    border-color: dimgray;
+    border-width: 0;
     color: lightgray;
     font-weight: bold;
     cursor: pointer;
