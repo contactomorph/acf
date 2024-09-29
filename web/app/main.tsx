@@ -22,6 +22,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <main>
       <Router kedge={KEDGE}>
         {{
+          ctor: () => (<div/>),
+          route: 'default',
+        }}
+        {{
           ctor: (cl, v) => (<TrainingHistoryPage client={cl} model={MODEL} visible={v} />),
           route: 'history',
         }}
