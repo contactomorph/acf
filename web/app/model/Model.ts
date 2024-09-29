@@ -55,7 +55,7 @@ export default class Model {
     }
 
     private static _compareTime(s1: Session, s2: Session): number {
-        return s1.date.getTime() - s2.date.getTime();
+        return s2.date.getTime() - s1.date.getTime();
     }
 
     private static _identical(s1: Session, s2: Session): boolean {
