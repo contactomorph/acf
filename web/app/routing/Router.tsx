@@ -33,7 +33,7 @@ const Wrapper = function(
     const { client, ctor } = props;
     const [visible, setVisible] = useState(false);
     const page: JSX.Element = ctor(client, visible);
-    const style: React.CSSProperties = { visibility: visible ? "visible" : "hidden" };
+    const style: React.CSSProperties = { visibility: visible ? "visible" : "collapse" };
     useEffect(() => { client.subscribe(setVisible); }, [client]);
     return (
         <div id={client.wrapperId} className={styles.Wrapper} style={style}>
