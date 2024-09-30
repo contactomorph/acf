@@ -11,6 +11,10 @@ export interface TimeSpan {
     readonly sec: number,
 }
 
+export function toSeconds(t: TimeSpan): number {
+    return 60 * ((60 * t.hr) + t.min) + t.sec;
+}
+
 export function fromKmPerHour(in_km_per_hour: number): Speed {
     return { in_meter_per_sec: in_km_per_hour / 3.6 };
 }

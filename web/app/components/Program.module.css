@@ -68,9 +68,7 @@ div.ProgLeftBox {
     padding: 0;
     margin: 0;
     background-color: lightgrey;
-    border-style: solid;
-    border-radius: 8px;
-    border-width: 0;
+    border-style: none;
     box-sizing: border-box;
     text-align: center;
 }

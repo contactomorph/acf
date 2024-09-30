@@ -60,19 +60,41 @@ function getFactor(multiFactor: MultiFactor, refSpeed: Speed): number {
     return factor;
 }
 
-function removeLastIntervalIfRecoveryInsideLoop(intervals: CompleteInterval[]) {
+function removeLastIntervalIfRecoveryInsideLoop(intervals: MutableInterval[]) {
     const lastInterval = intervals.at(-1);
     if (lastInterval?.isRecovery === true && lastInterval.round !== undefined) {
+        const {roundIndex, blockIndex, sectionCount} = lastInterval.round;
         intervals.pop();
+        for (let i = 1; i <= intervals.length; ++i) {
+            const interval = intervals.at(-i);
+            if (interval?.round === undefined) break;
+            const round: Round = interval.round;
+            if (round.blockIndex !== blockIndex || round.roundIndex !== roundIndex) break;
+            interval.round = { ...round, sectionCount: sectionCount - 1 };
+        }
     }
 }
 
-function pushMultipleRounds(to: CompleteInterval[], from: ReadonlyArray<MutableInterval>, factor: number) {
-    for (let i=0; i < factor; ++i) {
+function pushMultipleRounds(
+    to: CompleteInterval[],
+    from: ReadonlyArray<MutableInterval>,
+    factor: number,
+    blockIndex: number,
+) {
+    const sectionCount = from.length;
+    for (let i = 0; i < factor; ++i) {
+        let j = 0;
         for(const interval of from) {
             const copy: MutableInterval = { ...interval };
-            copy.round = {index: i, among: factor};
+            copy.round = {
+                sectionIndex: j,
+                sectionCount,
+                roundIndex: i,
+                roundCount: factor,
+                blockIndex,
+            };
             to.push(copy);
+            ++j;
         }
     }
 }
@@ -94,11 +116,13 @@ export function computeIntervals(training: Training | undefined, speedSpecifier:
         return [];
     const intervals: MutableInterval[] = [];
     const refSpeed = speedSpecifier(100);
+    let blockIndex = 0;
     for(const item of training) {
         if ("intervals" in item) {
             const factor = getFactor(item.multiFactor, refSpeed);
             const sequence = item.intervals.map(i => completeInterval(i, speedSpecifier));
-            pushMultipleRounds(intervals, sequence, factor);
+            pushMultipleRounds(intervals, sequence, factor, blockIndex);
+            ++blockIndex;
         } else {
             const interval = completeInterval(item, speedSpecifier);
             if (interval.isRecovery) {

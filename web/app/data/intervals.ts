@@ -7,8 +7,11 @@ export interface Interval {
 };
 
 export interface Round {
-    index: number;
-    among: number;
+    sectionIndex: number,
+    sectionCount: number,
+    roundIndex: number;
+    roundCount: number;
+    blockIndex: number;
 };
 
 export interface CompleteInterval {
