@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import icon from './assets/icon.svg';
 import './index.css';
 import Model from './model/Model';
 import FirebaseHistoryRepository from './backend/FirebaseHistoryRepository.ts';
@@ -15,10 +14,6 @@ const KEDGE = new RouterKedge();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <header>
-      <img className='header-content' src={icon} />
-      <div className='header-content'>Allures Athlétic Cœur de fond</div>
-    </header>
     <main>
       <Router kedge={KEDGE}>
         {{
