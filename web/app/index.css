@@ -8,27 +8,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+body {
+  background-image: url(assets/bg_damier_90_inv.png);
+}
+
 html, body {
   max-width: 100vw;
 }
 
-body {
-  background-image: url(assets/bg_damier_90.png);
-}
-
-header {
-  background-color: rgb(250, 249, 220);
-  display: flex;
-  flex-direction: row;
-  height: 60px;
-}
-
-.header-content {
-  height: 100%;
-  vertical-align: middle;
-  font-size: 15pt;
-}
-
 main {
   padding: 20px 10px 0 10px;
+}
+
+input[type="text"] {
+  background-color: white;
 }
