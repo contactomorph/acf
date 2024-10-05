@@ -40,7 +40,6 @@ function Step(props: { step: ProgramStep, classification: number }): JSX.Element
   const backgroundColor = speedColor.desaturate().hex();
   const title = step.isRecovery ? "Récupération" : "Course";
 
-  const proportionalWidth = 100 / (texts.length + 1);
   let tds: JSX.Element[];
   let round = step.round;
   if (round === undefined) {
@@ -48,17 +47,15 @@ function Step(props: { step: ProgramStep, classification: number }): JSX.Element
       backgroundColor, 
       paddingTop: padding,
       paddingBottom: padding,
-      width: `${proportionalWidth}%`,
     };
     tds = [<td key={0} colSpan={2} style={style} title={title}>&nbsp;</td>];
   }
   else if (round.sectionIndex === 0) {
-    const text = `${(round.roundIndex + 1)} / ${round.roundCount}`;
+    const text = `${(round.roundIndex + 1)}${NBS}/${NBS}${round.roundCount}`;
     const leftStyle: React.CSSProperties = {
       backgroundColor,
       paddingTop: padding,
       paddingBottom: padding,
-      width: `${3*proportionalWidth/4}%`,
     };
     const evenBlock = round.blockIndex % 2 === 0;
     const evenRound = round.roundIndex % 2 === 0;
@@ -69,13 +66,12 @@ function Step(props: { step: ProgramStep, classification: number }): JSX.Element
       backgroundColor: roundColor.hex(),
       paddingTop: padding,
       paddingBottom: padding,
-      width: `${proportionalWidth/4}%`,
       textAlign: "center",
     };
 
     tds = [
       <td key={-1} style={rightStyle} title={text} rowSpan={round.sectionCount}>{text}</td>,
-      <td key={0} style={leftStyle} title={title}>&nbsp;</td>,
+      <td key={0} style={leftStyle} title={title}>&nbsp;&nbsp;</td>,
     ];
   }
   else {
@@ -83,7 +79,6 @@ function Step(props: { step: ProgramStep, classification: number }): JSX.Element
       backgroundColor,
       paddingTop: padding,
       paddingBottom: padding,
-      width: `${proportionalWidth/2}%`,
     };
 
     tds = [
@@ -101,7 +96,6 @@ function Step(props: { step: ProgramStep, classification: number }): JSX.Element
       backgroundColor,
       paddingTop: padding,
       paddingBottom: padding,
-      width: `${proportionalWidth}%`,
     };
     tds.push(<td key={i} style={style}>{NBS + t + NBS}</td>);
     ++i;
