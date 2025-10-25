@@ -25,6 +25,12 @@ REPLACEMENT: REMOVE NEXT AND USE VITE
 > npm install identity-obj-proxy --save-dev
 > npm audit fix
 
+INSTALL AND DEBLOY WITH FIREBASE
+
+> npm install -g firebase-tools
+> cd .\acf
+> firebase deploy
+
 ============================================================
 POTENTIALLY OBSOLETE:
 

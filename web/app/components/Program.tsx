@@ -1,7 +1,7 @@
 import styles from './Program.module.css';
 import { CHRONO, NBS, RULER, SHOES, getIcon } from './icons';
 import { Distance, Pace, Speed, TimeSpan, toSeconds } from '../data/units';
-import { colorizeSpeed, stringifyDistance, stringifySpeed, stringifyTimeSpan } from './unit_display';
+import { colorizeSpeed, stringifyDistance, stringifyPace, stringifyTimeSpan } from './unit_display';
 import chroma from 'chroma-js';
 import { Round } from '../data/intervals';
 
@@ -31,7 +31,7 @@ function Step(props: { step: ProgramStep, classification: number }): JSX.Element
   const { step, classification } = props;
   const speedColor = colorizeSpeed(step.speedPercentage);
   const texts = [
-    stringifySpeed(step.speed),
+    stringifyPace(step.pace),
     stringifyDistance(step.distance),
     stringifyTimeSpan(step.timeSpan),
   ];
