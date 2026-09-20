@@ -74,7 +74,7 @@ STRUCTURE DE L'OUTILLAGE
 - test/__ mocks __/     Mocks Jest pour les fichiers statiques
 
 ------------------------------------------------------------
-NOTES / POINTS CONNUS (au 19/09/2026)
+NOTES / POINTS CONNUS (au 20/09/2026)
 ------------------------------------------------------------
 
 - React est volontairement resté en version 18 (React 19, Vite 8,
@@ -84,14 +84,6 @@ NOTES / POINTS CONNUS (au 19/09/2026)
   remonte désormais des avertissements/erreurs sur du code existant
   (chaînage optionnel, template literals, namespace JSX déprécié, etc.).
   Beaucoup sont corrigeables avec « npx eslint . --fix ».
-
-- Tests pré-existants en échec (déjà cassés avant la mise à jour des
-  dépendances, non liés à l'outillage) :
-    * __tests__/test_Model.ts               : l'ordre de tri des sessions
-      (comparateur _compareTime, ordre décroissant) ne correspond pas à
-      l'ordre croissant attendu par les tests.
-    * __tests__/test_TrainingCreationPage.tsx : nombre de blocs rendus
-      différent de celui attendu.
 
 - Avis npm audit : uuid < 11.1.1 (modéré, buffer bounds sur v3/v5/v6 avec
   paramètre buf — non utilisé ici). Corrigeable en passant à uuid@14

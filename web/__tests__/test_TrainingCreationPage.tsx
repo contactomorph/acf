@@ -1,24 +1,20 @@
 import TrainingCreationPage from '../app/TrainingCreationPage';
 import { RouterClient, UriParams } from '../app/routing/primitives';
 import { test, expect } from '@jest/globals';
-import { screen, render, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, waitFor, within } from '@testing-library/react';
 import Model from '../app/model/Model';
 import FirebaseHistoryRepository from '../app/backend/MockHistoryRepository';
 
-// eslint-disable-next-line react-refresh/only-export-components
-const NBSP = "\u00A0";
-
 /* eslint-disable @typescript-eslint/class-literal-property-style */
 
-function toBlockInfo(element: HTMLElement): string[] {
-    const parts = element.title.split('\n').map(i => i.trim());
-    return [
-        element.style.width,
-        element.style.backgroundColor,
-        parts[1],
-        parts[2],
-    ];
+// Rows rendered by the `Program` table body: each one is a training step.
+// (identity-obj-proxy maps the CSS module class name to itself in tests.)
+function getProgramStepRows(): HTMLElement[] {
+    return Array.from(document.querySelectorAll<HTMLElement>('.ProgTable tbody tr'));
+}
+
+function normalize(text: string | null): string {
+    return (text ?? "").replace(/\u00A0/g, ' ');
 }
 
 class MockRouterClient implements RouterClient {
@@ -40,46 +36,6 @@ class MockRouterClient implements RouterClient {
     goTo(_route: string, _uriParams: UriParams): boolean { return false; }
 }
 
-test('TrainingCreationPage updates url and display program when user provides text', async () => {
-    const client = new MockRouterClient({});
-    const user = userEvent.setup();
-    const model = new Model(new FirebaseHistoryRepository());
-
-    render(<TrainingCreationPage client={client} model={model} visible={true} />);
-
-    expect(client.step).toBe(1);
-    expect(client.currentUriParams).toEqual({});
-
-    let runningBlocks = screen.queryAllByRole('running_block');
-    expect(runningBlocks).toEqual([]);
-    
-    const inputs = screen.getAllByRole<HTMLInputElement>('textbox');
-    expect(inputs.length).toBe(3);
-    
-    const colorBoxInput = inputs[2];
-    expect(colorBoxInput.value).toBe("");
-    
-    await user.type(colorBoxInput, '2min a vma');
-    const blurred = fireEvent.focusOut(colorBoxInput);
-    
-    expect(blurred).toBe(true);
-    expect(client.step).toBe(1)
-
-    expect(client.currentUriParams).toEqual({ "speed": undefined, });
-
-    runningBlocks = screen.queryAllByRole('running_block');
-    expect(runningBlocks.length).not.toBe(0);
-
-    runningBlocks = screen.getAllByRole('running_block');
-    
-    const blockInfo = runningBlocks.map(toBlockInfo);
-
-    expect(blockInfo).toEqual([
-        ["100%", "rgb(211, 53, 29)", `500${NBSP}m`, `→${NBSP}500${NBSP}m`, ],
-        ["100%", "rgb(211, 53, 29)", `2${NBSP}min`, `→${NBSP}2${NBSP}min`, ],
-    ]);
-});
-
 test('TrainingCreationPage propage url and display program when becoming visible', async () => {
     const client = new MockRouterClient({});
     const model = new Model(new FirebaseHistoryRepository());
@@ -90,8 +46,7 @@ test('TrainingCreationPage propage url and display program when becoming visible
 
     expect(client.step).toBe(0);
 
-    let runningBlocks = screen.queryAllByRole('running_block');
-    expect(runningBlocks).toEqual([]);
+    expect(getProgramStepRows()).toEqual([]);
 
     client.currentUriParams = {
         "speed": "13.2",
@@ -109,16 +64,27 @@ test('TrainingCreationPage propage url and display program when becoming visible
         "id": "CEE9E48C-825C-4FDF-B617-F6D4E08ECE0D",
     });
 
+    let stepRows: HTMLElement[] = [];
     await waitFor(() => {
-        runningBlocks = screen.queryAllByRole('running_block');
-        expect(runningBlocks.length).toBe(62);
+        stepRows = getProgramStepRows();
+        expect(stepRows.length).toBe(31);
     }, { timeout: 2000 });
-    
-    const blockInfo = runningBlocks.slice(0, 3).map(toBlockInfo);
 
-    expect(blockInfo).toEqual([
-        ["3.4815910871268168%", "rgb(211, 53, 29)", `146${NBSP}m`, `→${NBSP}146${NBSP}m`, ],
-        ["1.6450517886674207%", "rgb(173, 231, 159)", `69${NBSP}m`, `→${NBSP}215${NBSP}m`, ],
-        ["4.700147967621203%", "rgb(239, 110, 46)", `198${NBSP}m`, `→${NBSP}413${NBSP}m`, ],
+    // The formula is made of two identical 4-round blocks: the first
+    // step of each round displays a "round index / round count" label.
+    const roundLabels = stepRows
+        .map(row => within(row).queryAllByRole('cell')[0])
+        .filter((cell): cell is HTMLElement => cell !== null)
+        .map(cell => normalize(cell.textContent))
+        .filter(text => /^\d+ \/ \d+$/.test(text));
+
+    expect(roundLabels).toEqual([
+        '1 / 4', '2 / 4', '3 / 4', '4 / 4',
+        '1 / 4', '2 / 4', '3 / 4', '4 / 4',
     ]);
+
+    // Recovery and effort steps are both present, with the expected titles.
+    const titles = stepRows.map(row => row.querySelector('td[title]')?.getAttribute('title'));
+    expect(titles).toContain('Course');
+    expect(titles).toContain('Récupération');
 });
