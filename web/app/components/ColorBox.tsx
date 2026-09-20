@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styles from './ColorBox.module.css';
 
 export type ColoredSpan = Partial<React.CSSProperties> & { textWidth: number };
@@ -6,67 +6,43 @@ export type ColoredSpan = Partial<React.CSSProperties> & { textWidth: number };
 export type Colorizer = (text: string) => ReadonlyArray<ColoredSpan>;
 
 const NBSP = "\u00A0";
-const EMPTY_CONTENT: JSX.Element = (<>{NBSP}</>);
 
-class ColorizingDaemon {
-  private readonly _setContent: (arg: JSX.Element) => void;
-  private readonly _colorizer: Colorizer;
+function extractSubText(
+  text: string,
+  from: number,
+  to: number | null = null,
+): string {
+  return text.substring(from, to ?? text.length).replace(/ /g, NBSP);
+}
 
-  constructor(
-    setContent: (arg: JSX.Element) => void,
-    colorizer: Colorizer,
-  ) {
-    this._setContent = setContent;
-    this._colorizer = colorizer;
-  }
-
-  public injectText(text: string): void {
-    const spans = this._colorizer(text);
-    const children = ColorizingDaemon._createChildren(spans, text);
-    this._setContent(<>{children}</>);
-  }
-
-  public clearText() {
-    this._setContent(EMPTY_CONTENT);
-  }
-
-  private static _createChildren(
-    spans: ReadonlyArray<ColoredSpan>,
-    text: string,
-  ): ReadonlyArray<JSX.Element> {
-    let offset = 0;
-    const children: Array<JSX.Element> = [];
-    for(const span of spans) {
-      if (span.textWidth <= 0) continue;
-      const nextOffset = Math.min(offset + span.textWidth, text.length);
-      if (offset >= nextOffset) break;
-      const subText = ColorizingDaemon._extractSubText(text, offset, nextOffset);
-      const properties = Object.getOwnPropertyNames(span);
-      if (properties.length === 1 && properties[0] === "textWidth") {
-        children.push(<React.Fragment key={offset}>{subText}</React.Fragment>);
-      } else {
-        children.push(<span key={offset} style={span}>{subText}</span>);
-      }
-      offset = nextOffset;
+function createChildren(
+  spans: ReadonlyArray<ColoredSpan>,
+  text: string,
+): ReadonlyArray<JSX.Element> {
+  let offset = 0;
+  const children: Array<JSX.Element> = [];
+  for (const span of spans) {
+    if (span.textWidth <= 0) continue;
+    const nextOffset = Math.min(offset + span.textWidth, text.length);
+    if (offset >= nextOffset) break;
+    const subText = extractSubText(text, offset, nextOffset);
+    const properties = Object.getOwnPropertyNames(span);
+    if (properties.length === 1 && properties[0] === "textWidth") {
+      children.push(<React.Fragment key={offset}>{subText}</React.Fragment>);
+    } else {
+      children.push(<span key={offset} style={span}>{subText}</span>);
     }
-    if (offset < text.length) {
-      children.push(
-        <React.Fragment key={offset}>
-          {ColorizingDaemon._extractSubText(text, offset)}
-        </React.Fragment>
-      );
-    }
-    children.push(<React.Fragment key={offset+1}>{NBSP}</React.Fragment>);
-    return children;
+    offset = nextOffset;
   }
-
-  private static _extractSubText(
-    text: string,
-    from: number,
-    to: number | null = null,
-  ): string {
-    return text.substring(from, to ?? text.length).replace(/ /g, NBSP);
+  if (offset < text.length) {
+    children.push(
+      <React.Fragment key={offset}>
+        {extractSubText(text, offset)}
+      </React.Fragment>
+    );
   }
+  children.push(<React.Fragment key={offset + 1}>{NBSP}</React.Fragment>);
+  return children;
 }
 
 function syncScrolling(
@@ -85,33 +61,17 @@ function onKeyUp(e: React.KeyboardEvent<HTMLElement>): void {
 }
 
 export function ColorBox(
-  props: { colorizer: Colorizer, text?: string, }
+  props: { colorizer: Colorizer, value: string, onChange: (text: string) => void, }
 ) : JSX.Element {
-  const { colorizer, text } = props;
-  const formulaRefObj = useRef<HTMLInputElement>(null);
+  const { colorizer, value, onChange } = props;
   const backdropRefObj = useRef<HTMLDivElement>(null);
-  const [content, setContent] = useState(EMPTY_CONTENT);
+  // View-only state: the coloring is only shown once the field loses focus.
+  // While editing, the plain (black) text is displayed so the caret stays visible.
+  const [colorized, setColorized] = useState(true);
 
-  const color = content === EMPTY_CONTENT ? "black" : "transparent";
-
-  useEffect(() => {
-    const textInput = formulaRefObj.current;
-    const backdrop = backdropRefObj.current;
-    if (backdrop !== null && textInput !== null) {
-      backdrop.scrollLeft = textInput.scrollLeft;
-    }
-  });
-
-  const daemon = useMemo(() => {
-    return new ColorizingDaemon(setContent, colorizer);
-  }, [colorizer]);
-
-  useEffect(() => {
-    if (text !== undefined && formulaRefObj.current) {
-      formulaRefObj.current.value = text;
-      daemon.injectText(text);
-    }
-  }, [colorizer, text, daemon]);
+  const content = colorized && value !== ""
+    ? <>{createChildren(colorizer(value), value)}</>
+    : <>{NBSP}</>;
 
   return (
     <div className={styles.BoxContainer}>
@@ -120,12 +80,12 @@ export function ColorBox(
       </div>
       <input type='text'
         className={styles.BoxText}
-        style={{color}}
-        ref={formulaRefObj}
+        style={{color: colorized ? "transparent" : "black"}}
+        value={value}
+        onChange={e => { setColorized(false); onChange(e.target.value); }}
+        onFocus={() => setColorized(false)}
+        onBlur={() => setColorized(true)}
         onScroll={e => syncScrolling(backdropRefObj.current, e.target as HTMLElement) }
-        onInput={() => daemon.clearText()}
-        onClick={() => daemon.clearText()}
-        onBlur={e => daemon.injectText(e.target.value)}
         onKeyUp={onKeyUp} />
     </div>);
 }

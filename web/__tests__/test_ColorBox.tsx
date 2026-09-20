@@ -1,7 +1,8 @@
 import { ColorBox, ColoredSpan, Colorizer } from '../app/components/ColorBox';
 import { test, expect } from '@jest/globals';
-import { screen, render, fireEvent, act } from '@testing-library/react';
+import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 
 class MockColorizer {
     public readonly colorizer: Colorizer;
@@ -39,24 +40,25 @@ class MockColorizer {
     }
 }
 
+// The parent component owns the text and passes it down (controlled input).
+function ControlledColorBox(props: { colorizer: Colorizer, initial?: string }): JSX.Element {
+    const [value, setValue] = useState(props.initial ?? "");
+    return <ColorBox colorizer={props.colorizer} value={value} onChange={setValue} />;
+}
+
 test('ColorBox calls the colorizer when the user provides input text', async () => {
     const user = userEvent.setup();
     const col = new MockColorizer();
 
-    const { rerender } = render(<ColorBox colorizer={col.colorizer}/>);
+    render(<ControlledColorBox colorizer={col.colorizer} />);
 
     expect(col.text).toBe("");
     expect(col.spans).toEqual([]);
 
-    await act(async () => {
-        const input = screen.getByRole('textbox');
-        await user.type(input, 'ab cd ef ghi');
-        const blurred = fireEvent.focusOut(input);
-        expect(blurred).toBe(true);
-    });
-    rerender(<ColorBox colorizer={col.colorizer}/>);
-
-    expect(col.step).toBe(1);
+    const input = screen.getByRole('textbox');
+    await user.type(input, 'ab cd ef ghi');
+    // Coloring is deferred until the field loses focus.
+    fireEvent.blur(input);
 
     expect(col.text).toBe("ab cd ef ghi");
     expect(col.spans).toEqual(
@@ -75,7 +77,7 @@ test('ColorBox adds colors to input text for the user', async () => {
     const user = userEvent.setup();
     const col = new MockColorizer();
 
-    render(<ColorBox colorizer={col.colorizer} />);
+    render(<ControlledColorBox colorizer={col.colorizer} />);
 
     const input = screen.getByRole('textbox');
     const box = screen.getByRole('formula');
@@ -84,11 +86,9 @@ test('ColorBox adds colors to input text for the user', async () => {
     expect(children.map(n => n.nodeType)).toEqual([Node.TEXT_NODE]);
 
     await user.type(input, 'ab cd ef ghi');
-    const blurred = fireEvent.focusOut(input);
-    
-    expect(blurred).toBe(true);
-    expect(col.step).toBe(1);
-    
+    // Coloring is deferred until the field loses focus.
+    fireEvent.blur(input);
+
     children = Array.from(box.childNodes);
     expect(children.map(n => [n.nodeType, n.nodeName, n.textContent])).toEqual(
     [
@@ -108,10 +108,9 @@ test('ColorBox calls the colorizer when the text is provided in props', () => {
 
     const { rerender } = render(<ColorBox
         colorizer={col.colorizer}
-        text={"bing or bong"} />
+        value={"bing or bong"}
+        onChange={() => {}} />
     );
-
-    expect(col.step).toBe(1);
 
     expect(col.text).toBe("bing or bong");
     expect(col.spans).toEqual(
@@ -125,11 +124,10 @@ test('ColorBox calls the colorizer when the text is provided in props', () => {
 
     rerender(<ColorBox
         colorizer={col.colorizer}
-        text={"boom"} />
+        value={"boom"}
+        onChange={() => {}} />
     );
-    
-    expect(col.step).toBe(2);
-    
+
     expect(col.text).toBe("boom");
     expect(col.spans).toEqual([ { "color": "red", "textWidth": 4, } ]);
 });

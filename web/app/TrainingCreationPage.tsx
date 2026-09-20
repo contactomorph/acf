@@ -2,7 +2,6 @@ import cstyles from './TrainingPage.module.css';
 import styles from './TrainingCreationPage.module.css';
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Speed, fromKmPerHour } from './data/units';
-import { Training } from './data/trainings';
 import { processFormula } from './model/FormulaProcessor';
 import { computeIntervals } from './model/interval_computation';
 import { toColoredSpans } from './controllers/grammar_coloration';
@@ -28,8 +27,6 @@ const DEFAULT_REF_SPEED = 15;
 const SPEED_URI_ARG = "speed";
 const ID_URI_ARG = "id";
 
-interface TrainingRef { training: Training | undefined };
-
 function retrieveValuesFromModel(
   id: string | undefined,
   model: Model,
@@ -38,7 +35,6 @@ function retrieveValuesFromModel(
   setFormulaText: (formulaText: string) => void,
   setDate: (date: Date | null) => void,
   activeTags: Set<string>,
-  trainingRef: TrainingRef,
 ): void {
   let place = "";
   let comment = "";
@@ -61,8 +57,6 @@ function retrieveValuesFromModel(
   if (commentInput) {
     commentInput.value = comment;
   }
-  const formula = processFormula(formulaText);
-  trainingRef.training = formula.training;
   setFormulaText(formulaText);
   setDate(date);
 }
@@ -84,7 +78,6 @@ export default function TrainingCreationPage(
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
   const [formulaText, setFormulaText] = useState<string>("");
   const [date, setDate] = useState<Date | null>(null);
-  const trainingRef = useMemo<TrainingRef>(() => { return { training: undefined }; }, []);
   const placeRefObj = useRef<HTMLInputElement>(null);
   const commentRefObj = useRef<HTMLInputElement>(null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -121,8 +114,7 @@ export default function TrainingCreationPage(
         commentRefObj.current,
         setFormulaText,
         setDate,
-        activeTags,
-        trainingRef);
+        activeTags);
     }
   }, [client, model, visible, version]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -138,21 +130,19 @@ export default function TrainingCreationPage(
   }, [model]);
 
   const colorizer: Colorizer = useCallback((text: string) => {
-    const formula = processFormula(text);
-    trainingRef.training = formula.training;
-    setFormulaText(text);
-    return toColoredSpans(formula.firstToken);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    return toColoredSpans(processFormula(text).firstToken);
+  }, []);
 
   const data = useMemo(() => {
     const speedSpecifier = (speedPercentage: number): Speed => {
       const ratio = speedPercentage / 100;
       return fromKmPerHour(ratio * refSpeed);
     };
-    const intervals = computeIntervals(trainingRef.training, speedSpecifier);
+    const training = processFormula(formulaText).training;
+    const intervals = computeIntervals(training, speedSpecifier);
 
     return { intervals };
-  }, [refSpeed, formulaText]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [refSpeed, formulaText]);
 
   const { intervals } = data;
 
@@ -166,7 +156,7 @@ export default function TrainingCreationPage(
       }
       const place = placeRefObj.current?.value ?? "";
       const comment = commentRefObj.current?.value ?? "";
-      const training = trainingRef.training ?? null;
+      const training = processFormula(formula).training ?? null;
       const session: Session = {
         id,
         comment,
@@ -222,7 +212,7 @@ export default function TrainingCreationPage(
           <tbody>
             <tr>
               <td className={cstyles.Label}>{getIcon(false)}&nbsp;Programme&nbsp;</td>
-              <td><ColorBox colorizer={colorizer} text={formulaText} /></td>
+              <td><ColorBox colorizer={colorizer} value={formulaText} onChange={setFormulaText} /></td>
             </tr>
             <tr>
               <td className={cstyles.Label}>{CALENDAR}&nbsp;Date&nbsp;</td>
