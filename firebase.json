@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "acf-allure",
     "public": "web/dist",
     "ignore": [
       "firebase.json",
