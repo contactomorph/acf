@@ -233,7 +233,7 @@ export default function TrainingCreationPage(
             </tr>
             <tr>
               <td className={cstyles.Label}>{CHECK_BOX}&nbsp;Catégories&nbsp;</td>
-              <td style={{ height: "30px", verticalAlign: "middle" }}>
+              <td className={cstyles.TagsCell}>
                 <ExpandableTagSet allTags={allTags} activeTags={activeTags} />
               </td>
             </tr>

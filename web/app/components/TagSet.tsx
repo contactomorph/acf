@@ -63,7 +63,7 @@ function toTagDiv(
     tags: Array<JSX.Element>,
     prefix: JSX.Element | undefined = undefined
 ) : JSX.Element {
-    const items: Array<JSX.Element> = prefix ? [prefix] : [];
+    const items: Array<JSX.Element> = [];
     let i = 0;
     for (const tag of tags) {
         if (0 === items.length) {
@@ -72,6 +72,12 @@ function toTagDiv(
             items.push(<React.Fragment key={`space_${i}`}>&nbsp;</React.Fragment>, tag);
         }
         i += 1;
+    }
+    if (prefix) {
+        return (<div>
+            <div className={styles.PrefixRow}>{prefix}</div>
+            <div>{items}</div>
+        </div>);
     }
     return (<div>{items}</div>);
 }

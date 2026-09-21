@@ -21,3 +21,32 @@ td.Label {
 input.Command {
   border: none;
 }
+
+td.TagsCell {
+  height: 30px;
+  vertical-align: middle;
+}
+
+@media (max-width: 600px) {
+  div.BoxText table,
+  div.BoxText tbody,
+  div.BoxText tr {
+    display: block;
+    width: 100%;
+  }
+
+  div.BoxText td {
+    display: block;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  td.Label {
+    width: 100%;
+    padding-top: 6px;
+  }
+
+  td.TagsCell {
+    height: auto;
+  }
+}

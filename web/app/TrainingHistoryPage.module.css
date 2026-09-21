@@ -22,3 +22,18 @@ div.Bar {
     padding: 5px;
     text-align: left;
 }
+
+@media (max-width: 600px) {
+  div.Bar table,
+  div.Bar tbody,
+  div.Bar tr {
+    display: block;
+    width: 100%;
+  }
+
+  div.Bar td {
+    display: block;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+}

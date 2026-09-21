@@ -20,3 +20,7 @@ span.InactiveTag {
     font-weight: bold;
     cursor: pointer;
 }
+
+div.PrefixRow {
+    margin-bottom: 5px;
+}
