@@ -23,6 +23,27 @@ div.Bar {
     text-align: left;
 }
 
+div.DetailPanel {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+div.ClickablePanel {
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+div.CreationPanel {
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+    background-color: lightgrey;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+}
+
 @media (max-width: 600px) {
   div.Bar table,
   div.Bar tbody,

@@ -1,0 +1,137 @@
+div.Calendar {
+    width: 100%;
+    background-color: lightgrey;
+    border-style: solid;
+    border-radius: 5px;
+    border-width: 0;
+    box-sizing: border-box;
+    padding: 5px;
+    text-align: center;
+}
+
+div.Header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+input.NavButton {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: white;
+    padding: 4px 8px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: small;
+    color: #544;
+    text-transform: capitalize;
+}
+
+input.NavButton:first-child {
+    margin-bottom: 8px;
+}
+
+input.NavButton:last-child {
+    margin-top: 8px;
+}
+
+span.RangeLabel {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: small;
+    color: #544;
+    min-width: 10em;
+}
+
+div.WeekdayRow {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 4px;
+}
+
+span.WeekdayLabel {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: small;
+    color: #544;
+}
+
+div.Grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+div.Day {
+    position: relative;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+span.DayNumber {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: small;
+}
+
+div.OddMonth {
+    background-color: #c8c8c8;
+}
+
+div.HasSession {
+    background-color: #dde;
+    font-weight: bold;
+}
+
+div.OddMonth.HasSession {
+    background-color: #aab;
+}
+
+span.Dot {
+    position: absolute;
+    bottom: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: red;
+}
+
+span.DotUnmatched {
+    position: absolute;
+    bottom: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #888;
+}
+
+div.Selected {
+    outline: 2px solid #544;
+}
+
+div.Today {
+    color: #a00;
+}
+
+@media (max-width: 600px) {
+    span.RangeLabel {
+        min-width: 0;
+        font-size: x-small;
+    }
+
+    div.Grid {
+        gap: 2px;
+    }
+
+    span.DayNumber {
+        font-size: x-small;
+    }
+}

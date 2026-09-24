@@ -13,12 +13,10 @@ import Model from './model/Model';
 import { Session } from './data/sessions';
 import { validate } from 'uuid';
 import { Future } from './tools/Future';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import frLocale from "date-fns/locale/fr";
 import { ExpandableTagSet } from './components/TagSet';
 import { CALENDAR, CHECK_BOX, COMMENT, PIN, SHOES, getIcon } from './components/icons';
 import { SharedLink } from './components/SharedLink';
+import { DateTimeBox, DEFAULT_HOUR, DEFAULT_MINUTE } from './components/DateTimeBox';
 
 const MIN_REF_SPEED = 5;
 const MAX_REF_SPEED = 25;
@@ -26,6 +24,21 @@ const DEC_COUNT_REF_SPEED = 1;
 const DEFAULT_REF_SPEED = 15;
 const SPEED_URI_ARG = "speed";
 const ID_URI_ARG = "id";
+const DATE_URI_ARG = "date";
+const DEFAULT_PLACE = "Stade Alain Mimoun";
+
+function parseDayKeyAtDefaultTime(dayKeyText: string | undefined): Date | null {
+  if (!dayKeyText) return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dayKeyText);
+  if (!match) {
+    return null;
+  }
+  const [, yearText, monthText, dayText] = match;
+  const year = Number.parseInt(yearText, 10);
+  const month = Number.parseInt(monthText, 10);
+  const day = Number.parseInt(dayText, 10);
+  return new Date(year, month - 1, day, DEFAULT_HOUR, DEFAULT_MINUTE);
+}
 
 function retrieveValuesFromModel(
   id: string | undefined,
@@ -35,10 +48,11 @@ function retrieveValuesFromModel(
   setFormulaText: (formulaText: string) => void,
   setDate: (date: Date | null) => void,
   activeTags: Set<string>,
+  initialDateText: string | undefined,
 ): void {
-  let place = "";
+  let place = DEFAULT_PLACE;
   let comment = "";
-  let date = null;
+  let date = parseDayKeyAtDefaultTime(initialDateText);
   let formulaText = "";
   activeTags.clear();
   if (id) {
@@ -107,6 +121,7 @@ export default function TrainingCreationPage(
   useMemo(() => {
     if (visible) {
       const id = client.getUriParam(ID_URI_ARG);
+      const initialDateText = client.getUriParam(DATE_URI_ARG);
       retrieveValuesFromModel(
         id,
         model,
@@ -114,7 +129,8 @@ export default function TrainingCreationPage(
         commentRefObj.current,
         setFormulaText,
         setDate,
-        activeTags);
+        activeTags,
+        initialDateText);
     }
   }, [client, model, visible, version]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -216,16 +232,7 @@ export default function TrainingCreationPage(
             </tr>
             <tr>
               <td className={cstyles.Label}>{CALENDAR}&nbsp;Date&nbsp;</td>
-              <td>
-                <DatePicker
-                  className={styles.TextField}
-                  locale={frLocale}
-                  dateFormat="dd/MM/yyyy kk:mm"
-                  onChange={setDate}
-                  selected={date}
-                  showTimeSelect
-                />
-              </td>
+              <td><DateTimeBox date={date} onDateChange={setDate} /></td>
             </tr>
             <tr>
               <td className={cstyles.Label}>{PIN}&nbsp;Lieu&nbsp;</td>

@@ -9,6 +9,15 @@ const DATE_TIME_OPTIONS: Intl.DateTimeFormatOptions = {
 
 export const DATE_TIME_FORMAT = new Intl.DateTimeFormat('fr-FR', DATE_TIME_OPTIONS);
 
+const DATE_OPTIONS: Intl.DateTimeFormatOptions = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: '2-digit',
+};
+
+export const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', DATE_OPTIONS);
+
 export function parseIso(text: string): Date | null {
     const n = Date.parse(text);
     return Number.isFinite(n)? new Date(n) : null;
