@@ -9,10 +9,11 @@ export interface RouterClient {
     getUriParam(key: string): string | undefined;
     setUriParam(key: string, value: string | undefined): void;
     goTo(route: string, uriParams: UriParams): boolean;
+    goToUntouched(route: string): boolean;
 }
 
 export interface VisibilityProvider {
-    subscribe(setVisible: (visible: boolean) => void): void;
+    subscribe(setState: (visible: boolean, touched: boolean) => void): void;
 };
 
 export interface URLStore {

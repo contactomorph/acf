@@ -38,7 +38,17 @@ class PrivateCoordinator {
             return false;
         this.replaceUriParams(this.routes[index], uriParams);
         this.clients.forEach((client, i) => {
-            client.setVisible(i === index);
+            client.setVisible(i === index, i === index);
+        });
+        this._activeIndex = index;
+        return true;
+    }
+
+    goToUntouched(index: number): boolean {
+        if (index < 0 || this.clients.length <= index || this._activeIndex === index)
+            return false;
+        this.clients.forEach((client, i) => {
+            client.setVisible(i === index, false);
         });
         this._activeIndex = index;
         return true;
@@ -86,14 +96,14 @@ class PrivateClient implements RouterClient, VisibilityProvider {
     private readonly _route: string;
     private readonly _index: number;
     private _visible: boolean;
-    private _setVisible: (visible: boolean) => void;
+    private _setState: (visible: boolean, touched: boolean) => void;
 
     constructor(coordinator: PrivateCoordinator, route: string, index: number) {
         this._coord = coordinator;
         this._route = route;
         this._index = index;
         this._visible = false;
-        this._setVisible = () => {};
+        this._setState = () => {};
     }
 
     get route(): string {
@@ -125,14 +135,22 @@ class PrivateClient implements RouterClient, VisibilityProvider {
         }
         return false;
     }
-    setVisible(visible: boolean) {
+    goToUntouched(route: string): boolean {
+        if (!this._visible) return false;
+        const foundIndex = this._coord.routes.findIndex(r => r === route);
+        if (0 <= foundIndex) {
+            return this._coord.goToUntouched(foundIndex);
+        }
+        return false;
+    }
+    setVisible(visible: boolean, touched: boolean) {
         if (this._visible !== visible) {
             this._visible = visible;
-            this._setVisible(visible);
+            this._setState(visible, touched);
         }
     }
-    subscribe(setVisible: (visible: boolean) => void): void {
-        this._setVisible = setVisible;
+    subscribe(setState: (visible: boolean, touched: boolean) => void): void {
+        this._setState = setState;
     }
 }
 

@@ -4,7 +4,7 @@ import { Coordinator } from "./Coordinator";
 import { RouterClient, URLStore, VisibilityProvider } from "./primitives";
 
 export interface PageInfo {
-    ctor: (client: RouterClient, visible: boolean) => JSX.Element,
+    ctor: (client: RouterClient, visible: boolean, touched: boolean) => JSX.Element,
     route: string,
 };
 
@@ -27,14 +27,16 @@ function _createDefaultURLStore(): URLStore | undefined {
 const Wrapper = function(
     props: {
         client: RouterClient & VisibilityProvider,
-        ctor: (client: RouterClient, visible: boolean) => JSX.Element,
+        ctor: (client: RouterClient, visible: boolean, touched: boolean) => JSX.Element,
     }
 ): JSX.Element {
     const { client, ctor } = props;
-    const [visible, setVisible] = useState(false);
-    const page: JSX.Element = ctor(client, visible);
-    const style: React.CSSProperties = { visibility: visible ? "visible" : "collapse" };
-    useEffect(() => { client.subscribe(setVisible); }, [client]);
+    const [state, setState] = useState({ visible: false, touched: false });
+    const page: JSX.Element = ctor(client, state.visible, state.touched);
+    const style: React.CSSProperties = { visibility: state.visible ? "visible" : "collapse" };
+    useEffect(() => {
+        client.subscribe((visible, touched) => setState({ visible, touched }));
+    }, [client]);
     return (
         <div id={client.wrapperId} className={styles.Wrapper} style={style}>
             {page}
