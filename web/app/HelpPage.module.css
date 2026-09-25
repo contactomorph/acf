@@ -1,0 +1,101 @@
+.Page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+    padding: 0;
+    margin: 0;
+}
+
+.Page > * {
+    margin-bottom: 10px;
+}
+
+div.Content {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: lightgrey;
+    text-align: left;
+}
+
+.Content h1 {
+    font-size: large;
+    margin: 0 0 10px 0;
+}
+
+.Content h2 {
+    font-size: medium;
+    margin: 16px 0 8px 0;
+}
+
+.Content p {
+    margin: 8px 0;
+}
+
+table.Reference {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.Reference td {
+    padding: 4px 8px;
+    vertical-align: top;
+    border-bottom: 1px solid #ccc;
+}
+
+td.Symbol {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    white-space: nowrap;
+    width: 4cm;
+}
+
+div.Example {
+    font-family: 'Courier New', Courier, monospace;
+    padding: 6px 8px;
+    margin: 6px 0;
+    background-color: white;
+    border-radius: 3px;
+}
+
+.Content code {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: white;
+    padding: 0 3px;
+    border-radius: 3px;
+}
+
+span.Keyword {
+    color: blue;
+}
+
+span.Distance {
+    background-color: pink;
+    color: darkmagenta;
+    border-radius: 3px;
+}
+
+span.Duration {
+    background-color: lightcyan;
+    color: darkcyan;
+    border-radius: 3px;
+}
+
+span.Factor {
+    background-color: #CFC3C3;
+    color: #3F3939;
+    border-radius: 3px;
+}
+
+p.Note {
+    font-size: small;
+    font-style: italic;
+    color: #544;
+    margin: 4px 0 8px 0;
+}
+
+.Content .Indented {
+    margin-left: 24px;
+}

@@ -34,6 +34,7 @@ class MockRouterClient implements RouterClient {
         this.step += 1;
     }
     goTo(_route: string, _uriParams: UriParams): boolean { return false; }
+    goToUntouched(_route: string): boolean { return false; }
 }
 
 test('TrainingCreationPage propage url and display program when becoming visible', async () => {
@@ -41,7 +42,7 @@ test('TrainingCreationPage propage url and display program when becoming visible
     const model = new Model(new FirebaseHistoryRepository());
 
     const { rerender } = render(
-        <TrainingCreationPage client={client} model={model} visible={false} />
+        <TrainingCreationPage client={client} model={model} visible={false} touched={false} />
     );
 
     expect(client.step).toBe(0);
@@ -54,7 +55,7 @@ test('TrainingCreationPage propage url and display program when becoming visible
     };
 
     rerender(
-        <TrainingCreationPage client={client} model={model} visible={true} />
+        <TrainingCreationPage client={client} model={model} visible={true} touched={true} />
     );
 
     expect(client.step).toBe(1);

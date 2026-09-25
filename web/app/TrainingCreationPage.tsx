@@ -86,9 +86,9 @@ function createDisplayUrl(): string {
 }
 
 export default function TrainingCreationPage(
-  props: { client: RouterClient, model: Model, visible: boolean, }
+  props: { client: RouterClient, model: Model, visible: boolean, touched: boolean, }
 ): JSX.Element {
-  const { client, model, visible } = props;
+  const { client, model, visible, touched } = props;
   const [refSpeed, setRefSpeed] = useState<number>(DEFAULT_REF_SPEED);
   const [formulaText, setFormulaText] = useState<string>("");
   const [date, setDate] = useState<Date | null>(null);
@@ -118,21 +118,35 @@ export default function TrainingCreationPage(
       }
     }
   }, [client, visible]);
+  const reloadFromModel = useCallback(() => {
+    const id = client.getUriParam(ID_URI_ARG);
+    const initialDateText = client.getUriParam(DATE_URI_ARG);
+    retrieveValuesFromModel(
+      id,
+      model,
+      placeRefObj.current,
+      commentRefObj.current,
+      setFormulaText,
+      setDate,
+      activeTags,
+      initialDateText);
+  }, [client, model, activeTags]);
+
+  // A real navigation (goTo) reveals this page as touched, so it reloads its
+  // data. Merely becoming visible again — for instance when returning from the
+  // help page via goToUntouched — leaves the current input untouched.
+  useMemo(() => {
+    if (visible && touched) {
+      reloadFromModel();
+    }
+  }, [visible, touched, reloadFromModel]);
+
+  // The model may load its data asynchronously after the first entry.
   useMemo(() => {
     if (visible) {
-      const id = client.getUriParam(ID_URI_ARG);
-      const initialDateText = client.getUriParam(DATE_URI_ARG);
-      retrieveValuesFromModel(
-        id,
-        model,
-        placeRefObj.current,
-        commentRefObj.current,
-        setFormulaText,
-        setDate,
-        activeTags,
-        initialDateText);
+      reloadFromModel();
     }
-  }, [client, model, visible, version]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [version, reloadFromModel]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (visible) {
       client.setUriParam(SPEED_URI_ARG, toText(refSpeed));
@@ -227,7 +241,14 @@ export default function TrainingCreationPage(
         <table style={{width: "100%"}}>
           <tbody>
             <tr>
-              <td className={cstyles.Label}>{getIcon(false)}&nbsp;Programme&nbsp;</td>
+              <td className={cstyles.Label}>
+                {getIcon(false)}&nbsp;Programme&nbsp;
+                <span
+                  className={styles.HelpIcon}
+                  onClick={() => client.goToUntouched('help')}
+                  role='help'
+                >&#x2753;</span>
+              </td>
               <td><ColorBox colorizer={colorizer} value={formulaText} onChange={setFormulaText} /></td>
             </tr>
             <tr>

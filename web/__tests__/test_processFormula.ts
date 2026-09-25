@@ -20,10 +20,10 @@ test('Process formula with loop', () => {
             intervals: [
                 { isRecovery: false, speedPercentage: 83, constraint: { in_meter: 300 } },
                 { isRecovery: false, speedPercentage: 94, constraint: { in_meter: 100 } },
-                { isRecovery: true, speedPercentage: 63, constraint: { in_sec: 120 } },
+                { isRecovery: true, speedPercentage: 65, constraint: { in_sec: 120 } },
             ],
         },
-        { isRecovery: true, speedPercentage: 63, constraint: { in_sec: 300 } },
+        { isRecovery: true, speedPercentage: 65, constraint: { in_sec: 300 } },
         { isRecovery: false, speedPercentage: 87, constraint: { in_meter: 2000 } },
     ];
     expect(findProblematicText(formula.firstToken)).toBe(null);
