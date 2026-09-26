@@ -30,8 +30,3 @@ input.TextField {
   width: 100%;
   border: none;
 }
-
-span.HelpIcon {
-  cursor: pointer;
-  user-select: none;
-}

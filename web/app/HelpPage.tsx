@@ -43,7 +43,7 @@ export default function HelpPage(
                 type="button"
                 className={cstyles.Command}
                 onClick={() => client.goToUntouched('creation')}
-                value={`Revenir`}
+                value={`⬅️ Revenir`}
             />
         </div>
         <div className={styles.Content}>

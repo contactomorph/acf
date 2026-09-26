@@ -18,8 +18,41 @@ td.Label {
   width: 3cm;
 }
 
-input.Command {
+.Command {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
   border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: white;
+  padding: 8px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: small;
+  color: #544;
+  margin-bottom: 8px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.Command:last-child {
+  margin-bottom: 0;
+}
+
+div.CommandRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+div.CommandRow:last-child {
+  margin-bottom: 0;
+}
+
+div.CommandRow .Command {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
 }
 
 td.TagsCell {

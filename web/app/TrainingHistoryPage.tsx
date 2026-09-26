@@ -112,13 +112,13 @@ export default function TrainingHistoryPage(
                     className={cstyles.BoxText}
                     onClick={(event) => event.stopPropagation()}
                 >
+                    <SharedLink url={createDisplayUrl(selectedSession.id)} />
                     <input
                         type="button"
                         className={cstyles.Command}
                         onClick={() => deleteSession(selectedSession.id)}
-                        value={`Supprimer`}
+                        value={`🗑️ Supprimer`}
                     />
-                    <SharedLink url={createDisplayUrl(selectedSession.id)} />
                 </div>}
             />
         </div>);

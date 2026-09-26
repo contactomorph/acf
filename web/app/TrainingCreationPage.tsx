@@ -268,35 +268,33 @@ export default function TrainingCreationPage(
           type="button"
           className={cstyles.Command}
           onClick={() => client.goTo('history', {})}
-          value={`Revenir`}
+          value={`⬅️ Revenir`}
         />
-        <span>&nbsp;</span>
         <input
           type="button"
           className={cstyles.Command}
           onClick={() => deleteSession()}
-          value={`Supprimer la séance`}
+          value={`🗑️ Supprimer la séance`}
         />
-        <span>&nbsp;</span>
         <input
           type="button"
           className={cstyles.Command}
           onClick={() => upsertSession(formulaText, activeTags, date)}
-          value={`Enregistrer les modifications`}
+          value={`💾 Enregistrer les modifications`}
+        />
+        <input
+          type="button"
+          className={cstyles.Command}
+          onClick={() => client.goToUntouched('help')}
+          value={`❓ Aide`}
+          role='help'
         />
       </div>
       <div className={cstyles.BoxText}>
         <table style={{width: "100%"}}>
           <tbody>
             <tr>
-              <td className={cstyles.Label}>
-                {getIcon(false)}&nbsp;Programme&nbsp;
-                <span
-                  className={styles.HelpIcon}
-                  onClick={() => client.goToUntouched('help')}
-                  role='help'
-                >&#x2753;</span>
-              </td>
+              <td className={cstyles.Label}>{getIcon(false)}&nbsp;Programme&nbsp;</td>
               <td><ColorBox colorizer={colorizer} value={formulaText} onChange={setFormulaText} /></td>
             </tr>
             <tr>

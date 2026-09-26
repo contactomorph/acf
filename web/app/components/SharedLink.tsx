@@ -1,4 +1,5 @@
 import { Future } from '../tools/Future';
+import cstyles from '../TrainingPage.module.css';
 
 function saveInClipboard(event: React.MouseEvent, text: string): void {
     event.preventDefault();
@@ -7,9 +8,8 @@ function saveInClipboard(event: React.MouseEvent, text: string): void {
 
 export function SharedLink(props: { url: string }) : JSX.Element {
     const { url } = props;
-    return (<div onClick={e => e.stopPropagation()} style={{ cursor: 'default' }}>
-        <a href={url} target="_blank" rel="noreferrer">Ouvrir le lien à partager</a>
-        <span>&nbsp;</span>
-        (<a href={url} onClick={(evt) => saveInClipboard(evt, url)}>Copier le lien</a>)
+    return (<div className={cstyles.CommandRow} onClick={e => e.stopPropagation()}>
+        <a className={cstyles.Command} href={url} target="_blank" rel="noreferrer">🔗 Ouvrir le lien à partager</a>
+        <a className={cstyles.Command} href={url} onClick={(evt) => saveInClipboard(evt, url)}>📋 Copier le lien à partager</a>
     </div>);
 }
