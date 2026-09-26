@@ -47,7 +47,7 @@ test('valid date with invalid/empty time falls back to 19:30', () => {
     fireEvent.change(screen.getByRole('dateText'), { target: { value: '23/09/2026' } });
     fireEvent.blur(screen.getByRole('dateText'));
 
-    expect(onChange).toHaveBeenCalledWith(new Date(2026, 8, 23, 19, 30));
+    expect(onChange).toHaveBeenCalledWith(new Date(2026, 8, 23, 12, 0));
 });
 
 test('valid time with invalid/empty date results in null', () => {

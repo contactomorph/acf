@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from './DateTimeBox.module.css';
 
-export const DEFAULT_HOUR = 19;
-export const DEFAULT_MINUTE = 30;
-
 const WEEKDAY_ABBREVIATIONS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
 
 interface DateParts { year: number, month: number, day: number }
@@ -97,8 +94,8 @@ function handleBlur(
                 parsedDate.year,
                 parsedDate.month - 1,
                 parsedDate.day,
-                DEFAULT_HOUR,
-                DEFAULT_MINUTE,
+                12,
+                0,
                 0,
                 0,
             );

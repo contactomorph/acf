@@ -16,7 +16,7 @@ import { Future } from './tools/Future';
 import { ExpandableTagSet } from './components/TagSet';
 import { CALENDAR, CHECK_BOX, COMMENT, PIN, SHOES, getIcon } from './components/icons';
 import { SharedLink } from './components/SharedLink';
-import { DateTimeBox, DEFAULT_HOUR, DEFAULT_MINUTE } from './components/DateTimeBox';
+import { DateTimeBox } from './components/DateTimeBox';
 
 const MIN_REF_SPEED = 5;
 const MAX_REF_SPEED = 25;
@@ -25,7 +25,16 @@ const DEFAULT_REF_SPEED = 15;
 const SPEED_URI_ARG = "speed";
 const ID_URI_ARG = "id";
 const DATE_URI_ARG = "date";
-const DEFAULT_PLACE = "Stade Alain Mimoun";
+
+const DEFAULT_TIMES: ReadonlyArray<[number, number]> = [
+  [19, 25],
+  [19, 25],
+  [19, 25],
+  [19, 25],
+  [19, 25],
+  [10, 0],
+  [10, 0],
+];
 
 function parseDayKeyAtDefaultTime(dayKeyText: string | undefined): Date | null {
   if (!dayKeyText) return null;
@@ -37,7 +46,45 @@ function parseDayKeyAtDefaultTime(dayKeyText: string | undefined): Date | null {
   const year = Number.parseInt(yearText, 10);
   const month = Number.parseInt(monthText, 10);
   const day = Number.parseInt(dayText, 10);
-  return new Date(year, month - 1, day, DEFAULT_HOUR, DEFAULT_MINUTE);
+  const noon = new Date(year, month - 1, day, 12, 0, 0, 0);
+  const frDayOfWeek = (noon.getDay() + 6) % 7; // 0=lun, 1=mar, ..., 6=dim
+  const [defaultHour, defaultMinute] = DEFAULT_TIMES[frDayOfWeek];
+  return new Date(year, month - 1, day, defaultHour, defaultMinute);
+}
+
+const DEFAULT_PLACES: ReadonlyArray<string> = [
+  "Stade Léo Lagrange",
+  "",
+  "Stade Alain Mimoun",
+  "",
+  "Stade Alain Mimoun",
+  "",
+  "Cité de l'immigration",
+];
+
+function chooseDefaultPlace(date: Date | null): string {
+  if (!date) return "";
+  const frDayOfWeek = (date.getDay() + 6) % 7; // 0=lun, 1=mar, ..., 6=dim
+  return DEFAULT_PLACES[frDayOfWeek];
+}
+
+const DEFAULT_TAGS: ReadonlyArray<string | null> = [
+  "Côtes",
+  null,
+  "Fractionné",
+  null,
+  "Fractionné",
+  null,
+  "Sortie longue",
+];
+
+function addDefaultTag(activeTags: Set<string>, date: Date | null): void {
+  if (!date) return;
+  const frDayOfWeek = (date.getDay() + 6) % 7; // 0=lun, 1=mar, ..., 6=dim
+  const tag = DEFAULT_TAGS[frDayOfWeek];
+  if (tag) {
+    activeTags.add(tag);
+  }
 }
 
 function retrieveValuesFromModel(
@@ -50,11 +97,12 @@ function retrieveValuesFromModel(
   activeTags: Set<string>,
   initialDateText: string | undefined,
 ): void {
-  let place = DEFAULT_PLACE;
-  let comment = "";
   let date = parseDayKeyAtDefaultTime(initialDateText);
+  let place = chooseDefaultPlace(date);
+  let comment = "";
   let formulaText = "";
   activeTags.clear();
+  addDefaultTag(activeTags, date);
   if (id) {
     const session = model.getSession(id);
     if (session) {
