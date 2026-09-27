@@ -1,8 +1,10 @@
+import cstyles from './TrainingPage.module.css';
 import styles from './TrainingCreationPage.module.css';
 import { useState, useMemo, useEffect } from 'react';
 import { Speed, fromKmPerHour } from './data/units';
 import { processFormula } from './model/FormulaProcessor';
 import { computeIntervals } from './model/interval_computation';
+import { encodeGarminWorkout } from './model/GarminWorkoutEncoder';
 import { Program } from './components/Program';
 import { DecimalBox } from './components/DecimalBox';
 import { RouterClient } from './routing/primitives';
@@ -20,6 +22,36 @@ const ID_URI_ARG = "id";
 
 function toText(s: number): string | undefined {
   return s === DEFAULT_REF_SPEED ? undefined : s.toFixed(DEC_COUNT_REF_SPEED);
+}
+
+function sanitizeFileName(name: string): string {
+  const cleaned = name.trim().replace(/[^\p{L}\p{N}]+/gu, '_').replace(/^_+|_+$/g, '');
+  return cleaned.length === 0 ? 'seance' : cleaned;
+}
+
+function pad2(value: number): string {
+  return value.toString().padStart(2, '0');
+}
+
+function formatSessionDateTime(date: Date): string {
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}_${pad2(date.getHours())}h${pad2(date.getMinutes())}`;
+}
+
+function downloadFitWorkout(session: Session, intervals: ReturnType<typeof computeIntervals>): void {
+  if (intervals.length === 0) return;
+
+  const workoutName = formatSessionDateTime(session.date);
+  const bytes = encodeGarminWorkout(workoutName, intervals);
+  const blob = new Blob([bytes as BlobPart], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+
+  anchor.href = url;
+  anchor.download = `acf_${sanitizeFileName(workoutName)}.fit`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+  URL.revokeObjectURL(url);
 }
 
 function getDefaultSession(): Session {
@@ -108,6 +140,15 @@ export default function TrainingDisplayPage(
         label={`${SHOES}VMA`}
       />
       <Program steps={intervals} />
+      <div className={cstyles.BoxText}>
+        <input
+          type="button"
+          className={cstyles.Command}
+          onClick={() => downloadFitWorkout(session, intervals)}
+          disabled={intervals.length === 0}
+          value={`⌚ Exporter vers une montre (Garmin .fit)`}
+        />
+      </div>
     </div>
   )
 }
