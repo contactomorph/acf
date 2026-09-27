@@ -285,7 +285,7 @@ export default function TrainingCreationPage(
         <input
           type="button"
           className={cstyles.Command}
-          onClick={() => client.goToUntouched('help')}
+          onClick={() => client.goToUntouched('help-creation')}
           value={`❓ Aide`}
           role='help'
         />

@@ -34,8 +34,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           route: 'display',
         }}
         {{
-          ctor: (cl, v) => (<HelpPage client={cl} visible={v} />),
-          route: 'help',
+          ctor: (cl, v) => (<HelpPage client={cl} visible={v} backTo='creation' />),
+          route: 'help-creation',
+        }}
+        {{
+          ctor: (cl, v) => (<HelpPage client={cl} visible={v} backTo='history' />),
+          route: 'help-history',
         }}
       </Router>
     </main>

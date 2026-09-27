@@ -36,7 +36,7 @@ export function stringifyPace(p: Pace): string {
     return stringifyTimeSpan(p.in_time_per_km);
 }
 
-const COLOR_SCALE = chroma.scale(['lightgreen', 'gold', 'orange', 'red', 'darkred']).domain([62, 77, 85, 97, 110]);
+const COLOR_SCALE = chroma.scale(['darkgreen', 'lightgreen', 'gold', 'orange', 'red', 'darkred']).domain([61, 69, 77, 85, 97, 110]);
 
 export function colorizeSpeed(speedPercentage: number): chroma.Color {
     return COLOR_SCALE(speedPercentage);

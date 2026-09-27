@@ -1,4 +1,4 @@
-import { SpeedLevel, assignPercentage } from "../../data/units";
+import { SpeedLevel, assignPercentage, RECOVERY_SPEED } from "../../data/units";
 import { ArrayIterator } from "../../tools/ArrayIterator";
 import { Morpheme, Range, MorphemeCategory } from "./morphemization";
 
@@ -145,7 +145,7 @@ function retrieveSpeed(it: ArrayIterator<Morpheme>): Lexeme | undefined {
     const next = it.next;
     if (next !== undefined && next.content === "10" && next.margin === "") {
         it.moveToNext();
-        const speedLexeme = toNumericLexeme(morpheme, NumericLexemeKind.Speed, assignPercentage("v10"));
+        const speedLexeme = toNumericLexeme(morpheme, NumericLexemeKind.Speed, RECOVERY_SPEED);
         speedLexeme.text = "v10";
         return speedLexeme;
     }

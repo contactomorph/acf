@@ -46,10 +46,12 @@ export function computeDistance(speed: Speed, duration: Duration): Distance {
 const PERCENTAGE_PER_LEVEL = new Map<SpeedLevel, number>([
     ["vma" as SpeedLevel, 100],
     ["v10" as SpeedLevel, 92],
-    ["vsm" as SpeedLevel, 88],
+    ["vsm" as SpeedLevel, 85],
     ["vm" as SpeedLevel, 80],
     ["vf" as SpeedLevel, 65],
 ]);
+
+export const RECOVERY_SPEED = 60;
 
 export function assignPercentage(level: SpeedLevel): number {
     const perc = PERCENTAGE_PER_LEVEL.get(level);

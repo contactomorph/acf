@@ -33,16 +33,16 @@ function Factor(props: { children: string }): JSX.Element {
 }
 
 export default function HelpPage(
-    props: { client: RouterClient, visible: boolean }
+    props: { client: RouterClient, visible: boolean, backTo: string }
 ): JSX.Element {
-    const { client } = props;
+    const { client, backTo } = props;
 
     return (<div className={styles.Page}>
         <div className={cstyles.BoxText}>
             <input
                 type="button"
                 className={cstyles.Command}
-                onClick={() => client.goToUntouched('creation')}
+                onClick={() => client.goToUntouched(backTo)}
                 value={`⬅️ Revenir`}
             />
         </div>
@@ -68,7 +68,7 @@ export default function HelpPage(
                 <tbody>
                     <tr><td className={styles.Symbol}><Speed percentage={100}>vma</Speed></td><td>Vitesse maximale aérobie</td></tr>
                     <tr><td className={styles.Symbol}><Speed percentage={92}>v10</Speed></td><td>Vitesse pour un 10km (92% de la vma)</td></tr>
-                    <tr><td className={styles.Symbol}><Speed percentage={88}>vsm</Speed></td><td>Vitesse pour un semi-marathon (88% de la vma)</td></tr>
+                    <tr><td className={styles.Symbol}><Speed percentage={85}>vsm</Speed></td><td>Vitesse pour un semi-marathon (88% de la vma)</td></tr>
                     <tr><td className={styles.Symbol}><Speed percentage={80}>vm</Speed></td><td>Vitesse pour un marathon (80% de la vma)</td></tr>
                     <tr><td className={styles.Symbol}><Speed percentage={65}>vf</Speed></td><td>Endurance fondamentale (65% de la vma)</td></tr>
                 </tbody>
@@ -99,8 +99,7 @@ export default function HelpPage(
             </p>
             <div className={styles.Example}><Duration>6min</Duration> <Keyword>à</Keyword> <Speed percentage={87}>87%</Speed> <Keyword>récup</Keyword> <Duration>3min</Duration><Keyword>,</Keyword> <Distance>400m</Distance> <Keyword>à</Keyword> <Speed percentage={78}>78%</Speed> <Keyword>récup</Keyword> <Duration>2min</Duration></div>
             <p>
-                Par défaut la récupération se fait à la vitesse d'endurance
-                fondamentale (<Speed percentage={65}>vf</Speed>) mais une vitesse
+                Par défaut la récupération se fait à <Speed percentage={60}>60%</Speed> de la VMA, mais une vitesse
                 explicite peut être incluse&nbsp;:
             </p>
             <div className={styles.Example}><Duration>6min</Duration> <Keyword>à</Keyword> <Speed percentage={87}>87%</Speed> <Keyword>récup</Keyword> <Duration>3min</Duration> <Keyword>à</Keyword> <Speed percentage={50}>50%</Speed><Keyword>,</Keyword> <Distance>400m</Distance> <Keyword>à</Keyword> <Speed percentage={78}>78%</Speed> <Keyword>récup</Keyword> <Duration>2min</Duration> <Keyword>à</Keyword> <Speed percentage={45}>45%</Speed></div>
@@ -145,7 +144,7 @@ export default function HelpPage(
                 la vma en utilisant les mots clés <Keyword>ou</Keyword> et
                 {' '}<Keyword>dès</Keyword>&nbsp;:
             </p>
-            <div className={styles.Example}><Factor>4</Factor> <Keyword>ou</Keyword> <Factor>5</Factor> <Keyword>dès</Keyword> <Factor>14</Factor> <Keyword>ou</Keyword> <Factor>6</Factor> <Keyword>dès</Keyword> <Factor>16</Factor> <Keyword>*</Keyword> <Keyword>(</Keyword><Duration>2'</Duration> <Keyword>à</Keyword> <Speed percentage={90}>90%</Speed> <Keyword>récup</Keyword> <Duration>4'</Duration><Keyword>)</Keyword></div>
+            <div className={styles.Example}><Factor>4</Factor> <Keyword>ou</Keyword> <Factor>5</Factor> <Keyword>dès</Keyword> <Speed percentage={60}>14</Speed> <Keyword>ou</Keyword> <Factor>6</Factor> <Keyword>dès</Keyword> <Speed percentage={60}>16</Speed> <Keyword>*</Keyword> <Keyword>(</Keyword><Duration>2'</Duration> <Keyword>à</Keyword> <Speed percentage={90}>90%</Speed> <Keyword>récup</Keyword> <Duration>4'</Duration><Keyword>)</Keyword></div>
             <p className={styles.Note}>
                 Le programme ci-dessus implique 4 répétitions pour une vma
                 inférieure à 14, 5 répétitions pour une vma de 14 à 16 et 6
@@ -155,7 +154,7 @@ export default function HelpPage(
                 Cette méthode peut être utilisée pour créer des séquences qui ne
                 s'appliquent que pour certaines gammes de vma&nbsp;:
             </p>
-            <div className={styles.Example}><Distance>10km</Distance> <Keyword>à</Keyword> <Speed percentage={88}>vsm</Speed><Keyword>,</Keyword> <Factor>0</Factor> <Keyword>ou</Keyword> <Factor>1</Factor> <Keyword>dès</Keyword> <Factor>15</Factor> <Keyword>*</Keyword> <Distance>3km</Distance> <Keyword>à</Keyword> <Speed percentage={92}>v10</Speed></div>
+            <div className={styles.Example}><Distance>10km</Distance> <Keyword>à</Keyword> <Speed percentage={88}>vsm</Speed><Keyword>,</Keyword> <Factor>0</Factor> <Keyword>ou</Keyword> <Factor>1</Factor> <Keyword>dès</Keyword> <Speed percentage={60}>15</Speed> <Keyword>*</Keyword> <Distance>3km</Distance> <Keyword>à</Keyword> <Speed percentage={92}>v10</Speed></div>
             <p className={styles.Note}>
                 L'intervalle final de 3km ne s'applique qu'aux vma à partir de 15.
             </p>

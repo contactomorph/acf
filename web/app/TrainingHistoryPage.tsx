@@ -141,6 +141,13 @@ export default function TrainingHistoryPage(
                 </tbody>
             </table>
         </div>
+        <input
+          type="button"
+          className={cstyles.Command}
+          onClick={() => client.goToUntouched('help-history')}
+          value={`❓ Aide`}
+          role='help'
+        />
         <TrainingCalendar
             statusPerDay={dayStatuses}
             selectedDay={selectedDay}

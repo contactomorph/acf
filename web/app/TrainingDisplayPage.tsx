@@ -146,7 +146,7 @@ export default function TrainingDisplayPage(
           className={cstyles.Command}
           onClick={() => downloadFitWorkout(session, intervals)}
           disabled={intervals.length === 0}
-          value={`⌚ Exporter vers une montre (Garmin .fit)`}
+          value={`⌚ Exporter un fichier .fit (compatible Garmin/COROS)`}
         />
       </div>
     </div>
